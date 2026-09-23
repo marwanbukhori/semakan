@@ -31,7 +31,7 @@ export const ApplicationSummarySchema = z.object({
   businessName: z.string(),
   premisesCategory: PremisesCategorySchema,
   state: z.string(),
-  submittedAt: z.string().datetime(),
+  submittedAt: z.iso.datetime(),
   status: ApplicationStatusSchema,
   assignedOfficerName: z.string().nullable(),
 });

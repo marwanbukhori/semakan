@@ -41,6 +41,7 @@ export default defineConfig([
       ],
     },
     rules: {
+      '@typescript-eslint/no-deprecated': 'error',
       'boundaries/dependencies': [
         'error',
         {
