@@ -21,6 +21,7 @@ export function DevPanel() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const isActive = (Object.keys(DEFAULT_DEV_CONTROLS) as (keyof DevControls)[]).some(
     (key) => controls[key] !== DEFAULT_DEV_CONTROLS[key],
   );
@@ -30,6 +31,8 @@ export function DevPanel() {
     if (!open) return;
     function onKeyDown(event: KeyboardEvent) {
       if (event.key !== 'Escape') return;
+      // Only when focus is in the panel, so Escape in a dialog or dropdown doesn't also close it.
+      if (!(event.target instanceof Node) || !containerRef.current?.contains(event.target)) return;
       setOpen(false);
       toggleRef.current?.focus();
     }
@@ -56,7 +59,10 @@ export function DevPanel() {
   return (
     // The toggle comes first in the DOM so Tab moves from it into the panel it opens;
     // flex-col-reverse still draws the panel above the toggle.
-    <div className="fixed bottom-4 right-4 z-40 flex flex-col-reverse items-end gap-2">
+    <div
+      ref={containerRef}
+      className="fixed bottom-4 right-4 z-40 flex flex-col-reverse items-end gap-2"
+    >
       <Button
         ref={toggleRef}
         variant="primary-fill"
@@ -117,13 +123,22 @@ export function DevPanel() {
             ))}
           </fieldset>
 
-          <label className="mb-4 flex items-center gap-2 text-body-sm">
+          <label className="mb-2 flex items-center gap-2 text-body-sm">
             <input
               type="checkbox"
               checked={controls.emptyList}
               onChange={(event) => update({ emptyList: event.target.checked })}
             />
             {t('devPanel.emptyList')}
+          </label>
+
+          <label className="mb-4 flex items-center gap-2 text-body-sm">
+            <input
+              type="checkbox"
+              checked={controls.conflictNext}
+              onChange={(event) => update({ conflictNext: event.target.checked })}
+            />
+            {t('devPanel.conflictNext')}
           </label>
 
           <Button variant="default-outline" size="small" onClick={resetData}>

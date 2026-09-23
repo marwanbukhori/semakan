@@ -1,5 +1,6 @@
 import { MoonIcon, SunIcon } from '@govtechmy/myds-react/icon';
 import { ThemeSwitch } from '@govtechmy/myds-react/theme-switch';
+import { AutoToast } from '@govtechmy/myds-react/toast';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router';
 import { DevPanel } from './dev-panel/DevPanel';
@@ -43,6 +44,7 @@ export function AppLayout() {
         <Outlet />
       </main>
       <DevPanel />
+      <AutoToast />
     </div>
   );
 }
