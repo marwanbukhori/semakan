@@ -38,6 +38,14 @@ export function AppLayout() {
             >
               {t('app.nav.fuel')}
             </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive ? 'font-semibold text-txt-primary' : 'text-txt-black-700 hover:underline'
+              }
+            >
+              {t('app.nav.about')}
+            </NavLink>
           </nav>
           {/* MYDS names the toggle after the current theme's label, so the labels are translated. */}
           <ThemeSwitch

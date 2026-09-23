@@ -5,10 +5,25 @@ export const ms: Translation = {
     name: 'Semakan',
     tagline: 'Semakan permohonan lesen',
     skipToContent: 'Langkau ke kandungan utama',
-    nav: { label: 'Utama', applications: 'Permohonan', fuel: 'Harga bahan api' },
+    nav: {
+      label: 'Utama',
+      applications: 'Permohonan',
+      fuel: 'Harga bahan api',
+      about: 'Tentang binaan ini',
+    },
     theme: { light: 'Tema cerah', dark: 'Tema gelap' },
     mockApiFailed:
       'API olok-olok demo gagal dimulakan, jadi tiada data akan dimuatkan. Cuba muat semula halaman.',
+  },
+  about: {
+    nav: {
+      label: 'Tentang binaan ini',
+      overview: 'Gambaran keseluruhan',
+      architecture: 'Seni bina',
+      practices: 'Amalan',
+      experience: 'Pengalaman',
+      aiWorkflow: 'Aliran kerja AI',
+    },
   },
   fuel: {
     title: 'Harga bahan api',

@@ -3,10 +3,25 @@ export const en = {
     name: 'Semakan',
     tagline: 'Licence application review',
     skipToContent: 'Skip to main content',
-    nav: { label: 'Main', applications: 'Applications', fuel: 'Fuel prices' },
+    nav: {
+      label: 'Main',
+      applications: 'Applications',
+      fuel: 'Fuel prices',
+      about: 'About this build',
+    },
     theme: { light: 'Light theme', dark: 'Dark theme' },
     mockApiFailed:
       "The demo's mock API could not start, so no data will load. Try reloading the page.",
+  },
+  about: {
+    nav: {
+      label: 'About this build',
+      overview: 'Overview',
+      architecture: 'Architecture',
+      practices: 'Practices',
+      experience: 'Experience',
+      aiWorkflow: 'AI workflow',
+    },
   },
   fuel: {
     title: 'Fuel prices',
