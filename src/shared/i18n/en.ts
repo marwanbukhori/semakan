@@ -143,6 +143,12 @@ export const en = {
       unknown: 'Check this field and try again.',
     },
   },
+  toast: {
+    label: 'Notification',
+    // Radix replaces {hotkey} (single braces) with the shortcut, e.g. "F8".
+    region: 'Notifications ({hotkey})',
+    dismiss: 'Dismiss notification',
+  },
   devPanel: {
     toggle: 'Dev Panel',
     toggleActive: 'Dev Panel (settings active)',

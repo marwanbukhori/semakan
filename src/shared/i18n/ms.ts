@@ -145,6 +145,11 @@ export const ms: Translation = {
       unknown: 'Semak medan ini dan cuba lagi.',
     },
   },
+  toast: {
+    label: 'Pemberitahuan',
+    region: 'Pemberitahuan ({hotkey})',
+    dismiss: 'Tutup pemberitahuan',
+  },
   devPanel: {
     toggle: 'Panel Dev',
     toggleActive: 'Panel Dev (tetapan aktif)',

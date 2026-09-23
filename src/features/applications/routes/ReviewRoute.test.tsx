@@ -1,6 +1,6 @@
-import { AutoToast } from '@govtechmy/myds-react/toast';
 import { screen, waitFor, within } from '@testing-library/react';
 import { Outlet } from 'react-router';
+import { AppToaster } from '@/app/AppToaster';
 import { isReviewable } from '@/features/applications/rules';
 import { requiresFireCertificate, seedApplicationDetails } from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
@@ -23,7 +23,7 @@ function Shell() {
   return (
     <>
       <Outlet />
-      <AutoToast />
+      <AppToaster />
     </>
   );
 }
