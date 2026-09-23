@@ -47,6 +47,7 @@ export const ms: Translation = {
       show: 'Tunjukkan data carta sebagai jadual',
       caption: 'Harga bahan api mingguan, RM seliter',
       week: 'Minggu',
+      noValue: 'Tiada data',
     },
     freshness: {
       asOf: 'Data setakat {{date}}',

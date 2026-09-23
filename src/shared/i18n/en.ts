@@ -42,6 +42,7 @@ export const en = {
       show: 'Show the chart data as a table',
       caption: 'Weekly fuel prices, RM per litre',
       week: 'Week of',
+      noValue: 'Not available',
     },
     freshness: {
       asOf: 'Data as of {{date}}',

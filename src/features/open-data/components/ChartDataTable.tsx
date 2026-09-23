@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { formatDate, formatPrice } from '@/shared/lib/format';
 import type { FuelKey, LevelRow } from '../types';
+import { NoValue } from './NoValue';
 
 /** The table view: every value the chart plots, reachable without hovering. */
 export function ChartDataTable({
@@ -29,9 +30,11 @@ export function ChartDataTable({
         <TableCaption className="sr-only">{t('fuel.table.caption')}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('fuel.table.week')}</TableHead>
+            <TableHead className="whitespace-nowrap">{t('fuel.table.week')}</TableHead>
             {fuels.map((fuel) => (
-              <TableHead key={fuel}>{t(`fuel.series.${fuel}`)}</TableHead>
+              <TableHead key={fuel} className="whitespace-nowrap">
+                {t(`fuel.series.${fuel}`)}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -44,8 +47,8 @@ export function ChartDataTable({
               {fuels.map((fuel) => {
                 const value = row[fuel];
                 return (
-                  <TableCell key={fuel}>
-                    {value === null ? '—' : formatPrice(value, i18n.language)}
+                  <TableCell key={fuel} className="whitespace-nowrap">
+                    {value === null ? <NoValue /> : formatPrice(value, i18n.language)}
                   </TableCell>
                 );
               })}

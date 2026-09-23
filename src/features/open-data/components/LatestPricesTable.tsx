@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { formatDate, formatPrice } from '@/shared/lib/format';
 import type { ChangeRow, FuelKey, LevelRow } from '../types';
+import { NoValue } from './NoValue';
 
 type LatestPricesTableProps = {
   levels: readonly LevelRow[];
@@ -34,9 +35,11 @@ export function LatestPricesTable({ levels, changes, fuels, weeks = 6 }: LatestP
         <TableCaption className="sr-only">{t('fuel.latest.caption')}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('fuel.latest.week')}</TableHead>
+            <TableHead className="whitespace-nowrap">{t('fuel.latest.week')}</TableHead>
             {fuels.map((fuel) => (
-              <TableHead key={fuel}>{t(`fuel.series.${fuel}`)}</TableHead>
+              <TableHead key={fuel} className="whitespace-nowrap">
+                {t(`fuel.series.${fuel}`)}
+              </TableHead>
             ))}
           </TableRow>
         </TableHeader>
@@ -48,7 +51,11 @@ export function LatestPricesTable({ levels, changes, fuels, weeks = 6 }: LatestP
                 const value = row[fuel];
                 return (
                   <TableCell key={fuel} className="whitespace-nowrap">
-                    {value === null ? '—' : t('fuel.price', { value: formatPrice(value, lang) })}
+                    {value === null ? (
+                      <NoValue />
+                    ) : (
+                      t('fuel.price', { value: formatPrice(value, lang) })
+                    )}
                     <Change delta={changeByDate.get(row.date)?.[fuel] ?? null} />
                   </TableCell>
                 );
