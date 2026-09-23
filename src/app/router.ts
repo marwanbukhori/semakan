@@ -11,7 +11,9 @@ export const routes: RouteObject[] = [
     ErrorBoundary: RouteError,
     HydrateFallback: PageSpinner,
     children: [
-      { index: true, loader: () => redirect('/applications') },
+      // Component keeps this a normal element route (not loader-only), so react-router
+      // doesn't warn that the matched leaf has nothing to render while the redirect resolves.
+      { index: true, Component: PageSpinner, loader: () => redirect('/applications') },
       {
         path: 'applications',
         // A crash inside a page is caught here, so the header and nav stay usable.

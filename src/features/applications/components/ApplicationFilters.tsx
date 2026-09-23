@@ -26,6 +26,12 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
   const { t } = useTranslation();
   const [draft, setDraft] = useState(q);
   const [lastSeenQ, setLastSeenQ] = useState(q);
+  // MYDS's Select only forwards `open` to Radix once it's a defined boolean for the whole
+  // lifetime of the component: internally it does `useEffect(() => setOpen(props.open), [props.open])`
+  // with no guard, so an omitted `open` prop (undefined) overwrites its initial `false` state on
+  // mount and flips Radix's Select.Root from controlled to uncontrolled, which Radix's dev-mode
+  // useControllableState warns about. Controlling `open` ourselves keeps it a boolean always.
+  const [statusOpen, setStatusOpen] = useState(false);
 
   // The URL's q changed from outside this input (e.g. "Clear filters"): adopt it.
   // Compare trimmed, so the URL's trimmed value never eats a space the user is typing.
@@ -46,6 +52,7 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
         <Input
           id="application-search"
           type="search"
+          size="medium"
           value={draft}
           placeholder={t('applications.filters.searchPlaceholder')}
           onChange={(event) => {
@@ -63,6 +70,8 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
         <Select
           value={status}
           onValueChange={(value) => onChange({ status: StatusFilterSchema.parse(value) })}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
           variant="outline"
           size="medium"
         >
