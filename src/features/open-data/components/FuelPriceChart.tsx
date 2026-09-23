@@ -37,7 +37,6 @@ const MIN_TICK_SPACING = 72;
 // The y-axis unit sits above the top tick label, on its own line.
 const UNIT_BASELINE = 12;
 
-// #region practice:accessible-chart
 /** The row's plotted values, highest first; null weeks are left out, never read as zero. */
 function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
   if (!row) return [];
@@ -48,7 +47,6 @@ function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
     })
     .sort((a, b) => b.value - a.value);
 }
-// #endregion
 
 /**
  * Whether focus came from the keyboard. Clicking also focuses the chart (it is a tab stop), and

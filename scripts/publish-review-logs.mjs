@@ -51,7 +51,7 @@ function sanitise(text) {
   // phrasing they sit in. Remove the phrase first so tidying punctuation has less to clean up.
   out = out.replace(/,?\s*implementer [0-9a-f]{17}/g, '');
   out = out.replace(/\bagentId:?\s*[0-9a-f]{17}\b,?/gi, '');
-  out = out.replace(/[0-9a-f]{17}/g, '');
+  out = out.replace(/\b[0-9a-f]{17}\b/g, '');
 
   // Absolute paths under this checkout become repo-relative; any other /Users/<user>/... path
   // still carries a username, so it is redacted instead.

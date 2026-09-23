@@ -150,7 +150,7 @@ export const PROJECTS: readonly Project[] = [
             en: 'Failure modes you can simulate',
             ms: 'Mod kegagalan yang boleh disimulasikan',
           },
-          href: '/about/architecture',
+          href: '/applications',
         },
       ],
       requirements: ['fe-ts-react', 'fe-api-states', 'fe-observability'],

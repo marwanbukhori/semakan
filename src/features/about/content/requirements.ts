@@ -27,7 +27,7 @@ const REQUIREMENTS_DATA = [
     semakan: {
       status: 'shown',
       links: [
-        { label: { en: 'The live app', ms: 'Aplikasi langsung' }, path: 'vercel.json' },
+        { label: { en: 'Vercel config', ms: 'Konfigurasi Vercel' }, path: 'vercel.json' },
         { label: { en: 'CI', ms: 'CI' }, path: '.github/workflows/ci.yml' },
       ],
     },
@@ -182,7 +182,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Checked at 360px', ms: 'Disemak pada 360px' },
-          path: 'src/features/open-data/components/FuelPriceChart.tsx',
+          path: 'src/features/applications/components/ApplicationFacts.tsx',
         },
       ],
     },
@@ -370,8 +370,8 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: {
-            en: 'Caching until the next data update',
-            ms: 'Caching sehingga kemas kini data seterusnya',
+            en: "Client cache tuned to the publisher's update schedule",
+            ms: 'Cache klien ditala mengikut jadual kemas kini penerbit',
           },
           path: 'src/features/open-data/api/queries.ts',
         },

@@ -242,8 +242,8 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Setiap paparan async mempunyai keempat-empat state',
     },
     what: {
-      en: 'Loading, empty, error (with a message per error kind) and success, and a dimmed frame while refetching.',
-      ms: 'Loading, empty, error (dengan mesej mengikut jenis ralat) dan success, serta frame malap semasa refetching.',
+      en: 'Loading, empty, error and success, with a message for each error kind and a dimmed frame while refetching. The excerpt shows how each error kind maps to its own message.',
+      ms: 'Loading, empty, error dan success, dengan mesej bagi setiap jenis ralat dan frame malap semasa refetching. Petikan ini menunjukkan bagaimana setiap jenis ralat dipetakan kepada mesejnya sendiri.',
     },
     why: {
       en: 'Real networks are slow and fail; the Dev Panel shows every state live.',
@@ -255,7 +255,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     plan: 4,
-    source: { path: 'src/shared/ui/LoadError.tsx', region: 'async-states' },
+    source: { path: 'src/shared/api/errorMessage.ts', region: 'async-states' },
   },
   {
     id: 'semantic-forms',
@@ -313,10 +313,10 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Tests kekal sah walaupun selepas refactors dan turut berfungsi sebagai semakan accessibility.',
     },
     enforcedBy: {
-      en: 'Conventions in AGENTS.md, and a coverage threshold in CI.',
-      ms: 'Konvensyen dalam AGENTS.md, dan coverage threshold dalam CI.',
+      en: 'Conventions in AGENTS.md and code review; the CI coverage threshold checks that tests exist, not how they are written.',
+      ms: 'Konvensyen dalam AGENTS.md dan code review; coverage threshold dalam CI menyemak bahawa tests wujud, bukan cara ia ditulis.',
     },
-    status: 'enforced',
+    status: 'partial',
     source: {
       path: 'src/features/applications/routes/ReviewRoute.test.tsx',
       region: 'test-behaviour',
@@ -427,7 +427,7 @@ export const PRACTICES: readonly Practice[] = [
     status: 'partial',
     plan: 4,
     source: {
-      path: 'src/features/open-data/components/FuelPriceChart.tsx',
+      path: 'src/features/open-data/components/ChartDataTable.tsx',
       region: 'accessible-chart',
     },
   },

@@ -1,6 +1,7 @@
 import { assertNever } from '@/shared/lib/assertNever';
 import { ApiError } from './ApiError';
 
+// #region practice:async-states
 /** Maps any data-layer error to the message key the user should see. */
 export function apiErrorMessageKey(error: unknown) {
   if (!(error instanceof ApiError)) return 'errors.server' as const;
@@ -20,3 +21,4 @@ export function apiErrorMessageKey(error: unknown) {
       return assertNever(error.kind);
   }
 }
+// #endregion
