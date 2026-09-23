@@ -124,7 +124,8 @@ export const ms: Translation = {
     submitting: 'Menghantar…',
     cancel: 'Batal',
     conflictTitle: 'Pegawai lain telah mengemas kini permohonan ini',
-    conflictBody: 'Versi terkini sedang dimuatkan. Semak semula, kemudian hantar keputusan anda.',
+    conflictBody:
+      'Permohonan ini telah dikemas kini. Semak butiran terkini, kemudian hantar semula keputusan anda.',
     reload: 'Muat semula versi terkini',
     failedTitle: 'Keputusan anda tidak dapat dihantar',
     errorToast: 'Keputusan anda tidak disimpan',

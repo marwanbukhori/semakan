@@ -122,7 +122,8 @@ export const en = {
     submitting: 'Submitting…',
     cancel: 'Cancel',
     conflictTitle: 'Another officer updated this application',
-    conflictBody: 'The latest version is loading. Check it, then submit your decision again.',
+    conflictBody:
+      'This application was updated. Check the latest details, then submit your decision again.',
     reload: 'Reload latest',
     failedTitle: "Couldn't submit your decision",
     errorToast: 'Your decision was not saved',

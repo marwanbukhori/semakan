@@ -37,9 +37,20 @@ export function Component() {
     void navigate('..');
   };
 
+  const error = review.error;
+  const isConflict = error instanceof ApiError && error.kind === 'conflict';
+  const isOtherFailure =
+    error !== null && !isConflict && !(error instanceof ApiError && error.kind === 'validation');
+
   // The detail page (the parent route) owns loading and not-found states.
   if (!data) return null;
-  if (!isReviewable(data.status) && review.isIdle) return <Navigate to=".." replace />;
+  // A closed application has nothing to review. While this officer's own
+  // decision is in flight or just saved, the closed status is theirs and the
+  // dialog closes itself; after a conflict, the refetched record is someone
+  // else's decision, so the dialog gives way to the detail page.
+  if (!isReviewable(data.status) && (review.isIdle || isConflict)) {
+    return <Navigate to=".." replace />;
+  }
 
   async function submit(decision: ReviewDecision) {
     if (!data) return;
@@ -64,11 +75,6 @@ export function Component() {
       throw error;
     }
   }
-
-  const error = review.error;
-  const isConflict = error instanceof ApiError && error.kind === 'conflict';
-  const isOtherFailure =
-    error !== null && !isConflict && !(error instanceof ApiError && error.kind === 'validation');
 
   return (
     <Dialog

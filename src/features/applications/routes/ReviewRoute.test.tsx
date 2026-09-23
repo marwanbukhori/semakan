@@ -2,7 +2,11 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { Outlet } from 'react-router';
 import { AppToaster } from '@/app/AppToaster';
 import { isReviewable } from '@/features/applications/rules';
-import { requiresFireCertificate, seedApplicationDetails } from '@/mocks/db/applications';
+import {
+  applyReview,
+  requiresFireCertificate,
+  seedApplicationDetails,
+} from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
 import { renderRoutes } from '@/test/render';
 import { Component as DetailRoute } from './DetailRoute';
@@ -194,12 +198,37 @@ describe('/applications/:id/review', () => {
     expect(
       await within(dialog).findByText('Another officer updated this application'),
     ).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(
+        'This application was updated. Check the latest details, then submit your decision again.',
+      ),
+    ).toBeInTheDocument();
     expect(within(dialog).getByRole('textbox', { name: 'Reason for rejection' })).toHaveValue(
       'Premis di zon kediaman',
     );
 
     await user.click(within(dialog).getByRole('button', { name: 'Submit decision' }));
     expect(await screen.findByText('Application rejected')).toBeInTheDocument();
+  });
+
+  it('closes the dialog when a conflict reveals another officer already decided', async () => {
+    const { user, router } = renderReview(approvable.id);
+    const dialog = await screen.findByRole('dialog');
+    // Another officer approves first, so this officer's version is stale.
+    applyReview(approvable.id, {
+      version: approvable.version,
+      review: { decision: 'approve', note: '' },
+    });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Submit decision' }));
+
+    await waitFor(() =>
+      expect(router.state.location.pathname).toBe(`/applications/${approvable.id}`),
+    );
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(
+      await screen.findByText('A decision has been recorded. This application is closed.'),
+    ).toBeInTheDocument();
   });
 
   it('redirects a review link for a closed application to its detail page', async () => {
