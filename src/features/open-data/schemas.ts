@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { assertNever } from '@/shared/lib/assertNever';
 
 /** The series the page charts, in palette order (colour follows the fuel, never its position). */
 export const FUEL_KEYS = ['ron95', 'ron97', 'diesel', 'ron95_budi95'] as const;
@@ -74,8 +75,17 @@ export const FuelPriceResponseSchema = z
         skipped += 1;
         continue;
       }
-      if (parsed.data.series_type === 'level') levels.push(parsed.data);
-      else changes.push(parsed.data);
+      const row = parsed.data;
+      switch (row.series_type) {
+        case 'level':
+          levels.push(row);
+          break;
+        case 'change_weekly':
+          changes.push(row);
+          break;
+        default:
+          assertNever(row);
+      }
     }
     const byDate = (a: { date: string }, b: { date: string }) => a.date.localeCompare(b.date);
     return { meta, levels: levels.sort(byDate), changes: changes.sort(byDate), skipped };
