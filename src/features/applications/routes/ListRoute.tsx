@@ -1,8 +1,8 @@
-import { AutoPagination } from '@govtechmy/myds-react/pagination';
 import { useTranslation } from 'react-i18next';
 import { useApplications } from '../api/queries';
 import { ApplicationFilters } from '../components/ApplicationFilters';
 import { ApplicationTable } from '../components/ApplicationTable';
+import { ListPagination } from '../components/ListPagination';
 import { EmptyResults, LoadError } from '../components/ListStates';
 import { useApplicationFilters } from '../hooks/useApplicationFilters';
 import { DEFAULT_LIST_PARAMS } from '../schemas';
@@ -48,12 +48,10 @@ export function Component() {
         // MYDS's pagination list never wraps, so on narrow viewports it can be wider than the
         // page; contain that overflow to this element instead of letting it scroll the page.
         <div className="w-full overflow-x-auto">
-          <AutoPagination
-            type="default"
+          <ListPagination
             page={data.page}
-            limit={data.pageSize}
-            count={data.total}
-            maxDisplay={4}
+            pageSize={data.pageSize}
+            total={data.total}
             onPageChange={(page) => setFilters({ page })}
           />
         </div>

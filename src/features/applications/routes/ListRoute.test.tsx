@@ -1,6 +1,7 @@
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { seedApplications } from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
+import { i18n } from '@/shared/i18n';
 import { renderRoutes } from '@/test/render';
 import { Component as ListRoute } from './ListRoute';
 
@@ -92,8 +93,25 @@ describe('/applications', () => {
     const { user, router } = renderList();
     await referenceLinks();
 
-    await user.click(screen.getByRole('button', { name: /next/i }));
+    await user.click(screen.getByRole('button', { name: 'Next' }));
 
     await waitFor(() => expect(router.state.location.search).toBe('?page=2'));
+    await user.click(screen.getByRole('button', { name: 'Previous' }));
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+  });
+
+  it('labels the pagination in the current language', async () => {
+    renderList();
+    await referenceLinks();
+    expect(screen.getByRole('navigation', { name: 'Pages of results' })).toBeInTheDocument();
+
+    try {
+      await act(() => i18n.changeLanguage('ms'));
+      const nav = screen.getByRole('navigation', { name: 'Halaman keputusan' });
+      expect(within(nav).getByRole('button', { name: 'Sebelumnya' })).toBeDisabled();
+      expect(within(nav).getByRole('button', { name: 'Seterusnya' })).toBeEnabled();
+    } finally {
+      await act(() => i18n.changeLanguage('en'));
+    }
   });
 });

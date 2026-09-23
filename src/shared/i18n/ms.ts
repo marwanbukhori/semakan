@@ -6,6 +6,7 @@ export const ms: Translation = {
     tagline: 'Semakan permohonan lesen',
     skipToContent: 'Langkau ke kandungan utama',
     nav: { label: 'Utama', applications: 'Permohonan' },
+    theme: { light: 'Tema cerah', dark: 'Tema gelap' },
   },
   applications: {
     title: 'Permohonan lesen',
@@ -32,6 +33,7 @@ export const ms: Translation = {
       status: 'Status',
       allStatuses: 'Semua status',
     },
+    pagination: { label: 'Halaman keputusan', previous: 'Sebelumnya', next: 'Seterusnya' },
   },
   status: {
     submitted: 'Dihantar',

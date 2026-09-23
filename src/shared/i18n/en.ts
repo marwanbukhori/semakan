@@ -4,6 +4,7 @@ export const en = {
     tagline: 'Licence application review',
     skipToContent: 'Skip to main content',
     nav: { label: 'Main', applications: 'Applications' },
+    theme: { light: 'Light theme', dark: 'Dark theme' },
   },
   applications: {
     title: 'Licence applications',
@@ -30,6 +31,7 @@ export const en = {
       status: 'Status',
       allStatuses: 'All statuses',
     },
+    pagination: { label: 'Pages of results', previous: 'Previous', next: 'Next' },
   },
   status: {
     submitted: 'Submitted',

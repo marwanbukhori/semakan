@@ -1,3 +1,4 @@
+import { MoonIcon, SunIcon } from '@govtechmy/myds-react/icon';
 import { ThemeSwitch } from '@govtechmy/myds-react/theme-switch';
 import { useTranslation } from 'react-i18next';
 import { NavLink, Outlet } from 'react-router';
@@ -29,7 +30,13 @@ export function AppLayout() {
               {t('app.nav.applications')}
             </NavLink>
           </nav>
-          <ThemeSwitch />
+          {/* MYDS names the toggle after the current theme's label, so the labels are translated. */}
+          <ThemeSwitch
+            themes={[
+              { label: t('app.theme.light'), value: 'light', icon: <SunIcon /> },
+              { label: t('app.theme.dark'), value: 'dark', icon: <MoonIcon /> },
+            ]}
+          />
         </div>
       </header>
       <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">

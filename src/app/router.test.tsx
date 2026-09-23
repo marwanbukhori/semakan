@@ -12,6 +12,8 @@ describe('app routes', () => {
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/applications');
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
+    // MYDS's ThemeSwitch names its button after the current theme, which we translate.
+    expect(screen.getByRole('button', { name: 'Light theme' })).toBeInTheDocument();
   });
 
   it('shows a not-found page without losing the layout', async () => {
