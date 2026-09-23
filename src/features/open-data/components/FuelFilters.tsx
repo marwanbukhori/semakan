@@ -38,11 +38,12 @@ export function FuelFilters({ range, fuels, onRangeChange, onToggleFuel }: FuelF
               variant={shown ? 'default-outline' : 'default-ghost'}
               aria-pressed={shown}
               onClick={() => onToggleFuel(fuel)}
-              className={shown ? undefined : 'opacity-60'}
             >
+              {/* Only the key dims when a fuel is hidden: the text keeps full contrast. */}
               <span
                 aria-hidden="true"
-                className="fuel-chart inline-block h-0.5 w-3 rounded-full"
+                data-fuel-key
+                className={`fuel-chart inline-block h-0.5 w-3 rounded-full${shown ? '' : ' opacity-40'}`}
                 style={{ backgroundColor: `var(--fuel-${fuel})` }}
               />
               {t(`fuel.series.${fuel}`)}
