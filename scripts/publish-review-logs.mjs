@@ -61,16 +61,18 @@ function sanitise(text) {
   // Scratch-space paths (the harness's temp dir for throwaway spikes).
   out = out.replace(/\/private\/tmp\/[^\s)"]+/g, '<scratch>');
 
-  // `.superpowers` (the git-ignored SDD scratch tree), with or without a trailing path, reads as
-  // internal, not repo-relative.
-  out = out.replace(/\.superpowers\/[^\s)"]+/g, '<workspace>');
-  out = out.replaceAll('.superpowers', '<workspace>');
+  // Only `.superpowers/` PATHS (the git-ignored SDD scratch tree) become `<workspace>`. The bare
+  // directory name is left alone — e.g. Plan 1's Ruling R6 ("Add `.superpowers` to
+  // .prettierignore") names the directory itself, not a path into it, and must read correctly.
+  out = out.replace(/\.superpowers\/[^\s)`"']+/g, '<workspace>');
 
   // The author's email, wherever it appears.
   if (EMAIL) out = out.replaceAll(EMAIL, '<email>');
 
-  // Tidy punctuation a removed phrase can leave behind, e.g. "(base x,  model sonnet)" or "(, )".
-  out = out.replace(/[ \t]{2,}/g, ' ');
+  // Tidy punctuation a removed phrase can leave behind, e.g. "(, )" from a lone id removal.
+  // Deliberately no blanket whitespace collapse here: the ledgers include markdown tables and
+  // indented lines whose alignment depends on runs of spaces, and none of the removals above
+  // leave stray double-spaces in this repo's ledgers (verified when this script was fixed).
   out = out.replace(/,\s*,/g, ',');
   out = out.replace(/\(\s*,\s*/g, '(');
   out = out.replace(/,\s*\)/g, ')');

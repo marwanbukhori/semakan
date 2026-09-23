@@ -52,30 +52,55 @@ describe('AiWorkflowRoute', () => {
     }
   });
 
-  it('links each incident commit to the right GitHub commit URL', () => {
+  it('links every incident commit to the right GitHub commit URL', () => {
     renderRoutes(routes, { initialEntries: ['/about/ai-workflow'] });
 
-    const firstIncident = screen.getByRole('heading', { name: 'A quiet API swap' }).closest('li')!;
-    const commitLink = within(firstIncident).getByRole('link', { name: 'Commit f435834' });
-    expect(commitLink).toHaveAttribute(
-      'href',
-      'https://github.com/marwanbukhori/semakan/commit/f435834',
+    const commitIncidents = aiWorkflow.incidents.filter((incident) =>
+      incident.links.some((link) => link.kind === 'commit'),
     );
+    expect(commitIncidents).toHaveLength(6);
+
+    for (const incident of commitIncidents) {
+      const sha = incident.links.find((link) => link.kind === 'commit')!.sha;
+      const item = screen.getByRole('heading', { name: incident.title.en }).closest('li')!;
+      const commitLink = within(item).getByRole('link', { name: `Commit ${sha}` });
+      expect(commitLink).toHaveAttribute(
+        'href',
+        `https://github.com/marwanbukhori/semakan/commit/${sha}`,
+      );
+    }
   });
 
   it('shows the numbers, matching the content', () => {
     renderRoutes(routes, { initialEntries: ['/about/ai-workflow'] });
 
     const table = screen.getByRole('table', { name: 'By the numbers' });
-    const plan1Row = within(table).getByRole('rowheader', { name: 'Plan 1' }).closest('tr')!;
-    expect(within(plan1Row).getByRole('gridcell', { name: '11' })).toBeInTheDocument();
-    expect(within(plan1Row).getByRole('gridcell', { name: '2' })).toBeInTheDocument();
-    expect(within(plan1Row).getByRole('gridcell', { name: '19' })).toBeInTheDocument();
+
+    for (const row of aiWorkflow.numbers.perPlan) {
+      const planRow = within(table)
+        .getByRole('rowheader', { name: `Plan ${row.plan}` })
+        .closest('tr')!;
+      expect(
+        within(planRow).getByRole('gridcell', { name: String(row.tasks) }),
+      ).toBeInTheDocument();
+      expect(
+        within(planRow).getByRole('gridcell', { name: String(row.fixRounds) }),
+      ).toBeInTheDocument();
+      expect(
+        within(planRow).getByRole('gridcell', { name: String(row.rulings) }),
+      ).toBeInTheDocument();
+    }
 
     const totalRow = within(table).getByRole('rowheader', { name: 'Total' }).closest('tr')!;
-    expect(within(totalRow).getByRole('gridcell', { name: '29' })).toBeInTheDocument();
-    expect(within(totalRow).getByRole('gridcell', { name: '10' })).toBeInTheDocument();
-    expect(within(totalRow).getByRole('gridcell', { name: '45' })).toBeInTheDocument();
+    expect(
+      within(totalRow).getByRole('gridcell', { name: String(aiWorkflow.numbers.total.tasks) }),
+    ).toBeInTheDocument();
+    expect(
+      within(totalRow).getByRole('gridcell', { name: String(aiWorkflow.numbers.total.fixRounds) }),
+    ).toBeInTheDocument();
+    expect(
+      within(totalRow).getByRole('gridcell', { name: String(aiWorkflow.numbers.total.rulings) }),
+    ).toBeInTheDocument();
   });
 
   it('shows the Malay title when the language is Malay', async () => {

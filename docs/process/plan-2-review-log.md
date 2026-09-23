@@ -72,13 +72,13 @@ Task 10: dispatched (base 40e4ee2, sonnet)
 Task 10: fix round 1/5 dispatched before review (controller-confirmed gap; fix base 77c9dc9)
 Task 10: fix round 1/5 (1 addressed; commits 77c9dc9..66e3cd7) — full task review dispatched on 40e4ee2..66e3cd7
 Task 11 browser check (controller, 11:27–11:29, dev server restarted — it had cached a stale import error from a branch switch):
- OK: detail page facts/documents/timeline/breadcrumb; review dialog modal (inert dimmed background, focus inside); Escape closes to /applications/:id; 422 fire rule on app-002 shows translated message, radios aria-invalid, focus on decision; 409 conflict banner keeps typed reason, resubmit succeeds; success → badge Rejected, timeline entry with officer + reason, closed text, toast; 500 → error toast + callout, badge rolled back; Malay: no English on detail page except below.
- FINDINGS for final fix wave:
- B1 (Important) 360px: detail page scrollWidth 394 — MYDS SummaryList tables overflow (long values like email / labels); must fit or wrap at 360px.
- B2 (Important, a11y) Focus goes to <body> after the review dialog closes (Escape and after success). Should return to the Review link (Escape/cancel) or to the page heading when the application is now closed.
- B3 (Important, i18n) MYDS AutoToast viewport has English aria-label "Notifications (F8)" — translate (Radix ToastViewport `label` prop) or record as limitation.
- Demo note: with the modal open the Dev Panel is unreachable — set Dev Panel options on the detail page before clicking Review (server error keeps cached detail usable).
- Minor: toast overlaps the Dev Panel toggle; conflict copy "The latest version is loading" stays after load completes.
+  OK: detail page facts/documents/timeline/breadcrumb; review dialog modal (inert dimmed background, focus inside); Escape closes to /applications/:id; 422 fire rule on app-002 shows translated message, radios aria-invalid, focus on decision; 409 conflict banner keeps typed reason, resubmit succeeds; success → badge Rejected, timeline entry with officer + reason, closed text, toast; 500 → error toast + callout, badge rolled back; Malay: no English on detail page except below.
+  FINDINGS for final fix wave:
+  B1 (Important) 360px: detail page scrollWidth 394 — MYDS SummaryList tables overflow (long values like email / labels); must fit or wrap at 360px.
+  B2 (Important, a11y) Focus goes to <body> after the review dialog closes (Escape and after success). Should return to the Review link (Escape/cancel) or to the page heading when the application is now closed.
+  B3 (Important, i18n) MYDS AutoToast viewport has English aria-label "Notifications (F8)" — translate (Radix ToastViewport `label` prop) or record as limitation.
+  Demo note: with the modal open the Dev Panel is unreachable — set Dev Panel options on the detail page before clicking Review (server error keeps cached detail usable).
+  Minor: toast overlaps the Dev Panel toggle; conflict copy "The latest version is loading" stays after load completes.
 Task 10: minor (deferred): no test for overlay-click close (same path as Escape)
 Task 10: complete (commits 40e4ee2..66e3cd7, 1 fix round, review clean)
 Final review: dispatched (8612607..66e3cd7, opus)

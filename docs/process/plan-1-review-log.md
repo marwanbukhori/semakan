@@ -7,29 +7,29 @@ Branch: plan-1-foundation (from main @ e386413)
 
 ## Pre-flight scan
 
-| Pair / task | Produces → consumes | Finding |
+| Pair / task                                  | Produces → consumes                                                                                            | Finding                                                                                                     |
 | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| T1 ↔ T3 ↔ T5 ↔ T6 (src/test/setup.ts) | T1 base; T3 replaces (MSW); T5 replaces (resets); T6 adds i18n import | Consistent: each version is a superset of the previous |
-| T1 ↔ T2 (eslint.config.js) | boundaries config → violation proof | Consistent |
-| T3 ↔ T5, T6 (apiClient.get) | get(path, schema, {params, signal}) | T6 passes ApplicationListParams (object type alias) as params: assignable to Record<string, QueryValue>. OK |
-| T3 ↔ T5 (handlers/index.ts) | empty array → replaced with applicationHandlers | Consistent |
-| T4 ↔ T5, T7, T8, T9 (schemas/types/fixtures) | PAGE_SIZE, PREMISES_CATEGORIES, params schema, DEFAULT_LIST_PARAMS, StatusFilterSchema, makeApplicationSummary | Names and signatures match across tasks |
-| T5 ↔ T6, T9, T10 (devControls, db) | setDevControls, getDevControls, LATENCY/FAILURE_OPTIONS, resetApplications, seedApplications | Match |
-| T5 ↔ T9 (seed facts) | "Restoran Selera Kampung" exists in seed | NOT GUARANTEED: random pick; ~5% chance absent. See ruling R3 |
-| T6 ↔ T7–T10 (renderRoutes/createWrapper) | helpers | Match |
-| T6 ↔ T8–T10 (en strings used in tests) | All asserted strings exist in en.ts | Checked each: match ('2000 ms' comes from template, not en.ts) |
-| T8 ↔ T9 (ApplicationTable props) | items/isLoading/sort/order/onSortChange/emptyState | Match |
-| T9 ↔ T10 (ListRoute Component) | named export `Component` → lazy route | Match |
-| T1 self | coverage thresholds set, but coverage skipped in T1 step 12 | Intentional; first enforced at T9 step 7 and CI |
-| T2 self | throwaway files created and deleted | OK |
-| T3 self | tests 10 vs code | OK |
-| T4 self | 6 tests vs schemas | OK |
-| T5 self | tests reference LPP-2026-1056 = 1000 + 56 with 57 items | OK |
-| T7 self | Probe uses <output> (role status) | OK |
-| T8 self | skeleton rows use index keys | Plan-mandated; static list, acceptable (R4) |
-| T9 self | pagination next-button name unverified; plan gives an adapt instruction | OK |
-| T10 self | Browser check needs Playwright MCP (controller-side tools) | See R5 |
-| T11 self | gh repo create / push / vercel deploy are external side effects | See R2 |
+| T1 ↔ T3 ↔ T5 ↔ T6 (src/test/setup.ts)        | T1 base; T3 replaces (MSW); T5 replaces (resets); T6 adds i18n import                                          | Consistent: each version is a superset of the previous                                                      |
+| T1 ↔ T2 (eslint.config.js)                   | boundaries config → violation proof                                                                            | Consistent                                                                                                  |
+| T3 ↔ T5, T6 (apiClient.get)                  | get(path, schema, {params, signal})                                                                            | T6 passes ApplicationListParams (object type alias) as params: assignable to Record<string, QueryValue>. OK |
+| T3 ↔ T5 (handlers/index.ts)                  | empty array → replaced with applicationHandlers                                                                | Consistent                                                                                                  |
+| T4 ↔ T5, T7, T8, T9 (schemas/types/fixtures) | PAGE_SIZE, PREMISES_CATEGORIES, params schema, DEFAULT_LIST_PARAMS, StatusFilterSchema, makeApplicationSummary | Names and signatures match across tasks                                                                     |
+| T5 ↔ T6, T9, T10 (devControls, db)           | setDevControls, getDevControls, LATENCY/FAILURE_OPTIONS, resetApplications, seedApplications                   | Match                                                                                                       |
+| T5 ↔ T9 (seed facts)                         | "Restoran Selera Kampung" exists in seed                                                                       | NOT GUARANTEED: random pick; ~5% chance absent. See ruling R3                                               |
+| T6 ↔ T7–T10 (renderRoutes/createWrapper)     | helpers                                                                                                        | Match                                                                                                       |
+| T6 ↔ T8–T10 (en strings used in tests)       | All asserted strings exist in en.ts                                                                            | Checked each: match ('2000 ms' comes from template, not en.ts)                                              |
+| T8 ↔ T9 (ApplicationTable props)             | items/isLoading/sort/order/onSortChange/emptyState                                                             | Match                                                                                                       |
+| T9 ↔ T10 (ListRoute Component)               | named export `Component` → lazy route                                                                          | Match                                                                                                       |
+| T1 self                                      | coverage thresholds set, but coverage skipped in T1 step 12                                                    | Intentional; first enforced at T9 step 7 and CI                                                             |
+| T2 self                                      | throwaway files created and deleted                                                                            | OK                                                                                                          |
+| T3 self                                      | tests 10 vs code                                                                                               | OK                                                                                                          |
+| T4 self                                      | 6 tests vs schemas                                                                                             | OK                                                                                                          |
+| T5 self                                      | tests reference LPP-2026-1056 = 1000 + 56 with 57 items                                                        | OK                                                                                                          |
+| T7 self                                      | Probe uses <output> (role status)                                                                              | OK                                                                                                          |
+| T8 self                                      | skeleton rows use index keys                                                                                   | Plan-mandated; static list, acceptable (R4)                                                                 |
+| T9 self                                      | pagination next-button name unverified; plan gives an adapt instruction                                        | OK                                                                                                          |
+| T10 self                                     | Browser check needs Playwright MCP (controller-side tools)                                                     | See R5                                                                                                      |
+| T11 self                                     | gh repo create / push / vercel deploy are external side effects                                                | See R2                                                                                                      |
 
 ## Rulings
 
@@ -48,11 +48,11 @@ Task 2: dispatched (base a674dcd, model haiku)
 Task 2: complete (commits a674dcd..991dc22, review clean)
 Task 3: dispatched (base 991dc22, model sonnet)
 
-- Ruling R6: Add `<workspace>` to .prettierignore (and eslint globalIgnores if lint picks it up) in Task 4's commit — prettier formats the git-ignored SDD scratch dir locally, which can make local format:check fail — cost if wrong: one extra ignore line.
- Task 3: minor (deferred): ApiError.fromResponse uses same fallback message for malformed vs message-less bodies
- Task 3: minor (deferred): no test covers abort/signal passthrough in client.ts send()
- Task 3: complete (commits 991dc22..1bff5a6, review clean)
- Task 4: dispatched (base 1bff5a6, model haiku)
+- Ruling R6: Add `.superpowers` to .prettierignore (and eslint globalIgnores if lint picks it up) in Task 4's commit — prettier formats the git-ignored SDD scratch dir locally, which can make local format:check fail — cost if wrong: one extra ignore line.
+  Task 3: minor (deferred): ApiError.fromResponse uses same fallback message for malformed vs message-less bodies
+  Task 3: minor (deferred): no test covers abort/signal passthrough in client.ts send()
+  Task 3: complete (commits 991dc22..1bff5a6, review clean)
+  Task 4: dispatched (base 1bff5a6, model haiku)
 Task 4: minor (deferred): schemas.ts uses deprecated z.string().datetime() instead of brief's z.iso.datetime() (silent deviation from brief; verified z.iso.datetime works in zod 4.6.5) — should be fixed before merge, showcase repo
 Task 4: complete (commits 1bff5a6..a43a32d, review clean)
 Task 5: dispatched (base a43a32d, model sonnet). Ruling R7: implementers use sonnet from here — haiku made an unreported API substitution in Task 4 — cost if wrong: slightly higher token cost.

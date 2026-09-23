@@ -46,10 +46,12 @@ export type AiWorkflowContent = {
   ownership: { own: Localized<string>[]; ai: Localized<string>[] };
   incidents: Incident[];
   /**
-   * Counted from the published logs in `docs/process/`: tasks completed matches
-   * `^\s*Task \d+: complete`; fix rounds matches `fix round \d+/5 \(` plus `Final fix wave: done`
-   * lines; rulings matches lines containing `Ruling`. See `scripts/publish-review-logs.mjs` and
-   * the task report for the exact commands.
+   * Counted from the published logs in `docs/process/`, run against `docs/process/plan-<n>-review-log.md`:
+   * - tasks completed: `grep -cE '^\s*Task \d+: complete' <file>`
+   * - fix rounds: `grep -cE 'fix round \d+/5 \(' <file>` plus `grep -cF 'Final fix wave: done' <file>`
+   * - rulings: lines containing `Ruling`, excluding the `## Rulings` section heading itself:
+   *   `grep 'Ruling' <file> | grep -vc '^#'`
+   * See `scripts/publish-review-logs.mjs` and the task report for full output.
    */
   numbers: { perPlan: PlanNumbers[]; total: Omit<PlanNumbers, 'plan'> };
 };
@@ -278,10 +280,10 @@ export const aiWorkflow: AiWorkflowContent = {
   ],
   numbers: {
     perPlan: [
-      { plan: 1, tasks: 11, fixRounds: 2, rulings: 19 },
-      { plan: 2, tasks: 10, fixRounds: 4, rulings: 12 },
-      { plan: 3, tasks: 8, fixRounds: 4, rulings: 14 },
+      { plan: 1, tasks: 11, fixRounds: 2, rulings: 18 },
+      { plan: 2, tasks: 10, fixRounds: 4, rulings: 11 },
+      { plan: 3, tasks: 8, fixRounds: 4, rulings: 13 },
     ],
-    total: { tasks: 29, fixRounds: 10, rulings: 45 },
+    total: { tasks: 29, fixRounds: 10, rulings: 42 },
   },
 };
