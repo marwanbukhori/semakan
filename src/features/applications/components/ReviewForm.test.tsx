@@ -127,7 +127,7 @@ describe('ReviewForm', () => {
     expect(screen.getByRole('button', { name: 'Submit decision' })).toHaveFocus();
   });
 
-  it('marks the decision radios invalid and focuses one after a server error on decision', async () => {
+  it('marks the decision group invalid and focuses a radio after a server error on decision', async () => {
     const onSubmit = vi.fn(() =>
       Promise.reject(
         new ApiError({
@@ -145,14 +145,16 @@ describe('ReviewForm', () => {
       'This premises type needs a fire safety certificate before it can be approved.',
     );
 
-    const approve = screen.getByRole('radio', { name: 'Approve' });
-    expect(approve).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByRole('radio', { name: 'Reject' })).toHaveAttribute('aria-invalid', 'true');
-    expect(screen.getByRole('radio', { name: 'Request more information' })).toHaveAttribute(
-      'aria-invalid',
-      'true',
+    // ARIA 1.2 puts aria-invalid on the radiogroup; it is deprecated on a radio.
+    const group = screen.getByRole('radiogroup', { name: 'Decision' });
+    expect(group).toHaveAttribute('aria-invalid', 'true');
+    expect(group).toHaveAccessibleDescription(
+      'This premises type needs a fire safety certificate before it can be approved.',
     );
-    expect(approve).toHaveFocus();
+    for (const radio of screen.getAllByRole('radio')) {
+      expect(radio).not.toHaveAttribute('aria-invalid');
+    }
+    expect(screen.getByRole('radio', { name: 'Approve' })).toHaveFocus();
   });
 
   it('marks the requested-info checkboxes invalid, describes the group, and focuses the first checkbox', async () => {

@@ -145,15 +145,13 @@ export function ReviewForm({ isSubmitting, onSubmit, onCancel }: ReviewFormProps
               }}
               name={field.name}
               aria-labelledby="decision-legend"
+              // ARIA 1.2: aria-invalid belongs on the radiogroup, not on each radio.
+              aria-invalid={errorCode('decision') ? true : undefined}
               aria-describedby={errorCode('decision') ? 'decision-error' : undefined}
             >
               {(['approve', 'reject', 'request_info'] as const).map((value) => (
                 <RadioItem key={value}>
-                  <RadioButton
-                    id={`decision-${value}`}
-                    value={value}
-                    aria-invalid={errorCode('decision') ? true : undefined}
-                  />
+                  <RadioButton id={`decision-${value}`} value={value} />
                   <RadioLabel htmlFor={`decision-${value}`}>
                     {t(`review.decisions.${value}`)}
                   </RadioLabel>
