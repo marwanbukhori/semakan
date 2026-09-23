@@ -16,7 +16,9 @@ describe('useDebouncedCallback', () => {
     });
     expect(spy).not.toHaveBeenCalled();
 
-    void act(() => vi.advanceTimersByTime(300));
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith('ked');
   });
@@ -30,7 +32,9 @@ describe('useDebouncedCallback', () => {
 
     act(() => result.current('x'));
     rerender({ cb: second });
-    void act(() => vi.advanceTimersByTime(300));
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
 
     expect(first).not.toHaveBeenCalled();
     expect(second).toHaveBeenCalledWith('x');
@@ -42,7 +46,9 @@ describe('useDebouncedCallback', () => {
 
     act(() => result.current('x'));
     unmount();
-    void act(() => vi.advanceTimersByTime(300));
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
 
     expect(spy).not.toHaveBeenCalled();
   });

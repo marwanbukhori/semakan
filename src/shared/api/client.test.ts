@@ -1,4 +1,4 @@
-import { http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse } from 'msw';
 import { z } from 'zod';
 import { server } from '@/mocks/node';
 import { ApiError } from './ApiError';
@@ -73,5 +73,22 @@ describe('apiClient.get', () => {
     server.use(http.get('/api/things', () => HttpResponse.error()));
 
     await expect(client.get('/things', ThingSchema)).rejects.toMatchObject({ kind: 'network' });
+  });
+
+  it('passes cancellation through as the original AbortError, not an ApiError', async () => {
+    server.use(
+      http.get('/api/things', async () => {
+        await delay('infinite');
+        return HttpResponse.json({ id: 'a', count: 1 });
+      }),
+    );
+    const controller = new AbortController();
+
+    const pending = client.get('/things', ThingSchema, { signal: controller.signal });
+    controller.abort();
+    const error = await pending.catch((e: unknown) => e);
+
+    expect(error).not.toBeInstanceOf(ApiError);
+    expect(error).toMatchObject({ name: 'AbortError' });
   });
 });

@@ -33,6 +33,7 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
   // useControllableState warns about. Controlling `open` ourselves keeps it a boolean always.
   const [statusOpen, setStatusOpen] = useState(false);
 
+  // React's "adjusting state when a prop changes" pattern: this must run during render, not in an effect.
   // The URL's q changed from outside this input (e.g. "Clear filters"): adopt it.
   // Compare trimmed, so the URL's trimmed value never eats a space the user is typing.
   if (q !== lastSeenQ) {
