@@ -75,4 +75,31 @@ describe('DevPanel', () => {
     await user.click(screen.getByRole('radio', { name: 'None', checked: false }));
     expect(screen.getByRole('button', { name: 'Dev Panel' })).not.toHaveTextContent('Active');
   });
+
+  it('forces a conflict on the next review', async () => {
+    const { user } = renderPanel();
+    await user.click(screen.getByRole('button', { name: 'Dev Panel' }));
+
+    await user.click(screen.getByRole('checkbox', { name: 'Force a conflict on the next review' }));
+
+    expect(getDevControls().conflictNext).toBe(true);
+  });
+
+  it('ignores Escape pressed outside the panel', async () => {
+    const { Wrapper } = createWrapper();
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">Elsewhere</button>
+        <DevPanel />
+      </>,
+      { wrapper: Wrapper },
+    );
+    await user.click(screen.getByRole('button', { name: 'Dev Panel' }));
+    screen.getByRole('button', { name: 'Elsewhere' }).focus();
+
+    await user.keyboard('{Escape}');
+
+    expect(screen.getByRole('region', { name: 'Mock API controls' })).toBeInTheDocument();
+  });
 });

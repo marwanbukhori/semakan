@@ -13,4 +13,9 @@ describe('applicationKeys', () => {
       applicationKeys.list({ ...DEFAULT_LIST_PARAMS, page: 2 }),
     );
   });
+
+  it('nests detail keys under details(), and details() under all', () => {
+    expect(applicationKeys.detail('app-001')).toEqual(['applications', 'detail', 'app-001']);
+    expect(applicationKeys.detail('app-001').slice(0, 2)).toEqual(applicationKeys.details());
+  });
 });

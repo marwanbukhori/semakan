@@ -92,3 +92,44 @@ describe('apiClient.get', () => {
     expect(error).toMatchObject({ name: 'AbortError' });
   });
 });
+
+describe('apiClient.post', () => {
+  it('sends a JSON body and returns the parsed response', async () => {
+    let seen: { method: string; contentType: string | null; body: unknown } | undefined;
+    server.use(
+      http.post('/api/things', async ({ request }) => {
+        seen = {
+          method: request.method,
+          contentType: request.headers.get('Content-Type'),
+          body: await request.json(),
+        };
+        return HttpResponse.json({ id: 'b', count: 2 });
+      }),
+    );
+
+    const result = await client.post('/things', ThingSchema, { name: 'x' });
+
+    expect(result).toEqual({ id: 'b', count: 2 });
+    expect(seen).toEqual({
+      method: 'POST',
+      contentType: 'application/json',
+      body: { name: 'x' },
+    });
+  });
+
+  it('maps a 422 response to a validation ApiError with field error codes', async () => {
+    server.use(
+      http.post('/api/things', () =>
+        HttpResponse.json({ fieldErrors: { reason: ['reason_too_short'] } }, { status: 422 }),
+      ),
+    );
+
+    const error = await client.post('/things', ThingSchema, {}).catch((e: unknown) => e);
+
+    expect(error).toMatchObject({
+      kind: 'validation',
+      status: 422,
+      fieldErrors: { reason: ['reason_too_short'] },
+    });
+  });
+});

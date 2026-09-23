@@ -8,22 +8,24 @@ export type RequestOptions = {
   signal?: AbortSignal;
 };
 
+type SendOptions = RequestOptions & { method: 'GET' | 'POST'; body?: unknown };
+
 export function createApiClient({ baseUrl }: { baseUrl: string }) {
-  /** GET a resource and validate it. The schema is required: unvalidated data never reaches the UI. */
-  async function get<T extends z.ZodType>(
+  /** Every request is validated: the schema is required, so unvalidated data never reaches the UI. */
+  async function request<T extends z.ZodType>(
     path: string,
     schema: T,
-    options: RequestOptions = {},
+    { method, body, params, signal }: SendOptions,
   ): Promise<z.infer<T>> {
-    const response = await send(buildUrl(baseUrl, path, options.params), options.signal);
-    const body = await readJson(response);
+    const response = await send(buildUrl(baseUrl, path, params), { method, body, signal });
+    const payload = await readJson(response);
 
-    if (!response.ok) throw ApiError.fromResponse(response.status, body);
+    if (!response.ok) throw ApiError.fromResponse(response.status, payload);
 
-    const result = schema.safeParse(body);
+    const result = schema.safeParse(payload);
     if (!result.success) {
       console.error(
-        `[api] ${path} returned an unexpected shape:\n${z.prettifyError(result.error)}`,
+        `[api] ${method} ${path} returned an unexpected shape:\n${z.prettifyError(result.error)}`,
       );
       throw new ApiError({
         kind: 'schema',
@@ -35,7 +37,24 @@ export function createApiClient({ baseUrl }: { baseUrl: string }) {
     return result.data;
   }
 
-  return { get };
+  function get<T extends z.ZodType>(
+    path: string,
+    schema: T,
+    options: RequestOptions = {},
+  ): Promise<z.infer<T>> {
+    return request(path, schema, { ...options, method: 'GET' });
+  }
+
+  function post<T extends z.ZodType>(
+    path: string,
+    schema: T,
+    body: unknown,
+    options: RequestOptions = {},
+  ): Promise<z.infer<T>> {
+    return request(path, schema, { ...options, method: 'POST', body });
+  }
+
+  return { get, post };
 }
 
 export type ApiClient = ReturnType<typeof createApiClient>;
@@ -51,9 +70,20 @@ function buildUrl(baseUrl: string, path: string, params: RequestOptions['params'
   return url;
 }
 
-async function send(url: URL, signal: AbortSignal | undefined): Promise<Response> {
+async function send(
+  url: URL,
+  { method, body, signal }: Pick<SendOptions, 'method' | 'body' | 'signal'>,
+): Promise<Response> {
+  const hasBody = body !== undefined;
   try {
-    return await fetch(url, { signal, headers: { Accept: 'application/json' } });
+    return await fetch(url, {
+      method,
+      signal,
+      headers: hasBody
+        ? { Accept: 'application/json', 'Content-Type': 'application/json' }
+        : { Accept: 'application/json' },
+      body: hasBody ? JSON.stringify(body) : undefined,
+    });
   } catch (cause) {
     // Cancellation is not a failure: let TanStack Query see the original AbortError.
     if (signal?.aborted && cause instanceof Error) throw cause;

@@ -2,7 +2,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { setDevControls } from '@/mocks/devControls';
 import { createWrapper } from '@/test/render';
 import { DEFAULT_LIST_PARAMS } from '../schemas';
-import { useApplications } from './queries';
+import { useApplication, useApplications } from './queries';
 
 describe('useApplications', () => {
   it('loads the page of applications for the given filters', async () => {
@@ -42,5 +42,21 @@ describe('useApplications', () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
     expect(result.current.error).toMatchObject({ kind: 'http', status: 500 });
+  });
+});
+
+describe('useApplication', () => {
+  it('loads one application by id', async () => {
+    const { Wrapper } = createWrapper();
+    const { result } = renderHook(() => useApplication('app-001'), { wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(result.current.data).toMatchObject({ id: 'app-001', referenceNo: 'LPP-2026-1000' });
+  });
+
+  it('exposes a 404 for an unknown id', async () => {
+    const { Wrapper } = createWrapper();
+    const { result } = renderHook(() => useApplication('app-999'), { wrapper: Wrapper });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error).toMatchObject({ status: 404 });
   });
 });

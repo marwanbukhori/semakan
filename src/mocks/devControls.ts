@@ -4,6 +4,7 @@ const DevControlsSchema = z.object({
   latencyMs: z.union([z.literal(0), z.literal(800), z.literal(2000)]),
   failure: z.enum(['none', 'server', 'network']),
   emptyList: z.boolean(),
+  conflictNext: z.boolean(),
 });
 
 export type DevControls = z.infer<typeof DevControlsSchema>;
@@ -20,6 +21,7 @@ export const DEFAULT_DEV_CONTROLS: DevControls = {
   latencyMs: 0,
   failure: 'none',
   emptyList: false,
+  conflictNext: false,
 };
 
 const STORAGE_KEY = 'semakan.devControls';

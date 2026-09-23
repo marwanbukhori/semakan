@@ -22,10 +22,12 @@
   "dependencies": {
     "@govtechmy/myds-react": "1.0.2",
     "@govtechmy/myds-style": "1.0.0",
+    "@hookform/resolvers": "5.9.1",
     "@tanstack/react-query": "5.103.2",
     "i18next": "26.4.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-hook-form": "7.88.0",
     "react-i18next": "17.0.15",
     "react-router": "8.4.0",
     "zod": "4.6.5"
