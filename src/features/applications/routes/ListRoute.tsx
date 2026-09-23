@@ -37,7 +37,7 @@ export function Component() {
       <ApplicationFilters q={filters.q} status={filters.status} onChange={setFilters} />
 
       {isError ? (
-        <LoadError error={error} onRetry={() => void refetch()} />
+        <LoadError title={t('errors.title')} error={error} onRetry={() => void refetch()} />
       ) : (
         <div
           aria-busy={isFetching}

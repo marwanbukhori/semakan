@@ -4,7 +4,7 @@ import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
 import { MockApiBanner } from '@/app/MockApiBanner';
 import { AppProviders } from '@/app/providers';
-import { routes } from '@/app/router';
+import { createRoutes } from '@/app/router';
 import '@/shared/i18n';
 import './index.css';
 
@@ -17,7 +17,7 @@ async function startMockApi() {
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Missing #root element');
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(createRoutes());
 
 void startMockApi()
   .then(

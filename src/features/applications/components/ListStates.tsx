@@ -8,11 +8,19 @@ import {
 import { useTranslation } from 'react-i18next';
 import { apiErrorMessageKey } from '@/shared/api/errorMessage';
 
-export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => void }) {
+export function LoadError({
+  title,
+  error,
+  onRetry,
+}: {
+  title: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
   const { t } = useTranslation();
   return (
     <Callout variant="danger">
-      <CalloutTitle>{t('errors.title')}</CalloutTitle>
+      <CalloutTitle>{title}</CalloutTitle>
       <CalloutContent>{t(apiErrorMessageKey(error))}</CalloutContent>
       <CalloutAction>
         <Button variant="default-outline" size="small" onClick={onRetry}>

@@ -1,11 +1,11 @@
 import { screen } from '@testing-library/react';
 import { renderRoutes } from '@/test/render';
 import { RouteError } from './RouteError';
-import { routes } from './router';
+import { createRoutes } from './router';
 
 describe('app routes', () => {
   it('redirects / to the applications list inside the layout', async () => {
-    const { router } = renderRoutes(routes, { initialEntries: ['/'] });
+    const { router } = renderRoutes(createRoutes(), { initialEntries: ['/'] });
 
     expect(
       await screen.findByRole('heading', { name: 'Licence applications' }),
@@ -17,10 +17,22 @@ describe('app routes', () => {
   });
 
   it('shows a not-found page without losing the layout', async () => {
-    renderRoutes(routes, { initialEntries: ['/nowhere'] });
+    renderRoutes(createRoutes(), { initialEntries: ['/nowhere'] });
 
     expect(await screen.findByText('Page not found')).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
+  });
+
+  it('opens an application from the list', async () => {
+    const { user, router } = renderRoutes(createRoutes(), { initialEntries: ['/applications'] });
+    const [firstLink] = await screen.findAllByRole('link', { name: /^LPP-2026-/ });
+
+    await user.click(firstLink!);
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: firstLink!.textContent ?? '' }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toMatch(/^\/applications\/app-\d{3}$/);
   });
 
   it('catches a crashing route with the error boundary', async () => {
