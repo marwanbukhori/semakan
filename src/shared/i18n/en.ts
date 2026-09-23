@@ -22,6 +22,12 @@ export const en = {
       experience: 'Experience',
       aiWorkflow: 'AI workflow',
     },
+    code: {
+      loading: 'Loading code…',
+      view: 'View on GitHub',
+      viewLines: 'View on GitHub (lines {{start}}–{{end}})',
+      missing: "This excerpt couldn't be found in the source.",
+    },
   },
   fuel: {
     title: 'Fuel prices',

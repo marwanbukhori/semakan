@@ -24,6 +24,12 @@ export const ms: Translation = {
       experience: 'Pengalaman',
       aiWorkflow: 'Aliran kerja AI',
     },
+    code: {
+      loading: 'Memuatkan kod…',
+      view: 'Lihat di GitHub',
+      viewLines: 'Lihat di GitHub (baris {{start}}–{{end}})',
+      missing: 'Petikan ini tidak ditemui dalam kod sumber.',
+    },
   },
   fuel: {
     title: 'Harga bahan api',
