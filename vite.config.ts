@@ -8,6 +8,24 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        // Vendor code changes far less often than app code: give the big libraries their own
+        // long-cacheable chunks (this also keeps every chunk under Vite's 500 kB warning).
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
+            },
+            { name: 'i18n', test: /node_modules[\\/](i18next|react-i18next)[\\/]/ },
+            { name: 'query', test: /node_modules[\\/]@tanstack[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     globals: true,
