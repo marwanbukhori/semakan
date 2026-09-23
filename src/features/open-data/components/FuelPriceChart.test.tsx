@@ -128,6 +128,11 @@ describe('FuelPriceChart', () => {
     expect((b! - a!) / (c! - b!)).toBeCloseTo(5 / 9, 2);
   });
 
+  it('labels the y-axis with its unit', () => {
+    const { container } = renderChart(['ron95']);
+    expect(container.querySelector('svg')).toHaveTextContent('RM per litre');
+  });
+
   it('shows a short message instead of a chart when there is nothing to plot', () => {
     const { container } = render(
       <FuelPriceChart levels={[]} fuels={['ron95']} rangeLabel="3 months" />,

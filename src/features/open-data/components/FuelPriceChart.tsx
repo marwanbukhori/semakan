@@ -33,6 +33,8 @@ const END_LABEL_WIDTH = 156;
 const TOOLTIP_OFFSET = 12;
 // Month labels like "Sep 2026" need about 60px; 72px keeps a clear gap between neighbours.
 const MIN_TICK_SPACING = 72;
+// The y-axis unit sits above the top tick label, on its own line.
+const UNIT_BASELINE = 12;
 
 /** The row's plotted values, highest first; null weeks are left out, never read as zero. */
 function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
@@ -66,7 +68,7 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
 
   const showDirectLabels = width >= DIRECT_LABEL_MIN_WIDTH;
   const margin = {
-    top: 16,
+    top: 32,
     right: showDirectLabels ? END_LABEL_OFFSET + END_LABEL_WIDTH : 16,
     bottom: 32,
     left: 48,
@@ -240,6 +242,9 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
         aria-hidden="true"
         className="block max-w-full"
       >
+        <text x={0} y={UNIT_BASELINE} className="fill-txt-black-500 text-body-xs">
+          {t('fuel.unit')}
+        </text>
         {ticks(geometry.domain).map((value) => (
           <g key={value}>
             <line
