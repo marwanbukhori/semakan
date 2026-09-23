@@ -77,7 +77,18 @@ export function Component() {
         if (!open) close();
       }}
     >
-      <DialogBody hideClose>
+      <DialogBody
+        hideClose
+        // The dialog opens from a URL, not a Radix trigger, so Radix has nothing
+        // to return focus to. Send it to the Review link, or to the heading once
+        // the application is closed and the link is gone.
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          (
+            document.getElementById('review-link') ?? document.getElementById('application-heading')
+          )?.focus();
+        }}
+      >
         <DialogHeader>
           <DialogTitle>{t('review.title', { reference: data.referenceNo })}</DialogTitle>
           <DialogDescription>{t('review.description')}</DialogDescription>

@@ -53,14 +53,21 @@ export function Component() {
 
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <h1 id="application-heading" className="font-heading text-heading-xs font-semibold">
+          <h1
+            id="application-heading"
+            // Focus lands here when the review dialog closes and there is no Review link.
+            tabIndex={-1}
+            className="font-heading text-heading-xs font-semibold focus:outline-none"
+          >
             {data.referenceNo}
           </h1>
           <StatusBadge status={data.status} />
         </div>
         {isReviewable(data.status) ? (
           <Button asChild variant="primary-fill" size="medium">
-            <Link to="review">{t('applications.detail.review')}</Link>
+            <Link id="review-link" to="review">
+              {t('applications.detail.review')}
+            </Link>
           </Button>
         ) : (
           <p className="text-body-sm text-txt-black-500">{t('applications.detail.closed')}</p>

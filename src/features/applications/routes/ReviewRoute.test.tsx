@@ -79,6 +79,10 @@ describe('/applications/:id/review', () => {
 
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(router.state.location.pathname).toBe(`/applications/${approvable.id}`);
+    // Focus returns to the link that opened the dialog, not to <body>.
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: 'Review application' })).toHaveFocus(),
+    );
   });
 
   it('records an approval, confirms it and closes', async () => {
@@ -94,6 +98,8 @@ describe('/applications/:id/review', () => {
     expect(
       await screen.findByText('A decision has been recorded. This application is closed.'),
     ).toBeInTheDocument();
+    // The Review link is gone now the application is closed, so focus lands on the heading.
+    await waitFor(() => expect(screen.getByRole('heading', { level: 1 })).toHaveFocus());
   });
 
   it('updates the status optimistically while the request is in flight', async () => {
