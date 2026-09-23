@@ -86,13 +86,15 @@ export const ms: Translation = {
     network: 'Semak sambungan anda dan cuba lagi.',
     server: 'Pelayan menghadapi masalah. Cuba lagi sebentar.',
     schema: 'Pelayan menghantar data yang tidak dijangka.',
+    rateLimited: 'Terlalu banyak permintaan buat masa ini. Tunggu seminit, kemudian cuba lagi.',
+    notFound: 'Data tersebut tidak ditemui.',
     retry: 'Cuba lagi',
     route: {
       title: 'Berlaku ralat',
       body: 'Halaman ini gagal dimuatkan.',
       home: 'Kembali ke permohonan',
     },
-    notFound: { title: 'Halaman tidak ditemui', body: 'Tiada apa-apa di alamat ini.' },
+    pageNotFound: { title: 'Halaman tidak ditemui', body: 'Tiada apa-apa di alamat ini.' },
   },
   documents: {
     ssm_certificate: 'Sijil SSM',

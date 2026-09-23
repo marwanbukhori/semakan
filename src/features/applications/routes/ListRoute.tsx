@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { LoadError } from '@/shared/ui/LoadError';
 import { useApplications } from '../api/queries';
 import { ApplicationFilters } from '../components/ApplicationFilters';
 import { ApplicationTable } from '../components/ApplicationTable';
 import { ListPagination } from '../components/ListPagination';
-import { EmptyResults, LoadError } from '../components/ListStates';
+import { EmptyResults } from '../components/ListStates';
 import { useApplicationFilters } from '../hooks/useApplicationFilters';
 
 /** Thin route: reads filters from the URL, fetches, and composes components. */

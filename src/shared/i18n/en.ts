@@ -84,13 +84,15 @@ export const en = {
     network: 'Check your connection and try again.',
     server: 'The server had a problem. Try again in a moment.',
     schema: 'The server sent data we did not expect.',
+    rateLimited: 'Too many requests right now. Wait a minute, then try again.',
+    notFound: "We couldn't find that data.",
     retry: 'Try again',
     route: {
       title: 'Something went wrong',
       body: 'This page failed to load.',
       home: 'Back to applications',
     },
-    notFound: { title: 'Page not found', body: 'There is nothing at this address.' },
+    pageNotFound: { title: 'Page not found', body: 'There is nothing at this address.' },
   },
   documents: {
     ssm_certificate: 'SSM certificate',
