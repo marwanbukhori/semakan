@@ -41,7 +41,7 @@ export const ms: Translation = {
       breadcrumb: 'Permohonan',
       loading: 'Memuatkan permohonan…',
       notFoundTitle: 'Permohonan tidak ditemui',
-      notFoundBody: 'Tiada permohonan dengan rujukan ini. Ia mungkin telah dikeluarkan.',
+      notFoundBody: 'Tiada permohonan dengan rujukan ini. Ia mungkin telah dipadam.',
       loadErrorTitle: 'Permohonan ini tidak dapat dimuatkan',
       sections: {
         applicant: 'Pemohon',
