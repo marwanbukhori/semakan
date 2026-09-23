@@ -8,6 +8,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { apiErrorMessageKey } from '@/shared/api/errorMessage';
 
+// #region practice:async-states
 export function LoadError({
   title,
   error,
@@ -30,3 +31,4 @@ export function LoadError({
     </Callout>
   );
 }
+// #endregion

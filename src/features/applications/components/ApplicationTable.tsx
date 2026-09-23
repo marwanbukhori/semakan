@@ -70,6 +70,7 @@ export function ApplicationTable({
   );
 }
 
+// #region practice:stable-keys
 function Rows({
   items,
   isLoading,
@@ -133,6 +134,7 @@ function Rows({
     </>
   );
 }
+// #endregion
 
 function SortableHead({
   field,

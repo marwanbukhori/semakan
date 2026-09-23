@@ -42,6 +42,7 @@ export default defineConfig([
     },
     rules: {
       '@typescript-eslint/no-deprecated': 'error',
+      // #region practice:feature-boundaries
       'boundaries/dependencies': [
         'error',
         {
@@ -96,6 +97,7 @@ export default defineConfig([
           ],
         },
       ],
+      // #endregion
     },
   },
   {

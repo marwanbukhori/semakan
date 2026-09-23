@@ -13,11 +13,13 @@
     "moduleDetection": "force",
     "noEmit": true,
     "skipLibCheck": true,
+    // #region practice:strict-typescript
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
+    // #endregion
     "erasableSyntaxOnly": true,
     "noUncheckedSideEffectImports": true,
     "paths": { "@/*": ["./src/*"] }

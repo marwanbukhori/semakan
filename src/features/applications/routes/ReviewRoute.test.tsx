@@ -58,6 +58,7 @@ const heading = (d: { referenceNo: string }, options?: { hidden?: boolean }) =>
   screen.findByRole('heading', { level: 1, name: d.referenceNo, ...options });
 
 describe('/applications/:id/review', () => {
+  // #region practice:test-behaviour
   it('opens as a named dialog with focus inside, and Escape returns to the detail page', async () => {
     const { user, router } = renderReview(approvable.id);
 
@@ -88,6 +89,7 @@ describe('/applications/:id/review', () => {
       expect(screen.getByRole('link', { name: 'Review application' })).toHaveFocus(),
     );
   });
+  // #endregion
 
   it('records an approval, confirms it and closes', async () => {
     const { user, router } = renderReview(approvable.id);

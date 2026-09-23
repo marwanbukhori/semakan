@@ -242,6 +242,7 @@ export function ReviewForm({ isSubmitting, onSubmit, onCancel }: ReviewFormProps
   );
 }
 
+// #region practice:semantic-forms
 function TextField({
   id,
   label,
@@ -268,6 +269,7 @@ function TextField({
     </div>
   );
 }
+// #endregion
 
 function FieldError({
   id,

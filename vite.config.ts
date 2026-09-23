@@ -13,6 +13,7 @@ export default defineConfig({
       output: {
         // Vendor code changes far less often than app code: give the big libraries their own
         // long-cacheable chunks (this also keeps every chunk under Vite's 500 kB warning).
+        // #region practice:code-splitting
         codeSplitting: {
           groups: [
             {
@@ -23,6 +24,7 @@ export default defineConfig({
             { name: 'query', test: /node_modules[\\/]@tanstack[\\/]/ },
           ],
         },
+        // #endregion
       },
     },
   },

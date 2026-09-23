@@ -11,6 +11,7 @@ export type RequestOptions = {
 type SendOptions = RequestOptions & { method: 'GET' | 'POST'; body?: unknown };
 
 export function createApiClient({ baseUrl }: { baseUrl: string }) {
+  // #region practice:validate-at-boundary
   /** Every request is validated: the schema is required, so unvalidated data never reaches the UI. */
   async function request<T extends z.ZodType>(
     path: string,
@@ -36,6 +37,7 @@ export function createApiClient({ baseUrl }: { baseUrl: string }) {
     }
     return result.data;
   }
+  // #endregion
 
   function get<T extends z.ZodType>(
     path: string,

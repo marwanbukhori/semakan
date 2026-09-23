@@ -16,6 +16,7 @@ import type {
   TimelineEventSchema,
 } from './schemas';
 
+// #region practice:types-from-schemas
 export type ApplicationStatus = z.infer<typeof ApplicationStatusSchema>;
 export type PremisesCategory = z.infer<typeof PremisesCategorySchema>;
 export type StatusFilter = z.infer<typeof StatusFilterSchema>;
@@ -32,3 +33,4 @@ export type ReviewDecisionInput = z.input<typeof ReviewDecisionSchema>;
 export type ReviewDecision = z.output<typeof ReviewDecisionSchema>;
 export type Decision = ReviewDecision['decision'];
 export type ReviewRequest = z.infer<typeof ReviewRequestSchema>;
+// #endregion

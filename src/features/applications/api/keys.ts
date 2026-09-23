@@ -1,5 +1,6 @@
 import type { ApplicationListParams } from '../types';
 
+// #region practice:query-keys
 export const applicationKeys = {
   all: ['applications'] as const,
   lists: () => [...applicationKeys.all, 'list'] as const,
@@ -7,3 +8,4 @@ export const applicationKeys = {
   details: () => [...applicationKeys.all, 'detail'] as const,
   detail: (id: string) => [...applicationKeys.details(), id] as const,
 };
+// #endregion

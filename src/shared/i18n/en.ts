@@ -256,7 +256,9 @@ export const en = {
   },
 } as const;
 
+// #region practice:typed-translations
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> };
 
 /** Every language must provide exactly these keys; the type checker enforces it. */
 export type Translation = Widen<typeof en>;
+// #endregion
