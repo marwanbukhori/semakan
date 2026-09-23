@@ -128,8 +128,9 @@ function FacetSection({ role, facet }: { role: Role; facet: Facet }) {
         </p>
         <ul className="flex flex-wrap gap-1.5">
           {facet.requirements.map((id) => (
-            <li key={id}>
-              <Tag variant="default" size="small">
+            <li key={id} className="max-w-full">
+              {/* MYDS tags never wrap; long requirement labels must, or they overflow at 360px. */}
+              <Tag variant="default" size="small" className="h-auto whitespace-normal text-left">
                 {pick(REQUIREMENT_LABEL.get(id)!)}
               </Tag>
             </li>

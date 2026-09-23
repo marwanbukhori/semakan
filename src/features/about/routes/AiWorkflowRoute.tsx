@@ -200,13 +200,13 @@ export function Component() {
           {([1, 2, 3] as const).map((plan) => (
             <li key={plan}>
               <a href={blobUrl(REVIEW_LOG_PATHS[plan])} className={`text-body-sm ${linkClass}`}>
-                <code>{REVIEW_LOG_PATHS[plan]}</code>
+                <code className="[overflow-wrap:anywhere]">{REVIEW_LOG_PATHS[plan]}</code>
               </a>
             </li>
           ))}
           <li>
             <a href={blobUrl(REVIEW_LOG_README_PATH)} className={`text-body-sm ${linkClass}`}>
-              <code>{REVIEW_LOG_README_PATH}</code>
+              <code className="[overflow-wrap:anywhere]">{REVIEW_LOG_README_PATH}</code>
             </a>
           </li>
         </ul>

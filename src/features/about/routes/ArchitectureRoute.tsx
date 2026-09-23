@@ -38,7 +38,7 @@ export function Component() {
                   {layer.paths.map((path) => (
                     <li key={path}>
                       <a href={blobUrl(path)} className={`text-body-xs ${linkClass}`}>
-                        <code>{path}</code>
+                        <code className="[overflow-wrap:anywhere]">{path}</code>
                       </a>
                     </li>
                   ))}

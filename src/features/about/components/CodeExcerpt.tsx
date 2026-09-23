@@ -18,7 +18,7 @@ export function CodeExcerpt({ path, region }: { path: string; region: string }) 
   return (
     <figure className="overflow-hidden rounded-md border border-otl-divider">
       <figcaption className="flex flex-wrap items-center justify-between gap-2 border-b border-otl-divider bg-bg-washed px-3 py-2 text-body-xs">
-        <code className="text-txt-black-700">{path}</code>
+        <code className="text-txt-black-700 [overflow-wrap:anywhere]">{path}</code>
         <a href={blobUrl(path, excerpt ?? undefined)} className={linkClass}>
           {excerpt
             ? t('about.code.viewLines', { start: excerpt.startLine, end: excerpt.endLine })

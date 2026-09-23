@@ -17,7 +17,7 @@ export function FolderTree({ folders }: { folders: FolderEntry[] }) {
         <li key={folder.path}>
           <details className="p-3">
             <summary className="cursor-pointer text-body-sm font-medium text-txt-black-900">
-              <code>{folder.path}</code>
+              <code className="[overflow-wrap:anywhere]">{folder.path}</code>
             </summary>
             <div className="mt-2 flex flex-col gap-2 pl-4">
               <p className="text-body-sm text-txt-black-700">{pick(folder.text)}</p>
