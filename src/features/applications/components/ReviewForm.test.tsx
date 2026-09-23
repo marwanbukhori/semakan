@@ -94,4 +94,96 @@ describe('ReviewForm', () => {
 
     expect(await screen.findByText('Check this field and try again.')).toBeInTheDocument();
   });
+
+  it('announces a form-level server error as an alert', async () => {
+    const onSubmit = vi.fn(() =>
+      Promise.reject(
+        new ApiError({
+          kind: 'validation',
+          status: 422,
+          message: 'x',
+          fieldErrors: { version: ['stale'] },
+        }),
+      ),
+    );
+    const { user } = renderForm(onSubmit);
+
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Check this field and try again.');
+  });
+
+  it('marks the decision radios invalid and focuses one after a server error on decision', async () => {
+    const onSubmit = vi.fn(() =>
+      Promise.reject(
+        new ApiError({
+          kind: 'validation',
+          status: 422,
+          message: 'Review rejected',
+          fieldErrors: { decision: ['missing_fire_certificate'] },
+        }),
+      ),
+    );
+    const { user } = renderForm(onSubmit);
+
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+    await screen.findByText(
+      'This premises type needs a fire safety certificate before it can be approved.',
+    );
+
+    const approve = screen.getByRole('radio', { name: 'Approve' });
+    expect(approve).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('radio', { name: 'Reject' })).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.getByRole('radio', { name: 'Request more information' })).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
+    expect(approve).toHaveFocus();
+  });
+
+  it('marks the requested-info checkboxes invalid, describes the group, and focuses the first checkbox', async () => {
+    const { user } = renderForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Request more information' }));
+    await user.type(
+      screen.getByRole('textbox', { name: 'Note to the applicant' }),
+      'Sila hantar pelan lantai.',
+    );
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+    await screen.findByText('Choose at least one document.');
+
+    const group = screen.getByRole('group', { name: 'Documents needed' });
+    expect(group).toHaveAccessibleDescription('Choose at least one document.');
+    for (const checkbox of screen.getAllByRole('checkbox')) {
+      expect(checkbox).toHaveAttribute('aria-invalid', 'true');
+    }
+    expect(screen.getByRole('checkbox', { name: 'SSM certificate' })).toHaveFocus();
+  });
+
+  it('moves focus to the reason field when client-side validation fails', async () => {
+    const { user } = renderForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Reject' }));
+    await user.type(screen.getByRole('textbox', { name: 'Reason for rejection' }), 'Too short');
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+
+    await screen.findByText('Give a reason of at least 10 characters.');
+    expect(screen.getByRole('textbox', { name: 'Reason for rejection' })).toHaveFocus();
+  });
+
+  it('clears the reason error on decision change but keeps the typed text', async () => {
+    const { user } = renderForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Reject' }));
+    const reason = screen.getByRole('textbox', { name: 'Reason for rejection' });
+    await user.type(reason, 'Too short');
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+    await screen.findByText('Give a reason of at least 10 characters.');
+
+    await user.click(screen.getByRole('radio', { name: 'Approve' }));
+    await user.click(screen.getByRole('radio', { name: 'Reject' }));
+
+    expect(screen.queryByText('Give a reason of at least 10 characters.')).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: 'Reason for rejection' })).toHaveValue('Too short');
+  });
 });
