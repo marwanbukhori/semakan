@@ -83,9 +83,13 @@ describe('app routes', () => {
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe(`/applications/${reviewable.id}/review`);
   });
+});
+
+describe('app routes to open data', () => {
+  beforeEach(() => pinDate('2026-09-25T00:00:00.000Z'));
+  afterEach(unpinDate);
 
   it('reaches the fuel prices page from the header', async () => {
-    pinDate('2026-09-25T00:00:00.000Z');
     const { user, router } = renderRoutes(createRoutes(), { initialEntries: ['/applications'] });
 
     await user.click(await screen.findByRole('link', { name: 'Fuel prices' }));
@@ -94,6 +98,5 @@ describe('app routes', () => {
       await screen.findByRole('heading', { level: 1, name: 'Fuel prices' }),
     ).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/open-data/fuel-prices');
-    unpinDate();
   });
 });
