@@ -73,13 +73,6 @@ export function Component() {
   return (
     <Dialog
       open
-      // Radix's modal Dialog (the default) hides the rest of the page from the
-      // accessibility tree via aria-hidden while it is open, which would also
-      // hide the detail page underneath — the one place this dialog's data
-      // updates live. Non-modal keeps that page inspectable and interactive
-      // behind the dialog; initial autofocus into the dialog still happens,
-      // and clicking outside the dialog content still dismisses it.
-      modal={false}
       onOpenChange={(open) => {
         if (!open) close();
       }}

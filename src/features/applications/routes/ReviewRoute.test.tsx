@@ -45,8 +45,13 @@ const renderReview = (id: string) =>
     { initialEntries: [`/applications/${id}/review`] },
   );
 
-const heading = (d: { referenceNo: string }) =>
-  screen.findByRole('heading', { level: 1, name: d.referenceNo });
+// While the dialog is open, the detail page behind it is inert: still in the
+// DOM (its data keeps updating underneath), but `aria-hidden` by Radix's
+// modal focus management, so role queries must opt in with `hidden: true` to
+// reach it. Pass that option for any query made while the dialog is open;
+// once it has closed the background is reachable normally again.
+const heading = (d: { referenceNo: string }, options?: { hidden?: boolean }) =>
+  screen.findByRole('heading', { level: 1, name: d.referenceNo, ...options });
 
 describe('/applications/:id/review', () => {
   it('opens as a named dialog with focus inside, and Escape returns to the detail page', async () => {
@@ -54,6 +59,21 @@ describe('/applications/:id/review', () => {
 
     const dialog = await screen.findByRole('dialog', { name: `Review ${approvable.referenceNo}` });
     await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement));
+
+    // The background is inaccessible by role while the dialog is open — a
+    // modal dialog's whole point.
+    expect(
+      screen.queryByRole('heading', { level: 1, name: approvable.referenceNo }),
+    ).not.toBeInTheDocument();
+    // It's still in the DOM, just marked inert, not removed.
+    expect(
+      screen.getByRole('heading', { level: 1, name: approvable.referenceNo, hidden: true }),
+    ).toBeInTheDocument();
+
+    // Tabbing away from the last focusable control keeps focus trapped inside.
+    within(dialog).getByRole('button', { name: 'Submit decision' }).focus();
+    await user.tab();
+    expect(dialog).toContainElement(document.activeElement as HTMLElement);
 
     await user.keyboard('{Escape}');
 
@@ -78,7 +98,7 @@ describe('/applications/:id/review', () => {
 
   it('updates the status optimistically while the request is in flight', async () => {
     const { user } = renderReview(approvable.id);
-    await heading(approvable);
+    await heading(approvable, { hidden: true });
     const dialog = await screen.findByRole('dialog');
     setDevControls({ latencyMs: 800 });
 
@@ -90,7 +110,7 @@ describe('/applications/:id/review', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Submit decision' }));
 
     expect(within(dialog).getByRole('button', { name: 'Submitting…' })).toBeDisabled();
-    const header = (await heading(approvable)).parentElement!;
+    const header = (await heading(approvable, { hidden: true })).parentElement!;
     expect(within(header).getByText('Rejected')).toBeInTheDocument();
   });
 
@@ -103,7 +123,7 @@ describe('/applications/:id/review', () => {
 
     expect(await screen.findByText('Your decision was not saved')).toBeInTheDocument();
     expect(within(dialog).getByRole('alert')).toHaveTextContent("Couldn't submit your decision");
-    const header = (await heading(approvable)).parentElement!;
+    const header = (await heading(approvable, { hidden: true })).parentElement!;
     expect(within(header).queryByText('Approved')).not.toBeInTheDocument();
   });
 
