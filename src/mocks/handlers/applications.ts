@@ -16,7 +16,8 @@ function toFieldErrors(error: z.ZodError): Record<string, string[]> {
   const fieldErrors: Record<string, string[]> = {};
   for (const issue of error.issues) {
     const path = issue.path[0] === 'review' ? issue.path.slice(1) : issue.path;
-    const key = path.join('.') || 'root';
+    // Key by the field itself: `requestedInfo.0` belongs to `requestedInfo`.
+    const key = String(path[0] ?? 'root');
     (fieldErrors[key] ??= []).push(issue.message);
   }
   return fieldErrors;

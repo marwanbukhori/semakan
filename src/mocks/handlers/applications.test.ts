@@ -1,5 +1,6 @@
 import { ApplicationDetailSchema, ApplicationListSchema } from '@/features/applications/schemas';
 import { isReviewable } from '@/features/applications/rules';
+import { ApiError } from '@/shared/api/ApiError';
 import { apiClient } from '@/shared/api/client';
 import { getDevControls, setDevControls } from '../devControls';
 import { requiresFireCertificate, seedApplicationDetails } from '../db/applications';
@@ -72,6 +73,20 @@ describe('POST /api/applications/:id/review', () => {
         review: { decision: 'reject', reason: 'short' },
       }),
     ).rejects.toMatchObject({ kind: 'validation', fieldErrors: { reason: ['reason_too_short'] } });
+  });
+
+  it('keys a nested field error by its top-level field', async () => {
+    const error: unknown = await postReview(openApp.id, {
+      version: openApp.version,
+      review: {
+        decision: 'request_info',
+        requestedInfo: ['not_a_document'],
+        note: 'Tolong hantar',
+      },
+    }).catch((e: unknown) => e);
+    if (!(error instanceof ApiError)) throw new Error('Expected an ApiError');
+    expect(error.kind).toBe('validation');
+    expect(Object.keys(error.fieldErrors)).toEqual(['requestedInfo']);
   });
 
   it('answers 409 when the version is stale', async () => {
