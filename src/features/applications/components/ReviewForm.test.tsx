@@ -113,6 +113,20 @@ describe('ReviewForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Check this field and try again.');
   });
 
+  it('still shows an alert when a 422 names no fields', async () => {
+    const onSubmit = vi.fn(() =>
+      Promise.reject(
+        new ApiError({ kind: 'validation', status: 422, message: 'x', fieldErrors: {} }),
+      ),
+    );
+    const { user } = renderForm(onSubmit);
+
+    await user.click(screen.getByRole('button', { name: 'Submit decision' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Check this field and try again.');
+    expect(screen.getByRole('button', { name: 'Submit decision' })).toHaveFocus();
+  });
+
   it('marks the decision radios invalid and focuses one after a server error on decision', async () => {
     const onSubmit = vi.fn(() =>
       Promise.reject(

@@ -111,6 +111,11 @@ export function ReviewForm({ isSubmitting, onSubmit, onCancel }: ReviewFormProps
           touched.add('root.server');
         }
       }
+      // A 422 that names no field still has to tell the officer something went wrong.
+      if (touched.size === 0) {
+        setError('root.server', { type: 'server', message: 'unknown' });
+        touched.add('root.server');
+      }
       focusFirstError(touched);
     }
   }
