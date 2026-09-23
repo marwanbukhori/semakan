@@ -1,0 +1,82 @@
+import type { Translation } from './en';
+
+export const ms: Translation = {
+  app: {
+    name: 'Semakan',
+    tagline: 'Semakan permohonan lesen',
+    skipToContent: 'Langkau ke kandungan utama',
+    nav: { label: 'Utama', applications: 'Permohonan' },
+    theme: { light: 'Tema cerah', dark: 'Tema gelap' },
+    mockApiFailed:
+      'API olok-olok demo gagal dimulakan, jadi tiada data akan dimuatkan. Cuba muat semula halaman.',
+  },
+  applications: {
+    title: 'Permohonan lesen',
+    loading: 'Memuatkan permohonan…',
+    resultCount_one: '{{count}} permohonan',
+    resultCount_other: '{{count}} permohonan',
+    columns: {
+      referenceNo: 'Rujukan',
+      businessName: 'Perniagaan',
+      applicantName: 'Pemohon',
+      premisesCategory: 'Kategori',
+      submittedAt: 'Tarikh hantar',
+      status: 'Status',
+    },
+    empty: {
+      title: 'Tiada permohonan ditemui',
+      filtered: 'Tiada padanan untuk tapisan ini.',
+      unfiltered: 'Belum ada permohonan.',
+      clear: 'Kosongkan tapisan',
+    },
+    filters: {
+      search: 'Carian',
+      searchPlaceholder: 'Rujukan, pemohon atau perniagaan',
+      status: 'Status',
+      allStatuses: 'Semua status',
+    },
+    pagination: { label: 'Halaman keputusan', previous: 'Sebelumnya', next: 'Seterusnya' },
+  },
+  status: {
+    submitted: 'Dihantar',
+    under_review: 'Dalam semakan',
+    info_requested: 'Maklumat diperlukan',
+    approved: 'Diluluskan',
+    rejected: 'Ditolak',
+  },
+  category: {
+    food_beverage: 'Makanan & minuman',
+    retail: 'Runcit',
+    services: 'Perkhidmatan',
+    workshop: 'Bengkel',
+    entertainment: 'Hiburan',
+  },
+  errors: {
+    title: 'Permohonan tidak dapat dimuatkan',
+    network: 'Semak sambungan anda dan cuba lagi.',
+    server: 'Pelayan menghadapi masalah. Cuba lagi sebentar.',
+    schema: 'Pelayan menghantar data yang tidak dijangka.',
+    retry: 'Cuba lagi',
+    route: {
+      title: 'Berlaku ralat',
+      body: 'Halaman ini gagal dimuatkan.',
+      home: 'Kembali ke permohonan',
+    },
+    notFound: { title: 'Halaman tidak ditemui', body: 'Tiada apa-apa di alamat ini.' },
+  },
+  devPanel: {
+    toggle: 'Panel Dev',
+    toggleActive: 'Panel Dev (tetapan aktif)',
+    active: 'Aktif',
+    title: 'Kawalan API olok-olok',
+    latency: 'Kependaman',
+    latencyNone: 'Tiada',
+    latencyMs: '{{ms}} ms',
+    failure: 'Kegagalan',
+    failureNone: 'Tiada',
+    failureServer: 'Ralat pelayan (500)',
+    failureNetwork: 'Kegagalan rangkaian',
+    emptyList: 'Pulangkan senarai kosong',
+    reset: 'Set semula data demo',
+  },
+};
