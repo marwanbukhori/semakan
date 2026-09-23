@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getDevControls } from '@/mocks/devControls';
 import { createWrapper } from '@/test/render';
@@ -43,5 +43,24 @@ describe('DevPanel', () => {
     await user.click(screen.getByRole('checkbox', { name: 'Return an empty list' }));
 
     expect(getDevControls()).toMatchObject({ latencyMs: 2000, emptyList: true });
+  });
+
+  it('is keyboard operable: toggle, then the controls, and Escape closes back to the toggle', async () => {
+    const { user } = renderPanel();
+    const toggle = screen.getByRole('button', { name: 'Dev Panel' });
+
+    await user.tab();
+    expect(toggle).toHaveFocus();
+    await user.keyboard('{Enter}');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+    await user.tab();
+    const latency = screen.getByRole('group', { name: 'Latency' });
+    expect(within(latency).getByRole('radio', { name: 'None' })).toHaveFocus();
+
+    await user.keyboard('{Escape}');
+    expect(screen.queryByRole('region', { name: 'Mock API controls' })).not.toBeInTheDocument();
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveFocus();
   });
 });

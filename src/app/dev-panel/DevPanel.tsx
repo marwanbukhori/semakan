@@ -1,6 +1,6 @@
 import { Button } from '@govtechmy/myds-react/button';
 import { useQueryClient } from '@tanstack/react-query';
-import { useId, useState, useSyncExternalStore } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 import { resetApplications } from '@/mocks/db/applications';
 import {
@@ -19,6 +19,19 @@ export function DevPanel() {
   const controls = useSyncExternalStore(subscribeDevControls, getDevControls);
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes the panel and hands focus back to the toggle that opened it.
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    }
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open]);
 
   const failureLabels = {
     none: t('devPanel.failureNone'),
@@ -37,7 +50,19 @@ export function DevPanel() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-40 flex flex-col items-end gap-2">
+    // The toggle comes first in the DOM so Tab moves from it into the panel it opens;
+    // flex-col-reverse still draws the panel above the toggle.
+    <div className="fixed bottom-4 right-4 z-40 flex flex-col-reverse items-end gap-2">
+      <Button
+        ref={toggleRef}
+        variant="primary-fill"
+        size="small"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((isOpen) => !isOpen)}
+      >
+        {t('devPanel.toggle')}
+      </Button>
       {open && (
         <section
           id={panelId}
@@ -92,15 +117,6 @@ export function DevPanel() {
           </Button>
         </section>
       )}
-      <Button
-        variant="primary-fill"
-        size="small"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((isOpen) => !isOpen)}
-      >
-        {t('devPanel.toggle')}
-      </Button>
     </div>
   );
 }
