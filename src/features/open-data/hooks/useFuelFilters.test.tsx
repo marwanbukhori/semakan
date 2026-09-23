@@ -9,6 +9,14 @@ function Probe() {
       <output aria-label="filters">{JSON.stringify({ range, fuels })}</output>
       <button onClick={() => setRange('1y')}>1y</button>
       <button onClick={() => toggleFuel('ron97')}>toggle ron97</button>
+      <button
+        onClick={() => {
+          toggleFuel('ron97');
+          toggleFuel('diesel');
+        }}
+      >
+        toggle ron97 and diesel
+      </button>
     </>
   );
 }
@@ -38,5 +46,14 @@ describe('useFuelFilters', () => {
     const { user } = renderProbe();
     await user.click(screen.getByRole('button', { name: 'toggle ron97' }));
     expect(state()).toMatchObject({ fuels: ['ron95', 'diesel', 'ron95_budi95'] });
+  });
+
+  it('applies two toggles made in the same tick', async () => {
+    const { user, router } = renderProbe();
+    await user.click(screen.getByRole('button', { name: 'toggle ron97 and diesel' }));
+    expect(state()).toMatchObject({ fuels: ['ron95', 'ron95_budi95'] });
+    expect(new URLSearchParams(router.state.location.search).get('fuels')).toBe(
+      'ron95,ron95_budi95',
+    );
   });
 });

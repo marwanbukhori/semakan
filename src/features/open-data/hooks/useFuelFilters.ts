@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams } from 'react-router';
 import { FUEL_KEYS, FuelFiltersSchema } from '../schemas';
 import type { FuelFilters, FuelKey, FuelRange } from '../types';
@@ -18,26 +18,34 @@ const parse = (params: URLSearchParams) => FuelFiltersSchema.parse(Object.fromEn
 export function useFuelFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = useMemo(() => parse(searchParams), [searchParams]);
+  // React Router hands a functional update the params of the last render, not the last write, so
+  // two changes in one tick would each start from the same URL and the first would be lost. Each
+  // write therefore starts from the previous write until the new URL has rendered.
+  const pending = useRef<FuelFilters | null>(null);
+  useEffect(() => {
+    pending.current = null;
+  }, [searchParams]);
 
   const update = useCallback(
-    (patch: Partial<FuelFilters>) => {
+    (change: (current: FuelFilters) => Partial<FuelFilters>) => {
+      const current = pending.current ?? parse(searchParams);
+      const next = { ...current, ...change(current) };
+      pending.current = next;
       // replace: flipping filters should not fill the Back history.
-      void setSearchParams((previous) => toSearchParams({ ...parse(previous), ...patch }), {
-        replace: true,
-      });
+      void setSearchParams(toSearchParams(next), { replace: true });
     },
-    [setSearchParams],
+    [searchParams, setSearchParams],
   );
 
-  const setRange = useCallback((range: FuelRange) => update({ range }), [update]);
+  const setRange = useCallback((range: FuelRange) => update(() => ({ range })), [update]);
   const toggleFuel = useCallback(
     (key: FuelKey) =>
-      update({
+      update(({ fuels }) => ({
         fuels: FUEL_KEYS.filter((fuel) =>
-          fuel === key ? !filters.fuels.includes(fuel) : filters.fuels.includes(fuel),
+          fuel === key ? !fuels.includes(fuel) : fuels.includes(fuel),
         ),
-      }),
-    [filters.fuels, update],
+      })),
+    [update],
   );
 
   return { ...filters, setRange, toggleFuel };
