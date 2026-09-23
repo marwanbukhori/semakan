@@ -5,6 +5,8 @@ export const en = {
     skipToContent: 'Skip to main content',
     nav: { label: 'Main', applications: 'Applications' },
     theme: { light: 'Light theme', dark: 'Dark theme' },
+    mockApiFailed:
+      "The demo's mock API could not start, so no data will load. Try reloading the page.",
   },
   applications: {
     title: 'Licence applications',
@@ -51,7 +53,7 @@ export const en = {
     title: "Couldn't load applications",
     network: 'Check your connection and try again.',
     server: 'The server had a problem. Try again in a moment.',
-    schema: 'The server sent data we did not expect. The team has been notified.',
+    schema: 'The server sent data we did not expect.',
     retry: 'Try again',
     route: {
       title: 'Something went wrong',
@@ -62,9 +64,12 @@ export const en = {
   },
   devPanel: {
     toggle: 'Dev Panel',
+    toggleActive: 'Dev Panel (settings active)',
+    active: 'Active',
     title: 'Mock API controls',
     latency: 'Latency',
     latencyNone: 'None',
+    latencyMs: '{{ms}} ms',
     failure: 'Failure',
     failureNone: 'None',
     failureServer: 'Server error (500)',

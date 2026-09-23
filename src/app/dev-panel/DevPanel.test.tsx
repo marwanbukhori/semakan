@@ -63,4 +63,16 @@ describe('DevPanel', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
     expect(toggle).toHaveFocus();
   });
+
+  it('marks the toggle as active while any setting differs from the defaults', async () => {
+    const { user } = renderPanel();
+    await user.click(screen.getByRole('button', { name: 'Dev Panel' }));
+
+    await user.click(screen.getByRole('radio', { name: 'Network failure' }));
+    const toggle = screen.getByRole('button', { name: 'Dev Panel (settings active)' });
+    expect(toggle).toHaveTextContent('Active');
+
+    await user.click(screen.getByRole('radio', { name: 'None', checked: false }));
+    expect(screen.getByRole('button', { name: 'Dev Panel' })).not.toHaveTextContent('Active');
+  });
 });

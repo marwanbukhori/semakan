@@ -7,6 +7,8 @@ export const ms: Translation = {
     skipToContent: 'Langkau ke kandungan utama',
     nav: { label: 'Utama', applications: 'Permohonan' },
     theme: { light: 'Tema cerah', dark: 'Tema gelap' },
+    mockApiFailed:
+      'API olok-olok demo gagal dimulakan, jadi tiada data akan dimuatkan. Cuba muat semula halaman.',
   },
   applications: {
     title: 'Permohonan lesen',
@@ -53,7 +55,7 @@ export const ms: Translation = {
     title: 'Permohonan tidak dapat dimuatkan',
     network: 'Semak sambungan anda dan cuba lagi.',
     server: 'Pelayan menghadapi masalah. Cuba lagi sebentar.',
-    schema: 'Pelayan menghantar data yang tidak dijangka. Pasukan telah dimaklumkan.',
+    schema: 'Pelayan menghantar data yang tidak dijangka.',
     retry: 'Cuba lagi',
     route: {
       title: 'Berlaku ralat',
@@ -64,9 +66,12 @@ export const ms: Translation = {
   },
   devPanel: {
     toggle: 'Panel Dev',
+    toggleActive: 'Panel Dev (tetapan aktif)',
+    active: 'Aktif',
     title: 'Kawalan API olok-olok',
     latency: 'Kependaman',
     latencyNone: 'Tiada',
+    latencyMs: '{{ms}} ms',
     failure: 'Kegagalan',
     failureNone: 'Tiada',
     failureServer: 'Ralat pelayan (500)',

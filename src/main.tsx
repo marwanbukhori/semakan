@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter } from 'react-router';
 import { RouterProvider } from 'react-router/dom';
+import { MockApiBanner } from '@/app/MockApiBanner';
 import { AppProviders } from '@/app/providers';
 import { routes } from '@/app/router';
 import '@/shared/i18n';
@@ -19,11 +20,19 @@ if (!rootElement) throw new Error('Missing #root element');
 const router = createBrowserRouter(routes);
 
 void startMockApi()
-  .catch((error: unknown) => console.error('Mock API failed to start', error))
-  .then(() => {
+  .then(
+    () => true,
+    (error: unknown) => {
+      console.error('Mock API failed to start', error);
+      return false;
+    },
+  )
+  .then((mockApiStarted) => {
     createRoot(rootElement).render(
       <StrictMode>
         <AppProviders>
+          {/* Keep the app usable (navigation, theme, language) and say why data won't load. */}
+          {!mockApiStarted && <MockApiBanner />}
           <RouterProvider router={router} />
         </AppProviders>
       </StrictMode>,

@@ -31,9 +31,27 @@ describe('app routes', () => {
     renderRoutes([{ path: '/', Component: Boom, ErrorBoundary: RouteError }]);
 
     expect(await screen.findByText('Something went wrong')).toBeInTheDocument();
+    // The raw error text is a developer aid: shown in development only.
+    expect(screen.getByText('boom')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to applications' })).toHaveAttribute(
       'href',
       '/applications',
     );
+  });
+
+  it('hides the raw error detail outside development', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.stubEnv('DEV', false);
+    function Boom(): never {
+      throw new Error('boom');
+    }
+    try {
+      renderRoutes([{ path: '/', Component: Boom, ErrorBoundary: RouteError }]);
+
+      expect(await screen.findByText('Something went wrong')).toBeInTheDocument();
+      expect(screen.queryByText('boom')).not.toBeInTheDocument();
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 });

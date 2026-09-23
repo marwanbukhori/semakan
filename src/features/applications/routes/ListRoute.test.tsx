@@ -145,9 +145,9 @@ describe('/applications', () => {
     );
     renderList();
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'The server sent data we did not expect.',
-    );
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('The server sent data we did not expect.');
+    expect(alert).not.toHaveTextContent('notified');
     expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('unexpected shape'));
   });
 

@@ -28,7 +28,10 @@ export function RouteError() {
         <CalloutTitle>{t('errors.route.title')}</CalloutTitle>
         <CalloutContent>
           {t('errors.route.body')}
-          {detail && <span className="mt-1 block text-body-xs">{detail}</span>}
+          {/* The raw error is a developer aid; users only see the translated message. */}
+          {import.meta.env.DEV && detail && (
+            <span className="mt-1 block text-body-xs">{detail}</span>
+          )}
         </CalloutContent>
         <CalloutAction>
           <Link to="/applications" className="font-medium text-txt-primary underline">

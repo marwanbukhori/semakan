@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next';
 import { resetApplications } from '@/mocks/db/applications';
 import {
+  DEFAULT_DEV_CONTROLS,
   FAILURE_OPTIONS,
   getDevControls,
   LATENCY_OPTIONS,
@@ -20,6 +21,9 @@ export function DevPanel() {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
+  const isActive = (Object.keys(DEFAULT_DEV_CONTROLS) as (keyof DevControls)[]).some(
+    (key) => controls[key] !== DEFAULT_DEV_CONTROLS[key],
+  );
 
   // Escape closes the panel and hands focus back to the toggle that opened it.
   useEffect(() => {
@@ -60,8 +64,18 @@ export function DevPanel() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((isOpen) => !isOpen)}
+        // A forgotten failure or latency setting would otherwise look like a real bug.
+        aria-label={isActive ? t('devPanel.toggleActive') : undefined}
       >
         {t('devPanel.toggle')}
+        {isActive && (
+          <span
+            aria-hidden="true"
+            className="rounded-full bg-bg-warning-50 px-1.5 text-body-xs font-semibold text-txt-warning"
+          >
+            {t('devPanel.active')}
+          </span>
+        )}
       </Button>
       {open && (
         <section
@@ -82,7 +96,7 @@ export function DevPanel() {
                     checked={controls.latencyMs === ms}
                     onChange={() => update({ latencyMs: ms })}
                   />
-                  {ms === 0 ? t('devPanel.latencyNone') : `${ms} ms`}
+                  {ms === 0 ? t('devPanel.latencyNone') : t('devPanel.latencyMs', { ms })}
                 </label>
               ))}
             </div>
