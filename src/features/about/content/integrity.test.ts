@@ -3,6 +3,8 @@ import { REQUIREMENTS } from './requirements';
 import { extractRegion } from '../source/regions';
 import { PRACTICES } from './practices';
 import { aiWorkflow, REVIEW_LOG_PATHS, REVIEW_LOG_README_PATH } from './aiWorkflow';
+import { architecture } from './architecture';
+import { overview } from './overview';
 
 /**
  * Every path/region a content module points at must exist in the real repo, so the About pages
@@ -83,5 +85,27 @@ describe('content integrity', () => {
     .filter((path): path is string => path !== undefined);
   it.each(pipelineLinkPaths)('pipeline link %s exists in the repo', (path) => {
     expect(readFile(path)).toBeDefined();
+  });
+
+  const layerPaths = architecture.layers.flatMap((layer) => layer.paths);
+  it.each(layerPaths)('architecture layer path %s exists in the repo', (path) => {
+    expect(readFile(path)).toBeDefined();
+  });
+
+  it.each(architecture.trace.steps)('architecture trace step $path exists in the repo', (step) => {
+    expect(readFile(step.path)).toBeDefined();
+  });
+
+  const traceRegions = architecture.trace.steps.filter(
+    (step): step is typeof step & { region: string } => step.region !== undefined,
+  );
+  it.each(traceRegions)('architecture trace step $path has region $region', (step) => {
+    const text = readFile(step.path);
+    expect(text === undefined ? null : extractRegion(text, step.region)).not.toBeNull();
+  });
+
+  // A folder is a directory, so it exists when some repo file sits under it.
+  it.each(overview.folders)('overview folder $path exists in the repo', ({ path }) => {
+    expect(Object.keys(repoFiles).some((key) => key.startsWith(`/${path}/`))).toBe(true);
   });
 });
