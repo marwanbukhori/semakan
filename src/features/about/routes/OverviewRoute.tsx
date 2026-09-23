@@ -10,9 +10,7 @@ export function Component() {
   const pick = useLocalized();
   const title = pick(overview.title);
   const intro = pick(overview.intro);
-  const tour = pick(overview.tour);
   const tourNote = pick(overview.tourNote);
-  const folders = pick(overview.folders);
 
   return (
     <div className="flex flex-col gap-8">
@@ -63,21 +61,21 @@ export function Component() {
           {t('about.overview.tourHeading')}
         </h2>
         <ul className="flex flex-col gap-1">
-          {tour.map((link) => (
+          {overview.tour.map((link) => (
             <li key={link.href}>
               {link.href.startsWith('/') ? (
                 <Link
                   to={link.href}
                   className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
                 >
-                  {link.label}
+                  {pick(link.label)}
                 </Link>
               ) : (
                 <a
                   href={link.href}
                   className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
                 >
-                  {link.label}
+                  {pick(link.label)}
                 </a>
               )}
             </li>
@@ -90,7 +88,7 @@ export function Component() {
         <h2 id="overview-folders-heading" className="font-heading text-body-lg font-semibold">
           {t('about.overview.foldersHeading')}
         </h2>
-        <FolderTree folders={folders} />
+        <FolderTree folders={overview.folders} />
       </section>
     </div>
   );

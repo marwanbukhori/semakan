@@ -23,8 +23,8 @@ describe('OverviewRoute', () => {
       expect(screen.getByText(item)).toBeInTheDocument();
     }
 
-    for (const link of overview.tour.en) {
-      expect(screen.getByRole('link', { name: link.label })).toHaveAttribute('href', link.href);
+    for (const link of overview.tour) {
+      expect(screen.getByRole('link', { name: link.label.en })).toHaveAttribute('href', link.href);
     }
   });
 
@@ -39,13 +39,20 @@ describe('OverviewRoute', () => {
 
     await user.click(summary);
     expect(screen.queryByText(/The mock API \(MSW\)/)).not.toBeVisible();
+  });
 
-    // Enter on a focused <summary> natively activates it in real browsers (no custom key
-    // handler needed), but jsdom does not emulate that activation, so it is verified above
-    // via click instead. Confirmed empirically: `user.keyboard('{Enter}')` here leaves the
-    // <details> closed in jsdom. This is a known jsdom limitation, not a component bug.
-    summary.focus();
-    await user.keyboard('{Enter}');
+  it('the folder summary is reachable by keyboard', async () => {
+    const { user } = renderRoutes(routes, { initialEntries: ['/about'] });
+
+    const summary = screen.getByText('src/mocks').closest('summary')!;
+    for (let tabs = 0; tabs < 50 && document.activeElement !== summary; tabs++) {
+      await user.tab();
+    }
+    expect(summary).toHaveFocus();
+
+    // Enter/Space on a focused <summary> natively toggles the <details> in real browsers
+    // (no custom key handler needed), but jsdom does not emulate that activation. Verified
+    // in the real-browser check (Task 8).
   });
 
   it('shows the Malay title and no English intro sentence when the language is Malay', async () => {

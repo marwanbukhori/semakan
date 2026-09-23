@@ -19,7 +19,7 @@ describe('ArchitectureRoute', () => {
     const figure = screen.getByRole('figure', { name: /Four layers/ });
     const headings = within(figure).getAllByRole('heading', { level: 3 });
     expect(headings.map((heading) => heading.textContent)).toEqual(
-      architecture.layers.en.map((layer) => layer.name),
+      architecture.layers.map((layer) => layer.name.en),
     );
   });
 
@@ -31,7 +31,7 @@ describe('ArchitectureRoute', () => {
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(5);
 
-    architecture.trace.steps.en.forEach((step, index) => {
+    architecture.trace.steps.forEach((step, index) => {
       const link = within(items[index]!).getByRole('link', { name: /View on GitHub/ });
       expect(link).toHaveAttribute('href', blobUrl(step.path));
     });

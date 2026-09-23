@@ -10,10 +10,8 @@ export function Component() {
   const pick = useLocalized();
   const title = pick(architecture.title);
   const intro = pick(architecture.intro);
-  const layers = pick(architecture.layers);
   const diagramLabel = pick(architecture.diagramLabel);
   const traceTitle = pick(architecture.trace.title);
-  const traceSteps = pick(architecture.trace.steps);
 
   return (
     <div className="flex flex-col gap-8">
@@ -30,11 +28,11 @@ export function Component() {
           aria-labelledby="architecture-diagram-caption"
           className="flex flex-col items-center gap-0"
         >
-          {layers.map((layer, index) => (
-            <Fragment key={layer.name}>
+          {architecture.layers.map((layer, index) => (
+            <Fragment key={layer.paths[0]}>
               <div className="flex w-full max-w-xl flex-col gap-2 rounded-md border border-otl-divider bg-bg-washed p-4">
-                <h3 className="font-heading text-body-md font-semibold">{layer.name}</h3>
-                <p className="text-body-sm text-txt-black-700">{layer.text}</p>
+                <h3 className="font-heading text-body-md font-semibold">{pick(layer.name)}</h3>
+                <p className="text-body-sm text-txt-black-700">{pick(layer.text)}</p>
                 <ul className="flex flex-wrap gap-x-3 gap-y-1">
                   {layer.paths.map((path) => (
                     <li key={path}>
@@ -48,7 +46,7 @@ export function Component() {
                   ))}
                 </ul>
               </div>
-              {index < layers.length - 1 && (
+              {index < architecture.layers.length - 1 && (
                 <span aria-hidden="true" className="py-1 text-heading-2xs leading-none">
                   ↓
                 </span>
@@ -69,10 +67,10 @@ export function Component() {
           {traceTitle}
         </h2>
         <ol aria-label={traceTitle} className="flex flex-col gap-4">
-          {traceSteps.map((step) => (
+          {architecture.trace.steps.map((step) => (
             <li key={step.path} className="flex flex-col gap-2">
-              <h3 className="font-heading text-body-md font-semibold">{step.title}</h3>
-              <p className="text-body-sm text-txt-black-700">{step.text}</p>
+              <h3 className="font-heading text-body-md font-semibold">{pick(step.title)}</h3>
+              <p className="text-body-sm text-txt-black-700">{pick(step.text)}</p>
               {step.region ? (
                 <CodeExcerpt path={step.path} region={step.region} />
               ) : (
