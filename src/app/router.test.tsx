@@ -1,4 +1,6 @@
 import { screen } from '@testing-library/react';
+import { isReviewable } from '@/features/applications/rules';
+import { seedApplicationDetails } from '@/mocks/db/applications';
 import { renderRoutes } from '@/test/render';
 import { RouteError } from './RouteError';
 import { createRoutes } from './router';
@@ -65,5 +67,19 @@ describe('app routes', () => {
     } finally {
       vi.unstubAllEnvs();
     }
+  });
+
+  it('opens the review dialog from the detail page', async () => {
+    const reviewable = seedApplicationDetails().find((d) => isReviewable(d.status))!;
+    const { user, router } = renderRoutes(createRoutes(), {
+      initialEntries: [`/applications/${reviewable.id}`],
+    });
+
+    await user.click(await screen.findByRole('link', { name: 'Review application' }));
+
+    expect(
+      await screen.findByRole('dialog', { name: `Review ${reviewable.referenceNo}` }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(`/applications/${reviewable.id}/review`);
   });
 });

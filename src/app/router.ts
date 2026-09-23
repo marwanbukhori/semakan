@@ -37,6 +37,15 @@ export function createRoutes(): RouteObject[] {
                 Component: async () =>
                   (await import('@/features/applications/routes/DetailRoute')).Component,
               },
+              children: [
+                {
+                  path: 'review',
+                  lazy: {
+                    Component: async () =>
+                      (await import('@/features/applications/routes/ReviewRoute')).Component,
+                  },
+                },
+              ],
             },
           ],
         },
