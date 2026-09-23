@@ -34,11 +34,17 @@ export const FuelPriceRowSchema = z.discriminatedUnion('series_type', [
   ChangeRowSchema,
 ]);
 
-/** data.gov.my writes timestamps like "2026-09-24 00:01", in Malaysian time (UTC+8). */
+/**
+ * data.gov.my writes timestamps like "2026-09-24 00:01", in Malaysian time (UTC+8). The ISO check
+ * rejects impossible dates and times (month 13, 30 February, 24:00) as parse issues, which `Date`
+ * would otherwise throw on or silently roll over.
+ */
 const malaysiaDateTime = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/)
-  .transform((value) => new Date(`${value.replace(' ', 'T')}:00+08:00`).toISOString());
+  .transform((value) => value.replace(' ', 'T'))
+  .pipe(z.iso.datetime({ local: true, precision: -1 }))
+  .transform((value) => new Date(`${value}:00+08:00`).toISOString());
 
 export const CatalogueMetaSchema = z.object({
   catalogue_id: z.string(),

@@ -1,5 +1,10 @@
 import fixture from '@/mocks/fixtures/fuelprice.json';
-import { FuelFiltersSchema, FuelPriceResponseSchema, FuelPriceRowSchema } from './schemas';
+import {
+  CatalogueMetaSchema,
+  FuelFiltersSchema,
+  FuelPriceResponseSchema,
+  FuelPriceRowSchema,
+} from './schemas';
 
 describe('FuelPriceResponseSchema', () => {
   it('splits the recorded response into sorted price levels and weekly changes', () => {
@@ -18,6 +23,19 @@ describe('FuelPriceResponseSchema', () => {
       meta: { ...fixture.meta, data_as_of: '2026-09-24 00:01' },
     });
     expect(result.meta.data_as_of).toBe('2026-09-23T16:01:00.000Z');
+  });
+
+  it.each(['2026-13-01 00:00', '2026-02-30 00:00', '2026-09-24 24:00'])(
+    'rejects the impossible timestamp %s as a parse issue instead of throwing',
+    (value) => {
+      const result = CatalogueMetaSchema.safeParse({ ...fixture.meta, data_as_of: value });
+      expect(result.success).toBe(false);
+    },
+  );
+
+  it('accepts a leap day and converts it to UTC', () => {
+    const result = CatalogueMetaSchema.parse({ ...fixture.meta, last_updated: '2028-02-29 07:30' });
+    expect(result.last_updated).toBe('2028-02-28T23:30:00.000Z');
   });
 
   it('skips and counts rows it does not understand instead of failing the page', () => {
