@@ -4,6 +4,7 @@ import { CodeExcerpt } from '../components/CodeExcerpt';
 import { architecture } from '../content/architecture';
 import { useLocalized } from '../localized';
 import { blobUrl } from '../source/repo';
+import { linkClass } from '../components/linkClass';
 
 export function Component() {
   const { t } = useTranslation();
@@ -36,10 +37,7 @@ export function Component() {
                 <ul className="flex flex-wrap gap-x-3 gap-y-1">
                   {layer.paths.map((path) => (
                     <li key={path}>
-                      <a
-                        href={blobUrl(path)}
-                        className="text-body-xs font-medium text-txt-primary underline underline-offset-2"
-                      >
+                      <a href={blobUrl(path)} className={`text-body-xs ${linkClass}`}>
                         <code>{path}</code>
                       </a>
                     </li>
@@ -74,10 +72,7 @@ export function Component() {
               {step.region ? (
                 <CodeExcerpt path={step.path} region={step.region} />
               ) : (
-                <a
-                  href={blobUrl(step.path)}
-                  className="text-body-xs font-medium text-txt-primary underline underline-offset-2"
-                >
+                <a href={blobUrl(step.path)} className={`text-body-xs ${linkClass}`}>
                   {t('about.code.view')}
                 </a>
               )}

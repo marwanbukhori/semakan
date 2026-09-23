@@ -11,6 +11,7 @@ describe('app routes', () => {
     const { router } = renderRoutes(createRoutes(), { initialEntries: ['/'] });
     expect(await screen.findByRole('navigation', { name: 'About this build' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/about');
+    expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
   });
 
   it('links to the about pages from the header', async () => {

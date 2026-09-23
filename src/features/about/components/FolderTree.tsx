@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import type { FolderEntry } from '../content/overview';
 import { useLocalized } from '../localized';
 import { treeUrl } from '../source/repo';
+import { linkClass } from './linkClass';
 
 /**
  * Native <details>/<summary> per folder: keyboard-operable (Enter/Space on the
@@ -20,10 +21,7 @@ export function FolderTree({ folders }: { folders: FolderEntry[] }) {
             </summary>
             <div className="mt-2 flex flex-col gap-2 pl-4">
               <p className="text-body-sm text-txt-black-700">{pick(folder.text)}</p>
-              <a
-                href={treeUrl(folder.path)}
-                className="text-body-xs font-medium text-txt-primary underline underline-offset-2"
-              >
+              <a href={treeUrl(folder.path)} className={`text-body-xs ${linkClass}`}>
                 {t('about.code.view')}
               </a>
             </div>

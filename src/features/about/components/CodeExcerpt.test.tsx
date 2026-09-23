@@ -29,4 +29,12 @@ describe('CodeExcerpt', () => {
       "This excerpt couldn't be found in the source.",
     );
   });
+
+  it('shows the same alert when the source file is unknown', async () => {
+    const { Wrapper } = createWrapper();
+    render(<CodeExcerpt path="src/does/not/exist.ts" region="anything" />, { wrapper: Wrapper });
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      "This excerpt couldn't be found in the source.",
+    );
+  });
 });

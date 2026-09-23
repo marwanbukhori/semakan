@@ -33,7 +33,15 @@ describe('ArchitectureRoute', () => {
 
     architecture.trace.steps.forEach((step, index) => {
       const link = within(items[index]!).getByRole('link', { name: /View on GitHub/ });
-      expect(link).toHaveAttribute('href', blobUrl(step.path));
+      // A step with a region links to its exact lines once the excerpt loads.
+      expect(link.getAttribute('href')?.startsWith(blobUrl(step.path))).toBe(true);
     });
+  });
+
+  it('shows real code for the trace steps that name a region', async () => {
+    renderRoutes(routes, { initialEntries: ['/about/architecture'] });
+
+    const list = screen.getByRole('list', { name: architecture.trace.title.en });
+    expect(await within(list).findByText(/onMutate/)).toBeInTheDocument();
   });
 });

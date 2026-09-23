@@ -16,24 +16,19 @@ import {
 } from '../content/aiWorkflow';
 import { useLocalized } from '../localized';
 import { blobUrl, commitUrl } from '../source/repo';
+import { linkClass } from '../components/linkClass';
 
 function IncidentLinkItem({ link }: { link: IncidentLink }) {
   const { t } = useTranslation();
   if (link.kind === 'commit') {
     return (
-      <a
-        href={commitUrl(link.sha)}
-        className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-      >
+      <a href={commitUrl(link.sha)} className={`text-body-sm ${linkClass}`}>
         {t('about.aiWorkflow.viewCommit', { sha: link.sha })}
       </a>
     );
   }
   return (
-    <a
-      href={blobUrl(REVIEW_LOG_PATHS[link.plan])}
-      className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-    >
+    <a href={blobUrl(REVIEW_LOG_PATHS[link.plan])} className={`text-body-sm ${linkClass}`}>
       {t('about.aiWorkflow.viewLog')} · {t('about.aiWorkflow.plan', { n: link.plan })}
     </a>
   );
@@ -65,10 +60,7 @@ export function Component() {
               <h3 className="font-heading text-body-md font-semibold">{pick(step.title)}</h3>
               <p className="text-body-sm text-txt-black-700">{pick(step.text)}</p>
               {step.path && (
-                <a
-                  href={blobUrl(step.path)}
-                  className="text-body-xs font-medium text-txt-primary underline underline-offset-2"
-                >
+                <a href={blobUrl(step.path)} className={`text-body-xs ${linkClass}`}>
                   {t('about.code.view')}
                 </a>
               )}
@@ -95,9 +87,16 @@ export function Component() {
         <h2 id="ai-workflow-ownership-heading" className="font-heading text-body-lg font-semibold">
           {t('about.aiWorkflow.ownership')}
         </h2>
-        <div className="overflow-x-auto">
+        <div
+          // A scrollable region must be reachable by keyboard (axe: scrollable-region-focusable).
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          role="region"
+          aria-label={t('about.aiWorkflow.ownership')}
+          className="overflow-x-auto"
+        >
           <Table>
-            <TableCaption>{t('about.aiWorkflow.ownership')}</TableCaption>
+            <TableCaption className="sr-only">{t('about.aiWorkflow.ownership')}</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead scope="col">{t('about.aiWorkflow.own')}</TableHead>
@@ -155,9 +154,16 @@ export function Component() {
         <h2 id="ai-workflow-numbers-heading" className="font-heading text-body-lg font-semibold">
           {t('about.aiWorkflow.numbers')}
         </h2>
-        <div className="overflow-x-auto">
+        <div
+          // A scrollable region must be reachable by keyboard (axe: scrollable-region-focusable).
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          role="region"
+          aria-label={t('about.aiWorkflow.numbers')}
+          className="overflow-x-auto"
+        >
           <Table>
-            <TableCaption>{t('about.aiWorkflow.numbers')}</TableCaption>
+            <TableCaption className="sr-only">{t('about.aiWorkflow.numbers')}</TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead scope="col" />
@@ -193,19 +199,13 @@ export function Component() {
         <ul className="flex flex-col gap-1">
           {([1, 2, 3] as const).map((plan) => (
             <li key={plan}>
-              <a
-                href={blobUrl(REVIEW_LOG_PATHS[plan])}
-                className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-              >
+              <a href={blobUrl(REVIEW_LOG_PATHS[plan])} className={`text-body-sm ${linkClass}`}>
                 <code>{REVIEW_LOG_PATHS[plan]}</code>
               </a>
             </li>
           ))}
           <li>
-            <a
-              href={blobUrl(REVIEW_LOG_README_PATH)}
-              className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-            >
+            <a href={blobUrl(REVIEW_LOG_README_PATH)} className={`text-body-sm ${linkClass}`}>
               <code>{REVIEW_LOG_README_PATH}</code>
             </a>
           </li>

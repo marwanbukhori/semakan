@@ -4,6 +4,7 @@ import { FolderTree } from '../components/FolderTree';
 import { CI_BADGE_URL, CI_WORKFLOW_URL, LIVE_APP_URL, overview } from '../content/overview';
 import { useLocalized } from '../localized';
 import { REPO_URL } from '../source/repo';
+import { linkClass } from '../components/linkClass';
 
 export function Component() {
   const { t } = useTranslation();
@@ -25,16 +26,10 @@ export function Component() {
           <a href={CI_WORKFLOW_URL}>
             <img src={CI_BADGE_URL} alt={t('about.overview.ciAlt')} />
           </a>
-          <a
-            href={LIVE_APP_URL}
-            className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-          >
+          <a href={LIVE_APP_URL} className={`text-body-sm ${linkClass}`}>
             {t('about.overview.liveDemo')}
           </a>
-          <a
-            href={REPO_URL}
-            className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-          >
+          <a href={REPO_URL} className={`text-body-sm ${linkClass}`}>
             {t('about.overview.repo')}
           </a>
         </div>
@@ -64,17 +59,11 @@ export function Component() {
           {overview.tour.map((link) => (
             <li key={link.href}>
               {link.href.startsWith('/') ? (
-                <Link
-                  to={link.href}
-                  className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-                >
+                <Link to={link.href} className={`text-body-sm ${linkClass}`}>
                   {pick(link.label)}
                 </Link>
               ) : (
-                <a
-                  href={link.href}
-                  className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-                >
+                <a href={link.href} className={`text-body-sm ${linkClass}`}>
                   {pick(link.label)}
                 </a>
               )}

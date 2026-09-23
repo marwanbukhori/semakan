@@ -4,6 +4,7 @@ import { aboutKeys } from '../source/keys';
 import { loadSource } from '../source/files';
 import { extractRegion } from '../source/regions';
 import { blobUrl } from '../source/repo';
+import { linkClass } from './linkClass';
 
 export function CodeExcerpt({ path, region }: { path: string; region: string }) {
   const { t } = useTranslation();
@@ -18,10 +19,7 @@ export function CodeExcerpt({ path, region }: { path: string; region: string }) 
     <figure className="overflow-hidden rounded-md border border-otl-divider">
       <figcaption className="flex flex-wrap items-center justify-between gap-2 border-b border-otl-divider bg-bg-washed px-3 py-2 text-body-xs">
         <code className="text-txt-black-700">{path}</code>
-        <a
-          href={blobUrl(path, excerpt ?? undefined)}
-          className="font-medium text-txt-primary underline underline-offset-2"
-        >
+        <a href={blobUrl(path, excerpt ?? undefined)} className={linkClass}>
           {excerpt
             ? t('about.code.viewLines', { start: excerpt.startLine, end: excerpt.endLine })
             : t('about.code.view')}

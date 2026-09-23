@@ -68,6 +68,7 @@ export const ms: Translation = {
       challenge: 'Bahagian yang mencabar',
       inSemakan: 'Dalam Semakan',
       requirements: 'Keperluan dipenuhi',
+      roleWord: { frontend: 'frontend', backend: 'backend' },
       noFacet: 'Tiada kerja {{role}} pada projek ini.',
       mapTitle: 'Peta keperluan',
       mapCaption: 'Keperluan untuk peranan {{role}}',

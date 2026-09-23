@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import { useLocalized } from '../localized';
 import type { Facet, Project } from '../content/experience';
 import { REQUIREMENTS, type Role } from '../content/requirements';
+import { linkClass } from './linkClass';
 
 const OTHER_ROLE: Record<Role, Role> = { frontend: 'backend', backend: 'frontend' };
 /** Every id in a facet's `requirements` comes from `REQUIREMENTS` (typed via `RequirementId`), so a lookup here always finds an entry. */
@@ -58,7 +59,9 @@ export function ProjectCard({ project, role }: ProjectCardProps) {
       </header>
 
       {!hasActiveFacet && (
-        <p className="text-body-sm text-txt-black-700">{t('about.experience.noFacet', { role })}</p>
+        <p className="text-body-sm text-txt-black-700">
+          {t('about.experience.noFacet', { role: t(`about.experience.roleWord.${role}`) })}
+        </p>
       )}
 
       {sections.map(({ role: facetRole, facet }) => (
@@ -110,10 +113,7 @@ function FacetSection({ role, facet }: { role: Role; facet: Facet }) {
           <ul className="flex flex-col gap-0.5">
             {facet.semakan.map((link) => (
               <li key={link.href}>
-                <Link
-                  to={link.href}
-                  className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-                >
+                <Link to={link.href} className={`text-body-sm ${linkClass}`}>
                   {pick(link.label)}
                 </Link>
               </li>

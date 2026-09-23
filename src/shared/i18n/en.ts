@@ -66,6 +66,7 @@ export const en = {
       challenge: 'The hard part',
       inSemakan: 'In Semakan',
       requirements: 'Requirements met',
+      roleWord: { frontend: 'frontend', backend: 'backend' },
       noFacet: 'No {{role}} work on this project.',
       mapTitle: 'Requirements map',
       mapCaption: 'Requirements for the {{role}} role',

@@ -27,8 +27,8 @@ export function Component() {
 
       <RoleSwitch role={role} onRoleChange={setRole} />
 
-      <section className="flex flex-col gap-6">
-        <h2 className="font-heading text-body-lg font-semibold">
+      <section aria-labelledby="projects-heading" className="flex flex-col gap-6">
+        <h2 id="projects-heading" className="font-heading text-body-lg font-semibold">
           {t('about.experience.projects')}
         </h2>
         {orderedProjects.map((project) => (

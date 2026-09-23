@@ -18,6 +18,7 @@ import {
   type Role,
 } from '../content/requirements';
 import { blobUrl } from '../source/repo';
+import { linkClass } from './linkClass';
 
 type RequirementsMapProps = { role: Role };
 
@@ -44,17 +45,27 @@ export function RequirementsMap({ role }: RequirementsMapProps) {
   const { t } = useTranslation();
   const pick = useLocalized();
   const rows = REQUIREMENTS.filter((requirement) => requirement.role === role);
+  const caption = t('about.experience.mapCaption', {
+    role: t(`about.experience.roleWord.${role}`),
+  });
 
   return (
-    <div className="overflow-x-auto">
+    <div
+      // A scrollable region must be reachable by keyboard (axe: scrollable-region-focusable).
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      role="region"
+      aria-label={caption}
+      className="overflow-x-auto"
+    >
       <Table>
-        <TableCaption>{t('about.experience.mapCaption', { role })}</TableCaption>
+        <TableCaption>{caption}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>{t('about.experience.col.requirement')}</TableHead>
-            <TableHead>{t('about.experience.col.level')}</TableHead>
-            <TableHead>{t('about.experience.col.past')}</TableHead>
-            <TableHead>{t('about.experience.col.semakan')}</TableHead>
+            <TableHead scope="col">{t('about.experience.col.requirement')}</TableHead>
+            <TableHead scope="col">{t('about.experience.col.level')}</TableHead>
+            <TableHead scope="col">{t('about.experience.col.past')}</TableHead>
+            <TableHead scope="col">{t('about.experience.col.semakan')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,10 +79,7 @@ export function RequirementsMap({ role }: RequirementsMapProps) {
                 <ul className="flex flex-col gap-0.5">
                   {pastWorkFor(requirement.id).map((project) => (
                     <li key={project.id}>
-                      <a
-                        href={`#project-${project.id}`}
-                        className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-                      >
+                      <a href={`#project-${project.id}`} className={`text-body-sm ${linkClass}`}>
                         {pick(project.name)}
                       </a>
                     </li>
@@ -92,10 +100,7 @@ export function RequirementsMap({ role }: RequirementsMapProps) {
                     <ul className="flex flex-col gap-0.5">
                       {requirement.semakan.links.map((link) => (
                         <li key={link.path}>
-                          <a
-                            href={blobUrl(link.path)}
-                            className="text-body-sm font-medium text-txt-primary underline underline-offset-2"
-                          >
+                          <a href={blobUrl(link.path)} className={`text-body-sm ${linkClass}`}>
                             {pick(link.label)}
                           </a>
                         </li>

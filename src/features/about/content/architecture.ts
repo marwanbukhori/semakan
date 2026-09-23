@@ -98,6 +98,7 @@ export const architecture: ArchitectureContent = {
           ms: 'Mutation menukar status dalam perincian dan dalam setiap halaman senarai yang dicache sebelum server memberi jawapan.',
         },
         path: 'src/features/applications/api/mutations.ts',
+        region: 'optimistic-rollback',
       },
       {
         title: {
@@ -109,6 +110,7 @@ export const architecture: ArchitectureContent = {
           ms: 'apiClient menghantar (post) keputusan dan mem-parse jawapan berdasarkan ApplicationDetailSchema.',
         },
         path: 'src/shared/api/client.ts',
+        region: 'validate-at-boundary',
       },
       {
         title: { en: 'The server applies its rules', ms: 'Server menguatkuasakan peraturannya' },
