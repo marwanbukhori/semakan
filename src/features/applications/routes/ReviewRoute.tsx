@@ -74,7 +74,9 @@ export function Component() {
     <Dialog
       open
       onOpenChange={(open) => {
-        if (!open) close();
+        // Escape and outside clicks are ignored while submitting: the pending
+        // request would otherwise toast and navigate after the officer had left.
+        if (!open && !review.isPending) close();
       }}
     >
       <DialogBody

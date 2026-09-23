@@ -222,7 +222,13 @@ export function ReviewForm({ isSubmitting, onSubmit, onCancel }: ReviewFormProps
       {serverError && <FieldError id="review-server-error" code={serverError} alert />}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="default-outline" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="default-outline"
+          onClick={onCancel}
+          // The dialog cannot close while a decision is in flight.
+          disabled={isSubmitting}
+        >
           {t('review.cancel')}
         </Button>
         <Button ref={submitRef} type="submit" variant="primary-fill" disabled={isSubmitting}>

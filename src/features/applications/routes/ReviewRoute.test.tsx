@@ -118,6 +118,38 @@ describe('/applications/:id/review', () => {
     expect(within(dialog).getByRole('button', { name: 'Submitting…' })).toBeDisabled();
     const header = (await heading(approvable, { hidden: true })).parentElement!;
     expect(within(header).getByText('Rejected')).toBeInTheDocument();
+
+    // Let the delayed request finish inside this test: left in flight, it would
+    // land after the next test's data reset and bump the record's version there.
+    expect(
+      await screen.findByText('Application rejected', {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  it('stays open while a decision is being submitted, then closes once', async () => {
+    const { user, router } = renderReview(approvable.id);
+    const dialog = await screen.findByRole('dialog');
+    setDevControls({ latencyMs: 800 });
+    const detailPath = `/applications/${approvable.id}`;
+    const detailVisits = new Set<string>();
+    const stop = router.subscribe((state) => {
+      if (state.location.pathname === detailPath) detailVisits.add(state.location.key);
+    });
+
+    await user.click(within(dialog).getByRole('button', { name: 'Submit decision' }));
+    expect(within(dialog).getByRole('button', { name: 'Cancel' })).toBeDisabled();
+    await user.keyboard('{Escape}');
+
+    // Closing now would let the late success toast and navigation land on another page.
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(`${detailPath}/review`);
+
+    expect(
+      await screen.findByText('Application approved', {}, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(router.state.location.pathname).toBe(detailPath));
+    stop();
+    expect(detailVisits.size).toBe(1);
   });
 
   it('rolls back and explains when the server fails', async () => {
