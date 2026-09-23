@@ -78,15 +78,25 @@ describe('/applications', () => {
 
   it('shows a server error with a working retry', async () => {
     setDevControls({ failure: 'server' });
-    const { user } = renderList();
+    const { user, queryClient } = renderList();
 
     const alert = await screen.findByRole('alert');
     expect(alert).toHaveTextContent("Couldn't load applications");
     expect(alert).toHaveTextContent('The server had a problem');
+    expect(screen.queryByRole('navigation', { name: 'Pages of results' })).not.toBeInTheDocument();
 
     setDevControls({ failure: 'none' });
     await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await referenceLinks()).toHaveLength(10);
+    expect(screen.getByRole('status')).toHaveTextContent('57 applications');
+
+    // A refetch that fails after a successful load (as the Dev Panel triggers) keeps the old
+    // data in the cache; the old count and pagination must not stay on screen next to the error.
+    setDevControls({ failure: 'server' });
+    await act(() => queryClient.invalidateQueries());
+    expect(await screen.findByRole('alert')).toHaveTextContent('The server had a problem');
+    expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    expect(screen.queryByRole('navigation', { name: 'Pages of results' })).not.toBeInTheDocument();
   });
 
   it('explains a network failure differently from a server error', async () => {

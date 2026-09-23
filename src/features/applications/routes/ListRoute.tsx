@@ -23,7 +23,7 @@ export function Component() {
           {t('applications.title')}
         </h1>
         <p role="status" className="text-body-sm text-txt-black-500">
-          {data ? t('applications.resultCount', { count: data.total }) : ''}
+          {data && !isError ? t('applications.resultCount', { count: data.total }) : ''}
         </p>
       </header>
 
@@ -47,7 +47,7 @@ export function Component() {
         </div>
       )}
 
-      {data && data.total > data.pageSize && (
+      {data && !isError && data.total > data.pageSize && (
         // MYDS's pagination list never wraps, so on narrow viewports it can be wider than the
         // page; contain that overflow to this element instead of letting it scroll the page.
         <div className="w-full overflow-x-auto">
