@@ -4,6 +4,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type FocusEvent,
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
@@ -45,6 +46,19 @@ function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
       return value === null ? [] : [{ fuel, value }];
     })
     .sort((a, b) => b.value - a.value);
+}
+
+/**
+ * Whether focus came from the keyboard. Clicking also focuses the chart (it is a tab stop), and
+ * that should not speak; `:focus-visible` is the browser's own keyboard-or-not decision. A browser
+ * without it throws on the selector, and then every focus announces, as before.
+ */
+function isKeyboardFocus(element: Element): boolean {
+  try {
+    return element.matches(':focus-visible');
+  } catch {
+    return true;
+  }
 }
 
 type FuelPriceChartProps = {
@@ -159,8 +173,8 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     setAnnounced(index);
   }
 
-  function onFocus() {
-    if (!hasData) return;
+  function onFocus(event: FocusEvent<HTMLDivElement>) {
+    if (!hasData || !isKeyboardFocus(event.currentTarget)) return;
     show(active ?? levels.length - 1);
   }
 

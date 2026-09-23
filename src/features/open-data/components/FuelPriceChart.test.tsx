@@ -48,7 +48,8 @@ describe('FuelPriceChart', () => {
   it('reads each week aloud with the keyboard', async () => {
     const { user, chart } = renderChart(['ron95', 'ron97']);
 
-    act(() => chart.focus());
+    await user.tab();
+    expect(chart).toHaveFocus();
     const readout = screen.getByRole('status');
     expect(readout).toHaveTextContent(`RM ${last.ron97.toFixed(2)}`);
 
@@ -61,6 +62,20 @@ describe('FuelPriceChart', () => {
 
     await user.keyboard('{Escape}');
     expect(readout).toBeEmptyDOMElement();
+  });
+
+  it('announces a week on keyboard focus but not when the chart is clicked', async () => {
+    const { user, chart } = renderChart(['ron95']);
+    const readout = screen.getByRole('status');
+
+    await user.click(chart);
+    expect(chart).toHaveFocus();
+    expect(readout).toBeEmptyDOMElement();
+
+    await user.tab();
+    await user.tab({ shift: true });
+    expect(chart).toHaveFocus();
+    expect(readout).toHaveTextContent(`RM ${last.ron95.toFixed(2)}`);
   });
 
   it('keeps each fuel on its own colour when others are hidden', () => {
@@ -79,10 +94,10 @@ describe('FuelPriceChart', () => {
     );
   });
 
-  it('keeps the tooltip inside the chart, flipped left of the crosshair past the middle', () => {
+  it('keeps the tooltip inside the chart, flipped left of the crosshair past the middle', async () => {
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(190);
-    const { chart, container } = renderChart(['ron95']);
-    act(() => chart.focus());
+    const { user, container } = renderChart(['ron95']);
+    await user.tab();
     const tooltip = container.querySelector<HTMLElement>('[data-chart-tooltip]')!;
     const crosshair = Number(container.querySelector('[data-crosshair]')!.getAttribute('x1'));
     expect(tooltip.style.left).toBe(`${crosshair - 12 - 190}px`);
@@ -91,7 +106,7 @@ describe('FuelPriceChart', () => {
   it('leaves browser shortcuts with modifier keys alone and explains Escape', async () => {
     const { user, chart } = renderChart(['ron95']);
     expect(chart).toHaveAccessibleDescription(expect.stringContaining('Escape hides the readout.'));
-    act(() => chart.focus());
+    await user.tab();
     const readout = screen.getByRole('status');
     const before = readout.textContent;
 
@@ -104,11 +119,12 @@ describe('FuelPriceChart', () => {
     expect(readout).toHaveTextContent(`RM ${previous.ron95.toFixed(2)}`);
   });
 
-  it('announces keyboard reading but not mouse hover', () => {
-    const { chart, container } = renderChart(['ron95']);
-    act(() => chart.focus());
+  it('announces keyboard reading but not mouse hover', async () => {
+    const { user, container } = renderChart(['ron95']);
+    await user.tab();
     const readout = screen.getByRole('status');
     const before = readout.textContent;
+    expect(before).not.toBe('');
 
     // jsdom's bounding box is all zeros, so clientX is the plot x: the first week.
     fireEvent.pointerMove(container.querySelector('svg rect')!, { clientX: 48 });
