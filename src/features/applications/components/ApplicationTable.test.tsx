@@ -77,4 +77,19 @@ describe('ApplicationTable', () => {
     await user.click(screen.getByRole('button', { name: 'Submitted' }));
     expect(props.onSortChange).toHaveBeenLastCalledWith('submittedAt', 'asc');
   });
+
+  it('keeps data cells and sortable header buttons on one line', () => {
+    renderTable({ items: [makeApplicationSummary()] });
+
+    const link = screen.getByRole('link', { name: 'LPP-2026-1000' });
+    expect(link.closest('td')).toHaveClass('whitespace-nowrap');
+    expect(screen.getByRole('button', { name: 'Business' })).toHaveClass('whitespace-nowrap');
+  });
+
+  it('sizes skeleton rows to match a data row so nothing shifts when loading finishes', () => {
+    const { container } = renderTable({ isLoading: true });
+
+    const skeletonCell = container.querySelector('td');
+    expect(skeletonCell?.firstElementChild).toHaveClass('h-[33.11px]');
+  });
 });

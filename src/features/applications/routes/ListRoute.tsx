@@ -45,14 +45,18 @@ export function Component() {
       )}
 
       {data && data.total > data.pageSize && (
-        <AutoPagination
-          type="default"
-          page={data.page}
-          limit={data.pageSize}
-          count={data.total}
-          maxDisplay={4}
-          onPageChange={(page) => setFilters({ page })}
-        />
+        // MYDS's pagination list never wraps, so on narrow viewports it can be wider than the
+        // page; contain that overflow to this element instead of letting it scroll the page.
+        <div className="w-full overflow-x-auto">
+          <AutoPagination
+            type="default"
+            page={data.page}
+            limit={data.pageSize}
+            count={data.total}
+            maxDisplay={4}
+            onPageChange={(page) => setFilters({ page })}
+          />
+        </div>
       )}
     </section>
   );

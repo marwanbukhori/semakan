@@ -84,7 +84,11 @@ function Rows({
           <TableRow key={row} aria-hidden="true">
             {Array.from({ length: COLUMN_COUNT }, (_, cell) => (
               <TableCell key={cell}>
-                <TableSkeleton />
+                {/* Matches TableCell's own `leading-[33.11px]` so skeleton and data rows are
+                    the same height and the table doesn't jump when loading finishes. */}
+                <div className="flex h-[33.11px] items-center">
+                  <TableSkeleton />
+                </div>
               </TableCell>
             ))}
           </TableRow>
@@ -105,7 +109,7 @@ function Rows({
     <>
       {items.map((item) => (
         <TableRow key={item.id}>
-          <TableCell>
+          <TableCell className="whitespace-nowrap">
             <Link
               to={`/applications/${item.id}`}
               className="font-medium text-txt-primary underline-offset-2 hover:underline"
@@ -113,11 +117,15 @@ function Rows({
               {item.referenceNo}
             </Link>
           </TableCell>
-          <TableCell>{item.businessName}</TableCell>
-          <TableCell>{item.applicantName}</TableCell>
-          <TableCell>{t(`category.${item.premisesCategory}`)}</TableCell>
-          <TableCell>{formatDate(item.submittedAt, i18n.language)}</TableCell>
-          <TableCell>
+          <TableCell className="whitespace-nowrap">{item.businessName}</TableCell>
+          <TableCell className="whitespace-nowrap">{item.applicantName}</TableCell>
+          <TableCell className="whitespace-nowrap">
+            {t(`category.${item.premisesCategory}`)}
+          </TableCell>
+          <TableCell className="whitespace-nowrap">
+            {formatDate(item.submittedAt, i18n.language)}
+          </TableCell>
+          <TableCell className="whitespace-nowrap">
             <StatusBadge status={item.status} />
           </TableCell>
         </TableRow>
@@ -148,7 +156,7 @@ function SortableHead({
       <button
         type="button"
         onClick={() => onSortChange(field, nextOrder)}
-        className="inline-flex items-center gap-1 rounded-sm font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
+        className="inline-flex items-center gap-1 whitespace-nowrap rounded-sm font-medium focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
       >
         {t(`applications.columns.${field}`)}
         {isActive && <Icon aria-hidden="true" className="size-4" />}

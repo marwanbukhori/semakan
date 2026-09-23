@@ -96,4 +96,12 @@ describe('/applications', () => {
 
     await waitFor(() => expect(router.state.location.search).toBe('?page=2'));
   });
+
+  it('contains the pagination in a horizontally scrollable wrapper so it cannot overflow the page', async () => {
+    renderList();
+    await referenceLinks();
+
+    const nav = await screen.findByRole('navigation', { name: 'pagination' });
+    expect(nav.parentElement).toHaveClass('overflow-x-auto');
+  });
 });
