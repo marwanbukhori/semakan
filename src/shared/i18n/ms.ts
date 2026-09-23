@@ -61,6 +61,7 @@ export const ms: Translation = {
       intro:
         'Projek yang sama, dilihat melalui keperluan setiap peranan. Tukar peranan untuk menyusun semula halaman.',
       roleLegend: 'Tunjukkan pengalaman saya untuk',
+      projects: 'Projek',
       roles: { frontend: 'Peranan frontend', backend: 'Peranan backend' },
       facet: { frontend: 'Frontend', backend: 'Backend' },
       built: 'Apa yang saya bina',

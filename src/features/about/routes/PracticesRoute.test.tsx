@@ -7,7 +7,7 @@ import { Component as PracticesRoute } from './PracticesRoute';
 const routes = [{ path: '/about/practices', Component: PracticesRoute }];
 
 describe('PracticesRoute', () => {
-  afterEach(() => void i18n.changeLanguage('en'));
+  afterEach(() => act(() => i18n.changeLanguage('en')));
 
   it('shows the title and intro', () => {
     renderRoutes(routes, { initialEntries: ['/about/practices'] });

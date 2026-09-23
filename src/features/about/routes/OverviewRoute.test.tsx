@@ -8,7 +8,7 @@ import { Component as OverviewRoute } from './OverviewRoute';
 const routes = [{ path: '/about', Component: OverviewRoute }];
 
 describe('OverviewRoute', () => {
-  afterEach(() => void i18n.changeLanguage('en'));
+  afterEach(() => act(() => i18n.changeLanguage('en')));
 
   it('shows the title, intro, stack and tour links', () => {
     renderRoutes(routes, { initialEntries: ['/about'] });

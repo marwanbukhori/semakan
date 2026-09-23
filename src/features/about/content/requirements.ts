@@ -8,26 +8,14 @@ export type SemakanStatus = 'shown' | 'partial' | 'planned';
 /** `path` is a location in the repo, not language-specific, so only the label is localised. */
 export type RequirementLink = { label: Localized<string>; path: string };
 
-/** `role`, `level`, `status`, `plan` and `path` are not language-specific, so only prose is `Localized`. */
-export type Requirement = {
-  id: string;
-  role: Role;
-  level: RequirementLevel;
-  label: Localized<string>;
-  semakan: {
-    status: SemakanStatus;
-    plan?: number;
-    links: readonly RequirementLink[];
-  };
-};
-
 /**
  * `as const` keeps every `id` a literal, so `RequirementId` below is derived from this list: an
- * invalid tag anywhere else in the content is a type error. `satisfies` checks the shape without
- * widening those literals.
+ * invalid tag anywhere else in the content is a type error. The literal array isn't checked
+ * against `Requirement` here — that would be circular, since `Requirement.id` is `RequirementId`,
+ * which is derived from this same array — the shape is checked instead where `REQUIREMENTS` is
+ * given its type, below.
  */
 const REQUIREMENTS_DATA = [
-  // #region practice:typed-translations
   {
     id: 'fe-production',
     role: 'frontend',
@@ -474,13 +462,26 @@ const REQUIREMENTS_DATA = [
       ],
     },
   },
-  // #endregion
-] as const satisfies readonly Requirement[];
+] as const;
 
 /** An invalid `id` anywhere else in the content is a type error, via this derived union. */
 export type RequirementId = (typeof REQUIREMENTS_DATA)[number]['id'];
 
-// Widened back to `Requirement[]` for ergonomic consumption elsewhere (e.g. so `semakan.plan`
-// reads as the ordinary optional field it is, not a per-entry literal that only some union
-// members happen to have).
+/** `role`, `level`, `status`, `plan` and `path` are not language-specific, so only prose is `Localized`. */
+export type Requirement = {
+  id: RequirementId;
+  role: Role;
+  level: RequirementLevel;
+  label: Localized<string>;
+  semakan: {
+    status: SemakanStatus;
+    plan?: number;
+    links: readonly RequirementLink[];
+  };
+};
+
+// Checked against `Requirement` here (each literal `id` above is a member of `RequirementId`,
+// since `RequirementId` is derived from this same array) and widened back to `Requirement[]` for
+// ergonomic consumption elsewhere (e.g. so `semakan.plan` reads as the ordinary optional field it
+// is, not a per-entry literal that only some union members happen to have).
 export const REQUIREMENTS: readonly Requirement[] = REQUIREMENTS_DATA;

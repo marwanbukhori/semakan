@@ -21,11 +21,10 @@ import { blobUrl } from '../source/repo';
 
 type RequirementsMapProps = { role: Role };
 
-function pastWorkFor(id: string) {
+function pastWorkFor(id: RequirementId) {
   return PROJECTS.filter(
     (project) =>
-      project.frontend?.requirements.includes(id as RequirementId) ||
-      project.backend?.requirements.includes(id as RequirementId),
+      project.frontend?.requirements.includes(id) || project.backend?.requirements.includes(id),
   );
 }
 

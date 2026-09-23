@@ -3,10 +3,11 @@ import { ProjectCard } from '../components/ProjectCard';
 import { RequirementsMap } from '../components/RequirementsMap';
 import { RoleSwitch } from '../components/RoleSwitch';
 import { PROJECTS } from '../content/experience';
+import type { Role } from '../content/requirements';
 import { useRole } from '../hooks/useRole';
 
 /** Cards with a facet for the active role come first; content order is kept within each group. */
-function orderProjects(role: 'frontend' | 'backend') {
+function orderProjects(role: Role) {
   return [...PROJECTS].sort((a, b) => Number(!a[role]) - Number(!b[role]));
 }
 
@@ -26,11 +27,14 @@ export function Component() {
 
       <RoleSwitch role={role} onRoleChange={setRole} />
 
-      <div className="flex flex-col gap-6">
+      <section className="flex flex-col gap-6">
+        <h2 className="font-heading text-body-lg font-semibold">
+          {t('about.experience.projects')}
+        </h2>
         {orderedProjects.map((project) => (
           <ProjectCard key={project.id} project={project} role={role} />
         ))}
-      </div>
+      </section>
 
       <section aria-labelledby="requirements-map-heading" className="flex flex-col gap-3">
         <h2 id="requirements-map-heading" className="font-heading text-body-lg font-semibold">

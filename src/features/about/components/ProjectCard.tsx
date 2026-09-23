@@ -6,6 +6,7 @@ import type { Facet, Project } from '../content/experience';
 import { REQUIREMENTS, type Role } from '../content/requirements';
 
 const OTHER_ROLE: Record<Role, Role> = { frontend: 'backend', backend: 'frontend' };
+/** Every id in a facet's `requirements` comes from `REQUIREMENTS` (typed via `RequirementId`), so a lookup here always finds an entry. */
 const REQUIREMENT_LABEL = new Map(
   REQUIREMENTS.map((requirement) => [requirement.id, requirement.label]),
 );
@@ -126,16 +127,13 @@ function FacetSection({ role, facet }: { role: Role; facet: Facet }) {
           {t('about.experience.requirements')}
         </p>
         <ul className="flex flex-wrap gap-1.5">
-          {facet.requirements.map((id) => {
-            const label = REQUIREMENT_LABEL.get(id);
-            return (
-              <li key={id}>
-                <Tag variant="default" size="small">
-                  {label ? pick(label) : id}
-                </Tag>
-              </li>
-            );
-          })}
+          {facet.requirements.map((id) => (
+            <li key={id}>
+              <Tag variant="default" size="small">
+                {pick(REQUIREMENT_LABEL.get(id)!)}
+              </Tag>
+            </li>
+          ))}
         </ul>
       </div>
     </section>

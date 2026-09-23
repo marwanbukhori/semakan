@@ -59,6 +59,7 @@ export const en = {
       intro:
         "The same projects, seen through each role's requirements. Switch the role to reorder the page.",
       roleLegend: 'Show my experience for',
+      projects: 'Projects',
       roles: { frontend: 'Frontend role', backend: 'Backend role' },
       facet: { frontend: 'Frontend', backend: 'Backend' },
       built: 'What I built',

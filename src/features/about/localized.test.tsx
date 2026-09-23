@@ -3,7 +3,7 @@ import { i18n } from '@/shared/i18n';
 import { useLocalized } from './localized';
 
 describe('useLocalized', () => {
-  afterEach(() => void i18n.changeLanguage('en'));
+  afterEach(() => act(() => i18n.changeLanguage('en')));
 
   it('picks the value for the current language', async () => {
     const { result, rerender } = renderHook(() => useLocalized());
