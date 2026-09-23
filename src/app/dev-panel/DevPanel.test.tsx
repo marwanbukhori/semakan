@@ -85,6 +85,15 @@ describe('DevPanel', () => {
     expect(getDevControls().conflictNext).toBe(true);
   });
 
+  it('switches the data.gov.my source', async () => {
+    const { user } = renderPanel();
+    await user.click(screen.getByRole('button', { name: /Dev Panel/ }));
+
+    await user.click(screen.getByRole('radio', { name: 'Rate limited (429)' }));
+
+    expect(getDevControls().dataGov).toBe('rate_limited');
+  });
+
   it('ignores Escape pressed outside the panel', async () => {
     const { Wrapper } = createWrapper();
     const user = userEvent.setup();

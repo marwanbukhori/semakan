@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next';
 import { resetApplications } from '@/mocks/db/applications';
 import {
+  DATA_GOV_OPTIONS,
   DEFAULT_DEV_CONTROLS,
   FAILURE_OPTIONS,
   getDevControls,
@@ -140,6 +141,21 @@ export function DevPanel() {
             />
             {t('devPanel.conflictNext')}
           </label>
+
+          <fieldset className="mb-4">
+            <legend className="mb-1 text-body-sm font-medium">{t('devPanel.dataGov.title')}</legend>
+            {DATA_GOV_OPTIONS.map((mode) => (
+              <label key={mode} className="flex items-center gap-2 text-body-sm">
+                <input
+                  type="radio"
+                  name={`${panelId}-data-gov`}
+                  checked={controls.dataGov === mode}
+                  onChange={() => update({ dataGov: mode })}
+                />
+                {t(`devPanel.dataGov.${mode}`)}
+              </label>
+            ))}
+          </fieldset>
 
           <Button variant="default-outline" size="small" onClick={resetData}>
             {t('devPanel.reset')}

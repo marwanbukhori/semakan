@@ -167,6 +167,14 @@ export const ms: Translation = {
     failureNetwork: 'Kegagalan rangkaian',
     emptyList: 'Pulangkan senarai kosong',
     conflictNext: 'Paksa konflik pada semakan seterusnya',
+    dataGov: {
+      title: 'data.gov.my',
+      live: 'API langsung',
+      fixture: 'Data rakaman',
+      rate_limited: 'Had permintaan (429)',
+      not_found: 'Tidak ditemui (404)',
+      offline: 'Luar talian',
+    },
     reset: 'Set semula data demo',
   },
 };

@@ -166,6 +166,14 @@ export const en = {
     failureNetwork: 'Network failure',
     emptyList: 'Return an empty list',
     conflictNext: 'Force a conflict on the next review',
+    dataGov: {
+      title: 'data.gov.my',
+      live: 'Live API',
+      fixture: 'Recorded data',
+      rate_limited: 'Rate limited (429)',
+      not_found: 'Not found (404)',
+      offline: 'Offline',
+    },
     reset: 'Reset demo data',
   },
 } as const;
