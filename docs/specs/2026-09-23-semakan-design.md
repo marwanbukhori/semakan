@@ -20,7 +20,7 @@ applications. It has two jobs:
 
 ### Success criteria
 
-- The 8-minute demo script (section 9) runs end to end on the deployed app
+- The demo script (section 9) runs end to end on the deployed app
   without any step failing.
 - Every practice claimed on `/about/practices` links to real code in the repo
   and names how it is enforced.
