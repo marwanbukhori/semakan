@@ -8,11 +8,19 @@ export function DocumentList({ documents }: { documents: readonly ApplicationDoc
     <ul className="divide-y divide-otl-divider rounded-lg border border-otl-divider">
       {documents.map((doc) => (
         <li key={doc.id} className="flex items-center justify-between gap-3 px-4 py-3 text-body-sm">
-          <span className="flex items-center gap-2">
-            <DocumentIcon aria-hidden="true" className="size-4 text-txt-black-500" />
-            {t(`documents.${doc.kind}`)}
+          <span className="flex min-w-0 items-start gap-2">
+            <DocumentIcon
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 text-txt-black-500"
+            />
+            <span className="flex min-w-0 flex-col">
+              {t(`documents.${doc.kind}`)}
+              <span className="text-body-xs text-txt-black-500 [overflow-wrap:anywhere]">
+                {doc.fileName}
+              </span>
+            </span>
           </span>
-          <span className="text-txt-black-500">
+          <span className="shrink-0 text-txt-black-500">
             {t('applications.detail.documentSize', { size: doc.sizeKb })}
           </span>
         </li>
