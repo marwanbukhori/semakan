@@ -56,6 +56,33 @@ export const ms: Translation = {
       planned: 'Dirancang',
       plan: 'Pelan {{plan}}',
     },
+    experience: {
+      title: 'Pengalaman',
+      intro:
+        'Projek yang sama, dilihat melalui keperluan setiap peranan. Tukar peranan untuk menyusun semula halaman.',
+      roleLegend: 'Tunjukkan pengalaman saya untuk',
+      roles: { frontend: 'Peranan frontend', backend: 'Peranan backend' },
+      facet: { frontend: 'Frontend', backend: 'Backend' },
+      built: 'Apa yang saya bina',
+      challenge: 'Bahagian yang mencabar',
+      inSemakan: 'Dalam Semakan',
+      requirements: 'Keperluan dipenuhi',
+      noFacet: 'Tiada kerja {{role}} pada projek ini.',
+      mapTitle: 'Peta keperluan',
+      mapCaption: 'Keperluan untuk peranan {{role}}',
+      col: {
+        requirement: 'Keperluan',
+        level: 'Tahap',
+        past: 'Kerja lepas',
+        semakan: 'Dalam Semakan',
+      },
+      level: { must: 'Wajib ada', nice: 'Baik untuk ada' },
+      semakanStatus: {
+        shown: 'Ditunjukkan',
+        partial: 'Ditunjukkan sebahagian',
+        planned: 'Dirancang · Pelan {{plan}}',
+      },
+    },
   },
   fuel: {
     title: 'Harga bahan api',

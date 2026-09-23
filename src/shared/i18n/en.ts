@@ -54,6 +54,28 @@ export const en = {
       planned: 'Planned',
       plan: 'Plan {{plan}}',
     },
+    experience: {
+      title: 'Experience',
+      intro:
+        "The same projects, seen through each role's requirements. Switch the role to reorder the page.",
+      roleLegend: 'Show my experience for',
+      roles: { frontend: 'Frontend role', backend: 'Backend role' },
+      facet: { frontend: 'Frontend', backend: 'Backend' },
+      built: 'What I built',
+      challenge: 'The hard part',
+      inSemakan: 'In Semakan',
+      requirements: 'Requirements met',
+      noFacet: 'No {{role}} work on this project.',
+      mapTitle: 'Requirements map',
+      mapCaption: 'Requirements for the {{role}} role',
+      col: { requirement: 'Requirement', level: 'Level', past: 'Past work', semakan: 'In Semakan' },
+      level: { must: 'Must-have', nice: 'Nice to have' },
+      semakanStatus: {
+        shown: 'Shown',
+        partial: 'Partly shown',
+        planned: 'Planned · Plan {{plan}}',
+      },
+    },
   },
   fuel: {
     title: 'Fuel prices',
