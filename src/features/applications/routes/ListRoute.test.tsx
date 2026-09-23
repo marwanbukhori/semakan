@@ -10,12 +10,19 @@ const renderList = (url = '/applications') =>
 
 const referenceLinks = () => screen.findAllByRole('link', { name: /^LPP-2026-/ });
 
+/** The wrapper around the table that tells assistive technology a refresh is in progress. */
+const busyRegion = () => screen.getByRole('table').closest('div[aria-busy]');
+
 describe('/applications', () => {
   it('shows a loading skeleton, then the first page and the total', async () => {
     renderList();
 
-    expect(screen.getByRole('table', { name: 'Loading applications…' })).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Loading applications…' })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    );
     expect(await referenceLinks()).toHaveLength(10);
+    expect(screen.getByRole('table')).toHaveAttribute('aria-busy', 'false');
     expect(screen.getByRole('status')).toHaveTextContent('57 applications');
   });
 
@@ -98,6 +105,21 @@ describe('/applications', () => {
     await waitFor(() => expect(router.state.location.search).toBe('?page=2'));
     await user.click(screen.getByRole('button', { name: 'Previous' }));
     await waitFor(() => expect(router.state.location.search).toBe(''));
+  });
+
+  it('exposes a background refresh as busy while keeping the current rows', async () => {
+    const { user } = renderList();
+    await referenceLinks();
+    expect(busyRegion()).toHaveAttribute('aria-busy', 'false');
+
+    setDevControls({ latencyMs: 800 });
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+
+    await waitFor(() => expect(busyRegion()).toHaveAttribute('aria-busy', 'true'));
+    expect(await referenceLinks()).toHaveLength(10);
+    await waitFor(() => expect(busyRegion()).toHaveAttribute('aria-busy', 'false'), {
+      timeout: 2000,
+    });
   });
 
   it('labels the pagination in the current language', async () => {

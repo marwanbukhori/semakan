@@ -32,7 +32,10 @@ export function Component() {
       {isError ? (
         <LoadError error={error} onRetry={() => void refetch()} />
       ) : (
-        <div className={isRefreshing ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+        <div
+          aria-busy={isFetching}
+          className={isRefreshing ? 'opacity-60 transition-opacity' : 'transition-opacity'}
+        >
           <ApplicationTable
             items={data?.items}
             isLoading={isPending}
