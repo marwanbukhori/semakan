@@ -98,6 +98,7 @@ licence applications** (Permohonan Lesen Premis Perniagaan).
 | `/about/architecture` | Layer diagram and one request traced end to end. |
 | `/about/practices` | Practices catalogue (section 8). |
 | `/about/experience` | Past frontend work, each linked to a pattern in this app. |
+| `/about/ai-workflow` | How AI was used to build this app, with evidence (section 8a). |
 
 ### Global
 
@@ -224,6 +225,54 @@ component package across apps, feature flags, visual regression tests.
 Content for showcase pages lives in typed TS content files under
 `features/about/content/`, so it is edited without touching components.
 
+## 8a. AI workflow page (`/about/ai-workflow`)
+
+Purpose: show that AI was used as a disciplined engineering tool, not for
+"vibe coding". Every claim links to an artifact committed in this repo.
+
+### The flow, as a pipeline diagram
+
+1. **Brainstorm** – requirements clarified by question-and-answer, one decision
+   at a time (framework, mock API, design system, domain). Link: the spec's
+   decisions.
+2. **Spec** – written design doc, reviewed and approved by me before any code.
+   Link: `docs/specs/`.
+3. **Verify before planning** – throwaway spikes checked real library versions
+   instead of trusting the model's memory. Concrete example: the spike found
+   `@govtechmy/myds-style` requires Tailwind 3.4, so the plan uses Tailwind 3,
+   not 4. Link: the plan's "Global Constraints".
+4. **Plan** – a step-by-step implementation plan with exact files, interfaces
+   and tests per task. Link: `docs/plans/`.
+5. **Build with TDD** – each task writes a failing test first, then the code.
+   Link: commit history, where test and implementation land together.
+6. **Review** – each task reviewed against the spec before the next starts;
+   I read and approve diffs. Link: example review notes or PR.
+7. **Verify** – CI, Playwright and axe must pass before anything is called
+   done. Link: CI runs.
+
+### Tools section
+
+- **Claude Code** as the agent in the terminal.
+- **Skills** (Superpowers): brainstorming, writing-plans,
+  test-driven-development, subagent-driven-development, code review,
+  verification-before-completion. One line each on what it enforces.
+- **MCP servers**: Context7 (current library docs), Playwright (drive the real
+  app to check UI), browser automation. One line each on what it was used for.
+- **Project instructions**: `CLAUDE.md` / `AGENTS.md` in the repo holding the
+  conventions the agent must follow (folder rules, testing rules, commands).
+
+### What I own vs what AI does
+
+A two-column table: I own requirements, architecture decisions, trade-offs,
+review and approval, and final accountability; AI drafts code and tests,
+researches library changes, and runs checks. Ends with where AI was wrong and
+how the process caught it (e.g. the Tailwind version).
+
+### Constraints
+
+- Only claim what actually happened in this repo; no generic AI marketing.
+- Specs and plans stay committed under `docs/` so the links resolve.
+
 ## 9. Demo script (about 8 minutes)
 
 | Time | Screen | Show |
@@ -237,7 +286,8 @@ Content for showcase pages lives in typed TS content files under
 | 5:30 | `/about/practices` | Open 2–3 linked files on GitHub |
 | 6:30 | GitHub | Green CI, Playwright report, Storybook |
 | 7:00 | `/about/experience` | Past work → patterns here |
-| 8:00 | — | Trade-offs, questions |
+| 7:45 | `/about/ai-workflow` | Spec → plan → TDD → review; the Tailwind-version catch |
+| 8:30 | — | Trade-offs, questions |
 
 Backup: a recorded walkthrough video, and the app runnable locally.
 
@@ -266,7 +316,8 @@ Backup: a recorded walkthrough video, and the app runnable locally.
 6. i18n, theme, responsive, accessibility pass
 7. Tests to the levels above
 8. Storybook
-9. `/about` pages and content
+9. `/about` pages and content, including `/about/ai-workflow`
+   (`CLAUDE.md` / `AGENTS.md` is added in step 1)
 10. **Cut line:** `/applications/new` multi-step form and `/dashboard` are
     built last and dropped first if time runs short.
 11. Rehearse the demo and record the backup video.
