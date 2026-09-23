@@ -10,8 +10,8 @@ export function linearScale(
 
 export function niceDomain(values: readonly number[], step = 0.5): [number, number] {
   if (values.length === 0) return [0, step];
-  const lo = Math.floor(Math.min(...values) / step) * step;
-  let hi = Math.ceil(Math.max(...values) / step) * step;
+  const lo = Math.round(Math.floor(Math.min(...values) / step + 1e-9) * step * 100) / 100;
+  let hi = Math.round(Math.ceil(Math.max(...values) / step - 1e-9) * step * 100) / 100;
   if (hi === lo) hi = lo + step;
   return [lo, hi];
 }
@@ -50,7 +50,10 @@ export function nearestIndex(xs: readonly number[], x: number): number {
   return best;
 }
 
-/** Keep end labels at least `gap` apart and inside [min, max], preserving their order. */
+/**
+ * Keep end labels at least `gap` apart and inside [min, max], preserving their order.
+ * When `items.length * gap` exceeds `max - min`, bounds and order win over the gap.
+ */
 export function layoutEndLabels(
   items: readonly { key: string; y: number }[],
   gap: number,
@@ -67,6 +70,7 @@ export function layoutEndLabels(
 }
 
 export function monthTickIndexes(dates: readonly string[], maxTicks: number): number[] {
+  if (maxTicks <= 0) return [];
   const firsts = dates.flatMap((date, i) =>
     i === 0 || date.slice(0, 7) !== dates[i - 1]!.slice(0, 7) ? [i] : [],
   );

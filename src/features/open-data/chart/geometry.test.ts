@@ -23,6 +23,11 @@ describe('chart geometry', () => {
     expect(ticks([1.5, 3])).toEqual([1.5, 2, 2.5, 3]);
   });
 
+  it('tolerates float error near a step boundary like ticks() does', () => {
+    expect(niceDomain([4.499999999999])).toEqual([4.5, 5]);
+    expect(niceDomain([4.500000000001])).toEqual([4.5, 5]);
+  });
+
   it('breaks a line at missing values instead of drawing them as zero', () => {
     expect(
       segmentPath([{ x: 0, y: 10 }, { x: 10, y: 20 }, null, { x: 30, y: 5 }, { x: 40, y: 6 }]),
@@ -73,5 +78,6 @@ describe('chart geometry', () => {
     ];
     expect(monthTickIndexes(dates, 10)).toEqual([0, 2, 4, 5]);
     expect(monthTickIndexes(dates, 2)).toEqual([0, 4]);
+    expect(monthTickIndexes(dates, 0)).toEqual([]);
   });
 });
