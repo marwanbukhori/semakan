@@ -29,7 +29,8 @@ applications. It has two jobs:
 
 ### Non-goals
 
-- No real backend, database, or authentication. The API is mocked with MSW.
+- No real backend, database, or authentication. The app's own API is mocked
+  with MSW. The only live API is the public data.gov.my API (section 7a).
 - Not a copy of any real government system; the domain is illustrative.
 - No SSR or Next.js. This is a client-rendered SPA.
 
@@ -89,6 +90,7 @@ licence applications** (Permohonan Lesen Premis Perniagaan).
 | `/applications/:id` | Detail: applicant, business, documents, status timeline. |
 | `/applications/:id/review` | Review form: approve, reject (reason required), or request info (fields required). |
 | `/applications/new` | Multi-step application form with a draft saved to localStorage. |
+| `/open-data/fuel-prices` | Real data from data.gov.my (section 7a): weekly fuel price trend chart and table. |
 
 ### Showcase (public)
 
@@ -107,7 +109,9 @@ licence applications** (Permohonan Lesen Premis Perniagaan).
 - Route-level error boundaries.
 - **Dev Panel**: a floating panel that controls the mock API at runtime:
   latency (0 / 800ms / 2s), force error (500, network failure), force empty
-  list, force 409 conflict on the next review, reset seed data. Settings
+  list, force 409 conflict on the next review, reset seed data. A separate
+  **data.gov.my** section switches that source between *Live* and
+  *Simulated* (fixture, 429, 404, offline). Settings
   persist in localStorage. Shown in every environment, since the demo is the
   product.
 
@@ -127,6 +131,7 @@ src/
       schemas.ts        zod schemas: the data contract
       types.ts          z.infer types
     dashboard/
+    open-data/          data.gov.my integration: client, schemas, fuel prices
     auth/               mocked officer session
     about/              showcase pages and their content files
   shared/
@@ -192,6 +197,56 @@ A single typed error class with `kind: 'network' | 'http' | 'validation' |
 | Schema mismatch | Logged to console with details; generic error shown |
 | Render crash | Route error boundary; shell stays up |
 
+## 7a. data.gov.my integration (`/open-data/fuel-prices`)
+
+A real, public government API, called directly from the browser. This is the
+one feature that is not mocked by default.
+
+### Verified API behaviour (probed 2026-09-23)
+
+- Endpoint: `GET https://api.data.gov.my/data-catalogue/?id=fuelprice`.
+  Query params used: `limit`, `sort=-date`, `date_start`, `date_end`,
+  `meta=true`.
+- The path **must** end with `/`. Without it the API returns a 301 redirect.
+- CORS: `access-control-allow-origin: *`, so no proxy is needed.
+- Without `meta`, the body is a JSON array of rows. With `meta=true`, it is
+  `{ meta: { catalogue_id, data_as_of, last_updated, next_update,
+  data_source: string[], update_frequency, total, limit }, data: Row[] }`.
+- Rows are two different shapes in one dataset, told apart by `series_type`:
+  - `"level"`: prices in RM for `ron95`, `ron97`, `diesel`, `diesel_eastmsia`,
+    `ron95_skps`, `ron95_budi95`, `diesel_budi`, `diesel_skds`.
+  - `"change_weekly"`: the week-on-week change for the same fields.
+  Newer subsidy fields are `null` in older rows. Change values carry float
+  noise (e.g. `0.35000000000000053`).
+- Unknown dataset: HTTP 404 with body `{ status_code: 404, details: string[] }`.
+- Rate limiting: no rate-limit headers were observed. **UNVERIFIED**; the UI
+  still handles 429.
+
+### Design
+
+- `features/open-data/api/dataGovClient.ts`: base URL
+  `https://api.data.gov.my`, always adds the trailing slash, parses responses
+  with zod, and maps `{ status_code, details }` and 429 onto `ApiError`.
+- `features/open-data/schemas.ts`: `FuelPriceRowSchema` is a
+  `z.discriminatedUnion('series_type', [LevelRow, ChangeRow])`, with nullable
+  subsidy fields. Rows with an unknown `series_type` are dropped and counted
+  rather than crashing the page (the contract can drift on a real API).
+- Query: `useFuelPrices({ from, to })` with `meta=true`; `staleTime` is
+  derived from `meta.next_update` (weekly data should not be refetched on
+  every focus).
+- UI: a line chart of the level series (fuel types toggled on and off), a
+  table of the latest weeks showing the weekly change as up/down, the date
+  range and selected fuels in the URL, and a footer "Data as of
+  {data_as_of} · Next update {next_update} · Source: MOF via data.gov.my".
+- Values rounded to 2 decimal places for display only.
+- Dev Panel: *Live* (MSW passes the request through) or *Simulated*, where MSW
+  serves a recorded fixture or forces 429, 404 or offline.
+- Tests use the recorded fixture only; CI never calls the live API.
+- The page notes the link to the author's work: the POS side of the RON95
+  BUDI95 subsidy at Silentmode.
+- Charting: a small React chart library, chosen and version-checked in the
+  plan.
+
 ## 8. Practices catalogue (`/about/practices`)
 
 Each entry shows **What**, **Why**, **Where** (a snippet from the repo plus a
@@ -240,7 +295,9 @@ Purpose: show that AI was used as a disciplined engineering tool, not for
 3. **Verify before planning** – throwaway spikes checked real library versions
    instead of trusting the model's memory. Concrete example: the spike found
    `@govtechmy/myds-style` requires Tailwind 3.4, so the plan uses Tailwind 3,
-   not 4. Link: the plan's "Global Constraints".
+   not 4. A second example: probing data.gov.my found the trailing-slash
+   redirect and the mixed `series_type` rows before any code was written.
+   Link: the plan's "Global Constraints" and spec section 7a.
 4. **Plan** – a step-by-step implementation plan with exact files, interfaces
    and tests per task. Link: `docs/plans/`.
 5. **Build with TDD** – each task writes a failing test first, then the code.
@@ -273,7 +330,7 @@ how the process caught it (e.g. the Tailwind version).
 - Only claim what actually happened in this repo; no generic AI marketing.
 - Specs and plans stay committed under `docs/` so the links resolve.
 
-## 9. Demo script (about 8 minutes)
+## 9. Demo script (about 9 minutes; timings are a guide)
 
 | Time | Screen | Show |
 |---|---|---|
@@ -282,6 +339,7 @@ how the process caught it (e.g. the Tailwind version).
 | 2:00 | `/applications` | Filter/sort/search, URL restores view, BM↔EN, dark mode |
 | 3:00 | Dev Panel | Latency → skeletons; 500 → retry; empty → empty state |
 | 4:00 | Review | Field errors, optimistic approve, forced failure rollback, 409 banner |
+| 4:45 | `/open-data/fuel-prices` | Live data.gov.my call in the Network tab; discriminated union on `series_type`; "data as of"; simulate 429 |
 | 5:00 | Keyboard | Tab through review dialog, focus trap and return |
 | 5:30 | `/about/practices` | Open 2–3 linked files on GitHub |
 | 6:30 | GitHub | Green CI, Playwright report, Storybook |
@@ -313,6 +371,7 @@ Backup: a recorded walkthrough video, and the app runnable locally.
 3. Applications list (table, filters, URL state, states)
 4. Detail + timeline
 5. Review form + mutation (optimistic, 422, 409)
+5a. data.gov.my fuel prices feature
 6. i18n, theme, responsive, accessibility pass
 7. Tests to the levels above
 8. Storybook
