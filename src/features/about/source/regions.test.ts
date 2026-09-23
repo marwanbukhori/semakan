@@ -36,9 +36,23 @@ describe('extractRegion', () => {
     expect(extractRegion('// #region practice:firstly\nx\n// #endregion', 'first')).toBeNull();
   });
 
-  it('drops marker lines of other regions nested inside', () => {
+  it('drops marker lines of other regions nested inside, and reports the true last body line', () => {
     const nested =
       '// #region practice:outer\na\n// #region practice:inner\nb\n// #endregion\n// #endregion';
-    expect(extractRegion(nested, 'outer')?.code).toBe('a\nb');
+    expect(extractRegion(nested, 'outer')).toEqual({ code: 'a\nb', startLine: 2, endLine: 4 });
+  });
+
+  it('handles a nested opener directly after the outer marker', () => {
+    const nested =
+      '// #region practice:outer\n// #region practice:inner\nb\n// #endregion\n// #endregion';
+    expect(extractRegion(nested, 'outer')).toEqual({ code: 'b', startLine: 3, endLine: 3 });
+  });
+
+  it('returns an empty body with startLine one past the marker and endLine one before it', () => {
+    expect(extractRegion('// #region practice:empty\n// #endregion', 'empty')).toEqual({
+      code: '',
+      startLine: 2,
+      endLine: 1,
+    });
   });
 });
