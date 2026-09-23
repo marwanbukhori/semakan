@@ -26,8 +26,9 @@ export const en = {
       label: 'Weekly fuel prices, {{range}}',
       loading: 'Loading fuel prices…',
       instructions:
-        'Use the left and right arrow keys to read each week. Home and End jump to the first and last week.',
+        'Use the left and right arrow keys to read each week. Home and End jump to the first and last week. Escape hides the readout.',
       summary: '{{fuel}} went from RM {{from}} to RM {{to}}.',
+      empty: 'No price data for this period.',
     },
     latest: {
       title: 'Latest weeks',

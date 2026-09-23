@@ -1,4 +1,12 @@
-import { useId, useMemo, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react';
+import {
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useElementWidth } from '@/shared/hooks/useElementWidth';
 import { formatDate, formatMonthYear, formatPrice } from '@/shared/lib/format';
@@ -10,12 +18,30 @@ import {
   niceDomain,
   segmentPath,
   ticks,
+  tooltipLeft,
 } from '../chart/geometry';
 import type { FuelKey, LevelRow } from '../types';
 
 const HEIGHT = 300;
 const LABEL_GAP = 16;
 const DIRECT_LABEL_MIN_WIDTH = 480;
+const END_LABEL_OFFSET = 12;
+// A fixed width for the end labels: the widest, "RON95 (BUDI95) RM 1.99", is ~145px at 12px Inter
+// medium, and 156px still fits a two-digit ringgit price. The labels are a small fixed set, so a
+// fixed margin avoids a measure-then-re-render pass.
+const END_LABEL_WIDTH = 156;
+const TOOLTIP_OFFSET = 12;
+
+/** The row's plotted values, highest first; null weeks are left out, never read as zero. */
+function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
+  if (!row) return [];
+  return fuels
+    .flatMap((fuel) => {
+      const value = row[fuel];
+      return value === null ? [] : [{ fuel, value }];
+    })
+    .sort((a, b) => b.value - a.value);
+}
 
 type FuelPriceChartProps = {
   levels: readonly LevelRow[];
@@ -27,13 +53,22 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
   const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(containerRef, 720);
+  // `active` drives the crosshair and tooltip (mouse or keyboard); `announced` drives the live
+  // region, and only focus and keys change it, so hovering does not flood screen readers.
   const [active, setActive] = useState<number | null>(null);
+  const [announced, setAnnounced] = useState<number | null>(null);
   const instructionsId = useId();
   const summaryId = useId();
 
   const showDirectLabels = width >= DIRECT_LABEL_MIN_WIDTH;
-  const margin = { top: 16, right: showDirectLabels ? 136 : 16, bottom: 32, left: 48 };
+  const margin = {
+    top: 16,
+    right: showDirectLabels ? END_LABEL_OFFSET + END_LABEL_WIDTH : 16,
+    bottom: 32,
+    left: 48,
+  };
   const lang = i18n.language;
   const price = (value: number) => t('fuel.price', { value: formatPrice(value, lang) });
 
@@ -48,21 +83,21 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     const y = linearScale(domain, [plotBottom, margin.top]);
     const xs = levels.map((_, i) => x(i));
     const series = fuels.map((fuel) => {
-      const points = levels.map((row, i) =>
-        row[fuel] === null ? null : { x: xs[i]!, y: y(row[fuel]) },
-      );
-      const lastIndex = levels.findLastIndex((row) => row[fuel] !== null);
-      return { fuel, points, lastIndex };
+      const points = levels.map((row, i) => {
+        const value = row[fuel];
+        return value === null ? null : { x: xs[i]!, y: y(value), value };
+      });
+      const end = points.findLast((point) => point !== null) ?? null;
+      return { fuel, points, end };
     });
     const labelY = layoutEndLabels(
-      series.flatMap((s) =>
-        s.lastIndex < 0 ? [] : [{ key: s.fuel, y: s.points[s.lastIndex]!.y }],
-      ),
+      series.flatMap(({ fuel, end }) => (end ? [{ key: fuel, y: end.y }] : [])),
       LABEL_GAP,
       [margin.top, plotBottom],
     );
     const maxTicks = Math.max(1, Math.floor((plotRight - margin.left) / 72));
     return {
+      hasData: values.length > 0,
       plotRight,
       plotBottom,
       domain,
@@ -77,14 +112,16 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     };
   }, [width, levels, fuels, margin.left, margin.right, margin.top, margin.bottom]);
 
+  const { hasData } = geometry;
   const activeRow = active === null ? undefined : levels[active];
-  const readout = activeRow
+  const activeValues = visibleValues(activeRow, fuels);
+  const announcedRow = announced === null ? undefined : levels[announced];
+  const readout = announcedRow
     ? [
-        formatDate(activeRow.date, lang),
-        ...fuels
-          .filter((fuel) => activeRow[fuel] !== null)
-          .sort((a, b) => (activeRow[b] ?? 0) - (activeRow[a] ?? 0))
-          .map((fuel) => `${t(`fuel.series.${fuel}`)} ${price(activeRow[fuel] ?? 0)}`),
+        formatDate(announcedRow.date, lang),
+        ...visibleValues(announcedRow, fuels).map(
+          ({ fuel, value }) => `${t(`fuel.series.${fuel}`)} ${price(value)}`,
+        ),
       ].join(', ')
     : '';
 
@@ -111,7 +148,19 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     setActive(index < 0 ? null : index);
   }
 
+  function show(index: number | null) {
+    setActive(index);
+    setAnnounced(index);
+  }
+
+  function onFocus() {
+    if (!hasData) return;
+    show(active ?? levels.length - 1);
+  }
+
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    // Leave browser and assistive-technology shortcuts (Alt+Left and the like) alone.
+    if (!hasData || event.altKey || event.ctrlKey || event.metaKey) return;
     const lastIndex = levels.length - 1;
     const current = active ?? lastIndex;
     const next =
@@ -125,16 +174,33 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
               ? lastIndex
               : undefined;
     if (event.key === 'Escape') {
-      setActive(null);
+      show(null);
       return;
     }
     if (next === undefined) return;
     event.preventDefault();
-    setActive(next);
+    show(next);
   }
 
   const activeX = active === null ? undefined : geometry.xs[active];
-  const tooltipOnLeft = activeX !== undefined && activeX > width - 200;
+
+  // Place the tooltip from its real rendered width, which changes with the week's fuels and the
+  // language, so this runs after every render. It writes the DOM rather than state, so there is no
+  // second render, and a layout effect runs before paint, so the tooltip never shows misplaced.
+  useLayoutEffect(() => {
+    const tooltip = tooltipRef.current;
+    if (!tooltip || activeX === undefined) return;
+    tooltip.style.left = `${tooltipLeft(activeX, tooltip.offsetWidth, width, TOOLTIP_OFFSET)}px`;
+  });
+
+  if (!hasData) {
+    // The same element as the chart below, so the width observer keeps watching it.
+    return (
+      <div ref={containerRef} className="fuel-chart relative">
+        <p className="text-body-sm text-txt-black-500">{t('fuel.chart.empty')}</p>
+      </div>
+    );
+  }
 
   // A keyboard-explorable chart: one tab stop, named and described (instructions plus a text
   // summary), with the arrow keys reading each week into a live region. `group` keeps that name
@@ -149,8 +215,8 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
       aria-label={t('fuel.chart.label', { range: rangeLabel })}
       aria-describedby={`${instructionsId} ${summaryId}`}
       onKeyDown={onKeyDown}
-      onFocus={() => setActive((current) => current ?? levels.length - 1)}
-      onBlur={() => setActive(null)}
+      onFocus={onFocus}
+      onBlur={() => show(null)}
       className="fuel-chart relative rounded-md focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
     >
       <p id={instructionsId} className="sr-only">
@@ -216,11 +282,9 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
           />
         ))}
 
-        {geometry.series.map(({ fuel, points, lastIndex }) => {
-          const end = lastIndex < 0 ? null : points[lastIndex];
+        {geometry.series.map(({ fuel, end }) => {
           if (!end) return null;
           const labelY = geometry.labelY[fuel] ?? end.y;
-          const value = levels[lastIndex]![fuel] ?? 0;
           return (
             <g key={`end-${fuel}`}>
               <circle
@@ -243,12 +307,12 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
                     />
                   )}
                   <text
-                    x={geometry.plotRight + 12}
+                    x={geometry.plotRight + END_LABEL_OFFSET}
                     y={labelY}
                     dy="0.32em"
                     className="fill-txt-black-900 text-body-xs font-medium"
                   >
-                    {`${t(`fuel.series.${fuel}`)} ${price(value)}`}
+                    {`${t(`fuel.series.${fuel}`)} ${price(end.value)}`}
                   </text>
                 </>
               )}
@@ -256,9 +320,10 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
           );
         })}
 
-        {activeX !== undefined && activeRow && (
+        {activeX !== undefined && (
           <g>
             <line
+              data-crosshair
               x1={activeX}
               x2={activeX}
               y1={margin.top}
@@ -266,18 +331,16 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
               className="stroke-otl-gray-300"
               strokeWidth={1}
             />
-            {fuels.map((fuel) =>
-              activeRow[fuel] === null ? null : (
-                <circle
-                  key={fuel}
-                  cx={activeX}
-                  cy={geometry.y(activeRow[fuel])}
-                  r={4}
-                  strokeWidth={2}
-                  style={{ fill: `var(--fuel-${fuel})`, stroke: 'var(--chart-surface)' }}
-                />
-              ),
-            )}
+            {activeValues.map(({ fuel, value }) => (
+              <circle
+                key={fuel}
+                cx={activeX}
+                cy={geometry.y(value)}
+                r={4}
+                strokeWidth={2}
+                style={{ fill: `var(--fuel-${fuel})`, stroke: 'var(--chart-surface)' }}
+              />
+            ))}
           </g>
         )}
 
@@ -294,25 +357,23 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
 
       {activeX !== undefined && activeRow && (
         <div
+          ref={tooltipRef}
+          data-chart-tooltip
           aria-hidden="true"
           className="pointer-events-none absolute top-2 min-w-40 rounded-md border border-otl-gray-200 bg-bg-white p-2 text-body-xs shadow-card"
-          style={tooltipOnLeft ? { right: width - activeX + 12 } : { left: activeX + 12 }}
         >
           <p className="mb-1 text-txt-black-500">{formatDate(activeRow.date, lang)}</p>
-          {fuels
-            .filter((fuel) => activeRow[fuel] !== null)
-            .sort((a, b) => (activeRow[b] ?? 0) - (activeRow[a] ?? 0))
-            .map((fuel) => (
-              <p key={fuel} className="flex items-center gap-2">
-                <span
-                  aria-hidden="true"
-                  className="inline-block h-0.5 w-3 rounded-full"
-                  style={{ backgroundColor: `var(--fuel-${fuel})` }}
-                />
-                <strong className="text-txt-black-900">{price(activeRow[fuel] ?? 0)}</strong>
-                <span className="text-txt-black-500">{t(`fuel.series.${fuel}`)}</span>
-              </p>
-            ))}
+          {activeValues.map(({ fuel, value }) => (
+            <p key={fuel} className="flex items-center gap-2">
+              <span
+                aria-hidden="true"
+                className="inline-block h-0.5 w-3 rounded-full"
+                style={{ backgroundColor: `var(--fuel-${fuel})` }}
+              />
+              <strong className="text-txt-black-900">{price(value)}</strong>
+              <span className="text-txt-black-500">{t(`fuel.series.${fuel}`)}</span>
+            </p>
+          ))}
         </div>
       )}
     </div>

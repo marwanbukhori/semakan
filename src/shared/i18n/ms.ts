@@ -31,8 +31,9 @@ export const ms: Translation = {
       label: 'Harga bahan api mingguan, {{range}}',
       loading: 'Memuatkan harga bahan api…',
       instructions:
-        'Gunakan kekunci anak panah kiri dan kanan untuk membaca setiap minggu. Home dan End melompat ke minggu pertama dan terakhir.',
+        'Gunakan kekunci anak panah kiri dan kanan untuk membaca setiap minggu. Home dan End melompat ke minggu pertama dan terakhir. Escape menyembunyikan bacaan.',
       summary: '{{fuel}} berubah daripada RM {{from}} kepada RM {{to}}.',
+      empty: 'Tiada data harga bagi tempoh ini.',
     },
     latest: {
       title: 'Minggu terkini',
