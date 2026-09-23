@@ -77,10 +77,10 @@ describe('FuelFiltersSchema', () => {
     });
   });
 
-  it('reads fuels from a comma list, and falls back for tampered values', () => {
+  it('reads fuels from a comma list and keeps palette order, falls back for tampered values', () => {
     expect(FuelFiltersSchema.parse({ range: '1y', fuels: 'diesel,ron95' })).toEqual({
       range: '1y',
-      fuels: ['diesel', 'ron95'],
+      fuels: ['ron95', 'diesel'],
     });
     expect(FuelFiltersSchema.parse({ range: '10y', fuels: 'petrol' })).toEqual(
       FuelFiltersSchema.parse({}),

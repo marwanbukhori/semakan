@@ -83,5 +83,7 @@ export const FuelFiltersSchema = z.object({
     .string()
     .transform((value) => value.split(',').filter(Boolean))
     .pipe(z.array(FuelKeySchema))
+    // Keep the fixed palette order whatever order the URL lists them in.
+    .transform((keys) => FUEL_KEYS.filter((key) => keys.includes(key)))
     .catch([...FUEL_KEYS]),
 });
