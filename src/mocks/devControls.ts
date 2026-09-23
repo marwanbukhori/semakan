@@ -1,10 +1,19 @@
 import { z } from 'zod';
 
+export const DATA_GOV_OPTIONS = [
+  'live',
+  'fixture',
+  'rate_limited',
+  'not_found',
+  'offline',
+] as const;
+
 const DevControlsSchema = z.object({
   latencyMs: z.union([z.literal(0), z.literal(800), z.literal(2000)]),
   failure: z.enum(['none', 'server', 'network']),
   emptyList: z.boolean(),
   conflictNext: z.boolean(),
+  dataGov: z.enum(DATA_GOV_OPTIONS),
 });
 
 export type DevControls = z.infer<typeof DevControlsSchema>;
@@ -22,6 +31,8 @@ export const DEFAULT_DEV_CONTROLS: DevControls = {
   failure: 'none',
   emptyList: false,
   conflictNext: false,
+  // Tests must never reach the real API; the running app calls it live by default.
+  dataGov: import.meta.env.MODE === 'test' ? 'fixture' : 'live',
 };
 
 const STORAGE_KEY = 'semakan.devControls';

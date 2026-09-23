@@ -8,6 +8,8 @@ import './polyfills';
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
+  // A safety net: a test that fakes timers or pins the date can never leak into the next test.
+  vi.useRealTimers();
   server.resetHandlers();
   cleanup();
   resetDevControls();

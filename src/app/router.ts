@@ -49,6 +49,14 @@ export function createRoutes(): RouteObject[] {
             },
           ],
         },
+        {
+          path: 'open-data/fuel-prices',
+          ErrorBoundary: RouteError,
+          lazy: {
+            Component: async () =>
+              (await import('@/features/open-data/routes/FuelPricesRoute')).Component,
+          },
+        },
         { path: '*', Component: NotFound },
       ],
     },

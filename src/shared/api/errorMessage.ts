@@ -10,6 +10,9 @@ export function apiErrorMessageKey(error: unknown) {
     case 'schema':
       return 'errors.schema' as const;
     case 'http':
+      if (error.status === 429) return 'errors.rateLimited' as const;
+      if (error.status === 404) return 'errors.notFound' as const;
+      return 'errors.server' as const;
     case 'validation':
     case 'conflict':
       return 'errors.server' as const;

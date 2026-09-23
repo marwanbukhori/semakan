@@ -30,6 +30,14 @@ export function AppLayout() {
             >
               {t('app.nav.applications')}
             </NavLink>
+            <NavLink
+              to="/open-data/fuel-prices"
+              className={({ isActive }) =>
+                isActive ? 'font-semibold text-txt-primary' : 'text-txt-black-700 hover:underline'
+              }
+            >
+              {t('app.nav.fuel')}
+            </NavLink>
           </nav>
           {/* MYDS names the toggle after the current theme's label, so the labels are translated. */}
           <ThemeSwitch

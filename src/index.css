@@ -6,3 +6,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Categorical data palette for the fuel chart (dataviz reference slots 1-4),
+ * validated with the dataviz validator on MYDS surfaces: light #ffffff, dark #18181b.
+ * MYDS has no categorical data palette, so this is the one non-MYDS colour set.
+ */
+.fuel-chart {
+  --chart-surface: #ffffff;
+  --fuel-ron95: #2a78d6;
+  --fuel-ron97: #eb6834;
+  --fuel-diesel: #1baf7a;
+  --fuel-ron95_budi95: #eda100;
+}
+
+.dark .fuel-chart {
+  --chart-surface: #18181b;
+  --fuel-ron95: #3987e5;
+  --fuel-ron97: #d95926;
+  --fuel-diesel: #199e70;
+  --fuel-ron95_budi95: #c98500;
+}

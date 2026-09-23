@@ -5,10 +5,59 @@ export const ms: Translation = {
     name: 'Semakan',
     tagline: 'Semakan permohonan lesen',
     skipToContent: 'Langkau ke kandungan utama',
-    nav: { label: 'Utama', applications: 'Permohonan' },
+    nav: { label: 'Utama', applications: 'Permohonan', fuel: 'Harga bahan api' },
     theme: { light: 'Tema cerah', dark: 'Tema gelap' },
     mockApiFailed:
       'API olok-olok demo gagal dimulakan, jadi tiada data akan dimuatkan. Cuba muat semula halaman.',
+  },
+  fuel: {
+    title: 'Harga bahan api',
+    intro:
+      'Harga runcit bahan api mingguan di Malaysia, diterbitkan oleh Kementerian Kewangan di data.gov.my.',
+    series: {
+      ron95: 'RON95',
+      ron97: 'RON97',
+      diesel: 'Diesel',
+      ron95_budi95: 'RON95 (BUDI95)',
+    },
+    range: { label: 'Julat tarikh', '3m': '3 bulan', '6m': '6 bulan', '1y': '1 tahun' },
+    fuels: {
+      label: 'Bahan api dipaparkan',
+      none: 'Pilih sekurang-kurangnya satu bahan api untuk memaparkan carta.',
+    },
+    price: 'RM {{value}}',
+    unit: 'RM seliter',
+    chart: {
+      label: 'Harga bahan api mingguan, {{range}}',
+      loading: 'Memuatkan harga bahan api…',
+      instructions:
+        'Gunakan kekunci anak panah kiri dan kanan untuk membaca setiap minggu. Home dan End melompat ke minggu pertama dan terakhir. Escape menyembunyikan bacaan.',
+      summary: '{{fuel}} berubah daripada RM {{from}} kepada RM {{to}}.',
+      empty: 'Tiada data harga bagi tempoh ini.',
+    },
+    latest: {
+      title: 'Minggu terkini',
+      caption: 'Harga bagi minggu terkini, dengan perubahan berbanding minggu sebelumnya',
+      week: 'Minggu',
+      up: 'naik RM {{value}}',
+      down: 'turun RM {{value}}',
+      same: 'tiada perubahan',
+    },
+    table: {
+      show: 'Tunjukkan data carta sebagai jadual',
+      caption: 'Harga bahan api mingguan, RM seliter',
+      week: 'Minggu',
+      noValue: 'Tiada data',
+    },
+    freshness: {
+      asOf: 'Data setakat {{date}}',
+      next: 'Kemas kini seterusnya {{date}}',
+      source: 'Sumber: {{source}} melalui data.gov.my',
+      link: 'Lihat set data ini di data.gov.my',
+    },
+    skipped_one: '{{count}} baris mempunyai format yang tidak dijangka dan tidak dipaparkan.',
+    skipped_other: '{{count}} baris mempunyai format yang tidak dijangka dan tidak dipaparkan.',
+    errorTitle: 'Harga bahan api tidak dapat dimuatkan',
   },
   applications: {
     title: 'Permohonan lesen',
@@ -86,13 +135,15 @@ export const ms: Translation = {
     network: 'Semak sambungan anda dan cuba lagi.',
     server: 'Pelayan menghadapi masalah. Cuba lagi sebentar.',
     schema: 'Pelayan menghantar data yang tidak dijangka.',
+    rateLimited: 'Terlalu banyak permintaan buat masa ini. Tunggu seminit, kemudian cuba lagi.',
+    notFound: 'Data tersebut tidak ditemui.',
     retry: 'Cuba lagi',
     route: {
       title: 'Berlaku ralat',
       body: 'Halaman ini gagal dimuatkan.',
       home: 'Kembali ke permohonan',
     },
-    notFound: { title: 'Halaman tidak ditemui', body: 'Tiada apa-apa di alamat ini.' },
+    pageNotFound: { title: 'Halaman tidak ditemui', body: 'Tiada apa-apa di alamat ini.' },
   },
   documents: {
     ssm_certificate: 'Sijil SSM',
@@ -165,6 +216,14 @@ export const ms: Translation = {
     failureNetwork: 'Kegagalan rangkaian',
     emptyList: 'Pulangkan senarai kosong',
     conflictNext: 'Paksa konflik pada semakan seterusnya',
+    dataGov: {
+      title: 'data.gov.my',
+      live: 'API langsung',
+      fixture: 'Data rakaman',
+      rate_limited: 'Had permintaan (429)',
+      not_found: 'Tidak ditemui (404)',
+      offline: 'Luar talian',
+    },
     reset: 'Set semula data demo',
   },
 };

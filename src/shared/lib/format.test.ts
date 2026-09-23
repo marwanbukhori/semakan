@@ -1,4 +1,4 @@
-import { formatDate, formatDateTime } from './format';
+import { formatDate, formatDateTime, formatMonthYear, formatPrice } from './format';
 
 describe('formatDate', () => {
   it('formats in Malaysian time', () => {
@@ -20,5 +20,18 @@ describe('formatDateTime', () => {
     const text = formatDateTime('2026-09-20T17:05:00.000Z', 'en');
     expect(text).toMatch(/21 Sep/);
     expect(text).toMatch(/1:05/);
+  });
+});
+
+describe('formatPrice and formatMonthYear', () => {
+  it('shows prices with two decimals and removes float noise', () => {
+    expect(formatPrice(4.57, 'en')).toBe('4.57');
+    expect(formatPrice(0.35000000000000053, 'en')).toBe('0.35');
+    expect(formatPrice(2, 'ms')).toBe('2.00');
+  });
+
+  it('labels months for chart axes', () => {
+    expect(formatMonthYear('2026-03-05', 'en')).toMatch(/Mar/);
+    expect(formatMonthYear('2026-03-05', 'en')).toMatch(/2026/);
   });
 });
