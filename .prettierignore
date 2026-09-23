@@ -3,3 +3,4 @@ coverage
 docs
 public/mockServiceWorker.js
 package-lock.json
+.superpowers
