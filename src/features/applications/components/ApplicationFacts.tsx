@@ -12,9 +12,15 @@ import type { ApplicationDetail } from '../types';
 
 function Fact({ term, children }: { term: string; children: ReactNode }) {
   return (
-    <SummaryListRow>
-      <SummaryListTerm>{term}</SummaryListTerm>
-      <SummaryListDetail>{children}</SummaryListDetail>
+    // MYDS gives the term a 190px minimum width and the detail no wrapping, which
+    // overflows a 360px screen. Below `sm` the term stacks above its detail, and
+    // long values (emails, addresses) wrap anywhere. MYDS merges these classes
+    // with tailwind-merge, so `min-w-0` replaces its `min-w-[190px]`.
+    <SummaryListRow className="flex flex-col sm:table-row">
+      <SummaryListTerm className="min-w-0 pb-0 sm:min-w-[190px] sm:pb-3">{term}</SummaryListTerm>
+      <SummaryListDetail className="pt-1 [overflow-wrap:anywhere] sm:table-cell sm:pt-3">
+        {children}
+      </SummaryListDetail>
     </SummaryListRow>
   );
 }
