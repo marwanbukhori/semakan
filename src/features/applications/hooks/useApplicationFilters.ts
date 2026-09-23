@@ -16,15 +16,31 @@ function toSearchParams(params: ApplicationListParams): URLSearchParams {
   return result;
 }
 
+type SetFiltersOptions = {
+  /** Replace the current history entry instead of pushing a new one. */
+  replace?: boolean;
+};
+
 /** The URL is the single source of truth for list filters: shareable, and back/forward just works. */
 export function useApplicationFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const filters = useMemo(() => parse(searchParams), [searchParams]);
+  const hasActiveFilters =
+    filters.status !== DEFAULT_LIST_PARAMS.status || filters.q !== DEFAULT_LIST_PARAMS.q;
 
   const setFilters = useCallback(
-    (patch: Partial<ApplicationListParams>) => {
-      // Any change other than the page itself starts again from page 1.
-      void setSearchParams((previous) => toSearchParams({ ...parse(previous), page: 1, ...patch }));
+    (patch: Partial<ApplicationListParams>, options: SetFiltersOptions = {}) => {
+      // Search commits while typing would otherwise flood history with one entry per pause.
+      const onlySearch = Object.keys(patch).every((key) => key === 'q');
+      void setSearchParams(
+        // Any change other than the page itself starts again from page 1. Parsing the merged
+        // result normalises it (e.g. trims q) before it reaches the URL.
+        (previous) =>
+          toSearchParams(
+            ApplicationListParamsSchema.parse({ ...parse(previous), page: 1, ...patch }),
+          ),
+        { replace: options.replace ?? onlySearch },
+      );
     },
     [setSearchParams],
   );
@@ -33,5 +49,5 @@ export function useApplicationFilters() {
     void setSearchParams(new URLSearchParams());
   }, [setSearchParams]);
 
-  return { filters, setFilters, resetFilters };
+  return { filters, hasActiveFilters, setFilters, resetFilters };
 }

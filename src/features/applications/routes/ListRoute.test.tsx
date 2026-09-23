@@ -1,8 +1,12 @@
 import { act, screen, waitFor, within } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
 import { seedApplications } from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
+import { server } from '@/mocks/node';
 import { i18n } from '@/shared/i18n';
 import { renderRoutes } from '@/test/render';
+import { makeApplicationSummary } from '../fixtures';
+import { SEARCH_DEBOUNCE_MS } from '../components/ApplicationFilters';
 import { Component as ListRoute } from './ListRoute';
 
 const renderList = (url = '/applications') =>
@@ -74,6 +78,77 @@ describe('/applications', () => {
     await waitFor(() => expect(router.state.location.search).toBe(''));
     expect(await referenceLinks()).toHaveLength(10);
     expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('');
+  });
+
+  it('does not let a pending search undo "Clear filters"', async () => {
+    const { user, router } = renderList('/applications?q=zzzz-no-match');
+    expect(await screen.findByText('No applications found')).toBeInTheDocument();
+
+    await user.type(screen.getByRole('searchbox', { name: 'Search' }), 'x');
+    await user.click(screen.getByRole('button', { name: 'Clear filters' }));
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+
+    await act(() => new Promise((resolve) => setTimeout(resolve, SEARCH_DEBOUNCE_MS + 100)));
+    expect(router.state.location.search).toBe('');
+    expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('');
+  });
+
+  it('sorts by a column header and writes the sort to the URL', async () => {
+    const { user, router } = renderList();
+    const firstBefore = (await referenceLinks())[0]?.textContent;
+
+    await user.click(screen.getByRole('button', { name: 'Business' }));
+
+    await waitFor(() => expect(router.state.location.search).toBe('?sort=businessName&order=asc'));
+    await waitFor(() =>
+      expect(screen.getAllByRole('link')[0]).not.toHaveTextContent(firstBefore ?? ''),
+    );
+    expect(screen.getByRole('columnheader', { name: 'Business' })).toHaveAttribute(
+      'aria-sort',
+      'ascending',
+    );
+  });
+
+  it('restores the previous filters and search text on browser Back', async () => {
+    const { user, router } = renderList('/applications?status=rejected&q=zzzz-no-match');
+    expect(await screen.findByText('No applications found')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Clear filters' }));
+    await waitFor(() => expect(router.state.location.search).toBe(''));
+    expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('');
+
+    await act(() => router.navigate(-1));
+
+    expect(router.state.location.search).toBe('?status=rejected&q=zzzz-no-match');
+    expect(screen.getByRole('searchbox', { name: 'Search' })).toHaveValue('zzzz-no-match');
+    expect(screen.getByRole('combobox', { name: 'Status' })).toHaveTextContent('Rejected');
+  });
+
+  it('moves the URL to the page the server actually served', async () => {
+    const { router } = renderList('/applications?page=99');
+
+    await waitFor(() => expect(router.state.location.search).toBe('?page=6'));
+    expect(await referenceLinks()).toHaveLength(7);
+  });
+
+  it('explains a response that does not match the schema', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    server.use(
+      http.get('/api/applications', () =>
+        HttpResponse.json({
+          items: [{ ...makeApplicationSummary(), status: 'lost' }],
+          page: 1,
+          pageSize: 10,
+          total: 1,
+        }),
+      ),
+    );
+    renderList();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The server sent data we did not expect.',
+    );
+    expect(consoleError).toHaveBeenCalledWith(expect.stringContaining('unexpected shape'));
   });
 
   it('shows a server error with a working retry', async () => {

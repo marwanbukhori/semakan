@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplications } from '../api/queries';
 import { ApplicationFilters } from '../components/ApplicationFilters';
@@ -5,16 +6,22 @@ import { ApplicationTable } from '../components/ApplicationTable';
 import { ListPagination } from '../components/ListPagination';
 import { EmptyResults, LoadError } from '../components/ListStates';
 import { useApplicationFilters } from '../hooks/useApplicationFilters';
-import { DEFAULT_LIST_PARAMS } from '../schemas';
 
 /** Thin route: reads filters from the URL, fetches, and composes components. */
 export function Component() {
   const { t } = useTranslation();
-  const { filters, setFilters, resetFilters } = useApplicationFilters();
-  const { data, error, isPending, isError, isFetching, refetch } = useApplications(filters);
-  const hasActiveFilters =
-    filters.status !== DEFAULT_LIST_PARAMS.status || filters.q !== DEFAULT_LIST_PARAMS.q;
+  const { filters, hasActiveFilters, setFilters, resetFilters } = useApplicationFilters();
+  const { data, error, isPending, isError, isFetching, isPlaceholderData, refetch } =
+    useApplications(filters);
   const isRefreshing = isFetching && !isPending;
+
+  // The server clamps an out-of-range page (e.g. a stale shared link): show its page in the URL.
+  const servedPage = data && !isPlaceholderData ? data.page : undefined;
+  useEffect(() => {
+    if (servedPage !== undefined && servedPage !== filters.page) {
+      setFilters({ page: servedPage }, { replace: true });
+    }
+  }, [servedPage, filters.page, setFilters]);
 
   return (
     <section aria-labelledby="applications-heading" className="flex flex-col gap-6">

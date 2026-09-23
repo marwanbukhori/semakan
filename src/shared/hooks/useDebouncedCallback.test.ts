@@ -10,9 +10,9 @@ describe('useDebouncedCallback', () => {
     const { result } = renderHook(() => useDebouncedCallback(spy, 300));
 
     act(() => {
-      result.current('k');
-      result.current('ke');
-      result.current('ked');
+      result.current[0]('k');
+      result.current[0]('ke');
+      result.current[0]('ked');
     });
     expect(spy).not.toHaveBeenCalled();
 
@@ -30,7 +30,7 @@ describe('useDebouncedCallback', () => {
       initialProps: { cb: first },
     });
 
-    act(() => result.current('x'));
+    act(() => result.current[0]('x'));
     rerender({ cb: second });
     act(() => {
       vi.advanceTimersByTime(300);
@@ -44,8 +44,23 @@ describe('useDebouncedCallback', () => {
     const spy = vi.fn();
     const { result, unmount } = renderHook(() => useDebouncedCallback(spy, 300));
 
-    act(() => result.current('x'));
+    act(() => result.current[0]('x'));
     unmount();
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('drops a pending call when cancelled', () => {
+    const spy = vi.fn();
+    const { result } = renderHook(() => useDebouncedCallback(spy, 300));
+
+    act(() => {
+      result.current[0]('x');
+      result.current[1]();
+    });
     act(() => {
       vi.advanceTimersByTime(300);
     });

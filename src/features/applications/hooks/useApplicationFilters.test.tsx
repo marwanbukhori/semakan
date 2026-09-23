@@ -1,14 +1,17 @@
-import { screen } from '@testing-library/react';
+import { act, screen } from '@testing-library/react';
 import { renderRoutes } from '@/test/render';
 import { useApplicationFilters } from './useApplicationFilters';
 
 function Probe() {
-  const { filters, setFilters, resetFilters } = useApplicationFilters();
+  const { filters, hasActiveFilters, setFilters, resetFilters } = useApplicationFilters();
   return (
     <>
       <output aria-label="filters">{JSON.stringify(filters)}</output>
+      <output aria-label="active">{String(hasActiveFilters)}</output>
       <button onClick={() => setFilters({ status: 'approved' })}>approve</button>
       <button onClick={() => setFilters({ page: 3 })}>page 3</button>
+      <button onClick={() => setFilters({ q: '  kedai  ' })}>search</button>
+      <button onClick={() => setFilters({ sort: 'businessName' })}>sort</button>
       <button onClick={resetFilters}>reset</button>
     </>
   );
@@ -56,5 +59,36 @@ describe('useApplicationFilters', () => {
     const { user, router } = renderProbe('/?status=approved&q=kedai&page=2');
     await user.click(screen.getByRole('button', { name: 'reset' }));
     expect(router.state.location.search).toBe('');
+  });
+
+  it('reports whether a status or search filter is active', async () => {
+    const { user } = renderProbe('/?page=2&sort=businessName');
+    const active = () => screen.getByRole('status', { name: 'active' });
+    expect(active()).toHaveTextContent('false');
+
+    await user.click(screen.getByRole('button', { name: 'approve' }));
+    expect(active()).toHaveTextContent('true');
+  });
+
+  it('writes the normalised (trimmed) search to the URL', async () => {
+    const { user, router } = renderProbe('/');
+    await user.click(screen.getByRole('button', { name: 'search' }));
+    expect(searchOf(router)).toEqual({ q: 'kedai' });
+  });
+
+  it('replaces the history entry for search commits but pushes other changes', async () => {
+    const { user, router } = renderProbe('/');
+
+    await user.click(screen.getByRole('button', { name: 'approve' }));
+    await user.click(screen.getByRole('button', { name: 'search' }));
+    expect(searchOf(router)).toEqual({ status: 'approved', q: 'kedai' });
+
+    await act(() => router.navigate(-1));
+    expect(router.state.location.search).toBe('');
+
+    await act(() => router.navigate(1));
+    await user.click(screen.getByRole('button', { name: 'sort' }));
+    await act(() => router.navigate(-1));
+    expect(searchOf(router)).toEqual({ status: 'approved', q: 'kedai' });
   });
 });

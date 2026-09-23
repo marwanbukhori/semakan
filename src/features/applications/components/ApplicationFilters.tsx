@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@govtechmy/myds-react/select';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from '@/shared/hooks/useDebouncedCallback';
 import { APPLICATION_STATUSES, StatusFilterSchema } from '../schemas';
@@ -41,10 +41,17 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
     if (q !== draft.trim()) setDraft(q);
   }
 
-  const commitSearch = useDebouncedCallback(
+  const [commitSearch, cancelSearch] = useDebouncedCallback(
     (value: string) => onChange({ q: value }),
     SEARCH_DEBOUNCE_MS,
   );
+
+  // When q changes from outside (e.g. "Clear filters"), a commit still pending from earlier
+  // typing would write the old text back; drop it. Our own commits match what was typed.
+  const lastTypedRef = useRef(q);
+  useEffect(() => {
+    if (q !== lastTypedRef.current.trim()) cancelSearch();
+  }, [q, cancelSearch]);
 
   return (
     <div role="search" className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -58,6 +65,7 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
           placeholder={t('applications.filters.searchPlaceholder')}
           onChange={(event) => {
             setDraft(event.target.value);
+            lastTypedRef.current = event.target.value;
             commitSearch(event.target.value);
           }}
         >

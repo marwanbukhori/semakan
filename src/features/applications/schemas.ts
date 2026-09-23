@@ -50,7 +50,12 @@ export const ApplicationListSchema = z.object({
 export const ApplicationListParamsSchema = z.object({
   page: z.coerce.number().int().min(1).catch(1),
   status: StatusFilterSchema.catch('all'),
-  q: z.string().trim().max(100).catch(''),
+  // Over-long searches are cut to 100 characters rather than thrown away.
+  q: z
+    .string()
+    .trim()
+    .transform((s) => s.slice(0, 100))
+    .catch(''),
   sort: z.enum(SORT_FIELDS).catch('submittedAt'),
   order: z.enum(SORT_ORDERS).catch('desc'),
 });

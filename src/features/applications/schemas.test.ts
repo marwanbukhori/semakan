@@ -24,6 +24,11 @@ describe('ApplicationListParamsSchema', () => {
     ).toEqual({ page: 3, status: 'approved', q: 'kedai', sort: 'businessName', order: 'asc' });
   });
 
+  it('truncates an over-long search instead of discarding it', () => {
+    const { q } = ApplicationListParamsSchema.parse({ q: `  ${'a'.repeat(150)}  ` });
+    expect(q).toBe('a'.repeat(100));
+  });
+
   it('falls back to defaults for tampered values instead of throwing', () => {
     expect(
       ApplicationListParamsSchema.parse({
