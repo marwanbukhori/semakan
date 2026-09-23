@@ -31,6 +31,8 @@ const END_LABEL_OFFSET = 12;
 // fixed margin avoids a measure-then-re-render pass.
 const END_LABEL_WIDTH = 156;
 const TOOLTIP_OFFSET = 12;
+// Month labels like "Sep 2026" need about 60px; 72px keeps a clear gap between neighbours.
+const MIN_TICK_SPACING = 72;
 
 /** The row's plotted values, highest first; null weeks are left out, never read as zero. */
 function visibleValues(row: LevelRow | undefined, fuels: readonly FuelKey[]) {
@@ -79,9 +81,11 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
       fuels.flatMap((fuel) => (row[fuel] === null ? [] : [row[fuel]])),
     );
     const domain = niceDomain(values);
-    const x = linearScale([0, Math.max(levels.length - 1, 1)], [margin.left, plotRight]);
+    // Position weeks by their real dates, so an irregular gap between releases reads truthfully.
+    const times = levels.map((row) => Date.parse(row.date));
+    const x = linearScale([times[0] ?? 0, times.at(-1) ?? 0], [margin.left, plotRight]);
     const y = linearScale(domain, [plotBottom, margin.top]);
-    const xs = levels.map((_, i) => x(i));
+    const xs = times.map(x);
     const series = fuels.map((fuel) => {
       const points = levels.map((row, i) => {
         const value = row[fuel];
@@ -95,7 +99,6 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
       LABEL_GAP,
       [margin.top, plotBottom],
     );
-    const maxTicks = Math.max(1, Math.floor((plotRight - margin.left) / 72));
     return {
       hasData: values.length > 0,
       plotRight,
@@ -107,7 +110,8 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
       labelY,
       monthTicks: monthTickIndexes(
         levels.map((r) => r.date),
-        maxTicks,
+        xs,
+        MIN_TICK_SPACING,
       ),
     };
   }, [width, levels, fuels, margin.left, margin.right, margin.top, margin.bottom]);

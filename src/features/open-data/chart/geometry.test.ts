@@ -68,7 +68,11 @@ describe('chart geometry', () => {
     expect(squeezed.a).toBe(194);
   });
 
-  it('puts a tick at the first week of each month, thinned to fit', () => {
+  // One pixel per day, so the spacing rules read in days.
+  const byDay = (dates: readonly string[], pxPerDay = 1) =>
+    dates.map((date) => ((Date.parse(date) - Date.parse(dates[0]!)) / 86_400_000) * pxPerDay);
+
+  it('puts a tick at the first week of each month, thinned evenly to keep them apart', () => {
     const dates = [
       '2026-01-01',
       '2026-01-08',
@@ -77,9 +81,26 @@ describe('chart geometry', () => {
       '2026-03-05',
       '2026-04-02',
     ];
-    expect(monthTickIndexes(dates, 10)).toEqual([0, 2, 4, 5]);
-    expect(monthTickIndexes(dates, 2)).toEqual([0, 4]);
-    expect(monthTickIndexes(dates, 0)).toEqual([]);
+    expect(monthTickIndexes(dates, byDay(dates), 10)).toEqual([0, 2, 4, 5]);
+    // February to March is 28px, under 30: every other month instead.
+    expect(monthTickIndexes(dates, byDay(dates), 30)).toEqual([0, 4]);
+    expect(monthTickIndexes([], [], 72)).toEqual([]);
+  });
+
+  it('drops a leading partial month whose tick would crowd the next month', () => {
+    const dates = [
+      '2026-03-26',
+      '2026-04-02',
+      '2026-04-09',
+      '2026-04-16',
+      '2026-04-23',
+      '2026-04-30',
+      '2026-05-07',
+    ];
+    // At 3px a day, 26 March sits 21px before 2 April: too close for two labels.
+    expect(monthTickIndexes(dates, byDay(dates, 3), 72)).toEqual([1, 6]);
+    // With room to spare, the partial month keeps its tick.
+    expect(monthTickIndexes(dates, byDay(dates, 12), 72)).toEqual([0, 1, 6]);
   });
 
   it('places the tooltip beside the anchor, flipping past the middle and staying in the chart', () => {

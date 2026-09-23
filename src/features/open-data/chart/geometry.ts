@@ -69,14 +69,26 @@ export function layoutEndLabels(
   return Object.fromEntries(sorted.map((item, i) => [item.key, ys[i]!]));
 }
 
-export function monthTickIndexes(dates: readonly string[], maxTicks: number): number[] {
-  if (maxTicks <= 0) return [];
-  const firsts = dates.flatMap((date, i) =>
+/**
+ * Ticks at the first week of each month, at least `minSpacing` apart on the x positions `xs`. A
+ * leading partial month (the range starting late in a month) loses its tick when it would crowd
+ * the next month's; the rest are thinned to every nth month, so the spacing stays even.
+ */
+export function monthTickIndexes(
+  dates: readonly string[],
+  xs: readonly number[],
+  minSpacing: number,
+): number[] {
+  let firsts = dates.flatMap((date, i) =>
     i === 0 || date.slice(0, 7) !== dates[i - 1]!.slice(0, 7) ? [i] : [],
   );
-  if (firsts.length <= maxTicks) return firsts;
-  const every = Math.ceil(firsts.length / Math.max(maxTicks, 1));
-  return firsts.filter((_, i) => i % every === 0);
+  if (firsts.length > 1 && xs[firsts[1]!]! - xs[firsts[0]!]! < minSpacing) firsts = firsts.slice(1);
+  for (let every = 1; every < firsts.length; every += 1) {
+    const kept = firsts.filter((_, i) => i % every === 0);
+    const apart = kept.every((index, i) => i === 0 || xs[index]! - xs[kept[i - 1]!]! >= minSpacing);
+    if (apart) return kept;
+  }
+  return firsts.slice(0, 1);
 }
 
 /**

@@ -119,6 +119,15 @@ describe('FuelPriceChart', () => {
     expect(readout).toHaveTextContent(before);
   });
 
+  it('spaces weeks by their real dates, not by row', () => {
+    const rows = ['2025-09-25', '2025-09-30', '2025-10-09'].map((date) => ({ ...last, date }));
+    const { container } = renderChart(['ron95'], rows);
+    const d = container.querySelector('path[data-fuel="ron95"]')!.getAttribute('d')!;
+    const [a, b, c] = [...d.matchAll(/[ML]([\d.]+),/g)].map((m) => Number(m[1]));
+    // 5 days, then 9 days.
+    expect((b! - a!) / (c! - b!)).toBeCloseTo(5 / 9, 2);
+  });
+
   it('shows a short message instead of a chart when there is nothing to plot', () => {
     const { container } = render(
       <FuelPriceChart levels={[]} fuels={['ron95']} rangeLabel="3 months" />,
