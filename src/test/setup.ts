@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom/vitest';
+import '@/shared/i18n';
 import { cleanup } from '@testing-library/react';
 import { resetApplications } from '@/mocks/db/applications';
 import { resetDevControls } from '@/mocks/devControls';
