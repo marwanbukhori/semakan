@@ -3,10 +3,54 @@ export const en = {
     name: 'Semakan',
     tagline: 'Licence application review',
     skipToContent: 'Skip to main content',
-    nav: { label: 'Main', applications: 'Applications' },
+    nav: { label: 'Main', applications: 'Applications', fuel: 'Fuel prices' },
     theme: { light: 'Light theme', dark: 'Dark theme' },
     mockApiFailed:
       "The demo's mock API could not start, so no data will load. Try reloading the page.",
+  },
+  fuel: {
+    title: 'Fuel prices',
+    intro:
+      'Weekly retail fuel prices in Malaysia, published by the Ministry of Finance on data.gov.my.',
+    series: {
+      ron95: 'RON95',
+      ron97: 'RON97',
+      diesel: 'Diesel',
+      ron95_budi95: 'RON95 (BUDI95)',
+    },
+    range: { label: 'Date range', '3m': '3 months', '6m': '6 months', '1y': '1 year' },
+    fuels: { label: 'Fuels shown', none: 'Choose at least one fuel to show the chart.' },
+    price: 'RM {{value}}',
+    unit: 'RM per litre',
+    chart: {
+      label: 'Weekly fuel prices, {{range}}',
+      loading: 'Loading fuel prices…',
+      instructions:
+        'Use the left and right arrow keys to read each week. Home and End jump to the first and last week.',
+      summary: '{{fuel}} went from RM {{from}} to RM {{to}}.',
+    },
+    latest: {
+      title: 'Latest weeks',
+      caption: 'Prices for the latest weeks, with the change from the week before',
+      week: 'Week of',
+      up: 'up RM {{value}}',
+      down: 'down RM {{value}}',
+      same: 'no change',
+    },
+    table: {
+      show: 'Show the chart data as a table',
+      caption: 'Weekly fuel prices, RM per litre',
+      week: 'Week of',
+    },
+    freshness: {
+      asOf: 'Data as of {{date}}',
+      next: 'Next update {{date}}',
+      source: 'Source: {{source}} via data.gov.my',
+      link: 'View this dataset on data.gov.my',
+    },
+    skipped_one: '{{count}} row had an unexpected format and is not shown.',
+    skipped_other: '{{count}} rows had an unexpected format and are not shown.',
+    errorTitle: "Couldn't load fuel prices",
   },
   applications: {
     title: 'Licence applications',
