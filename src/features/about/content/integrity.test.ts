@@ -2,6 +2,7 @@ import { PROJECTS } from './experience';
 import { REQUIREMENTS } from './requirements';
 import { extractRegion } from '../source/regions';
 import { PRACTICES } from './practices';
+import { aiWorkflow, REVIEW_LOG_PATHS, REVIEW_LOG_README_PATH } from './aiWorkflow';
 
 /**
  * Every path/region a content module points at must exist in the real repo, so the About pages
@@ -70,5 +71,17 @@ describe('content integrity', () => {
   });
   it.each(projectRepoHrefs)('project $projectId: $href exists in the repo', ({ href }) => {
     expect(readFile(href)).toBeDefined();
+  });
+
+  const docsProcessPaths = [...Object.values(REVIEW_LOG_PATHS), REVIEW_LOG_README_PATH];
+  it.each(docsProcessPaths)('docs/process path %s exists in the repo', (path) => {
+    expect(readFile(path)).toBeDefined();
+  });
+
+  const pipelineLinkPaths = aiWorkflow.pipeline
+    .map((step) => step.path)
+    .filter((path): path is string => path !== undefined);
+  it.each(pipelineLinkPaths)('pipeline link %s exists in the repo', (path) => {
+    expect(readFile(path)).toBeDefined();
   });
 });
