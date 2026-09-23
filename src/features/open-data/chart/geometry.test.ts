@@ -6,6 +6,7 @@ import {
   niceDomain,
   segmentPath,
   ticks,
+  tooltipLeft,
 } from './geometry';
 
 describe('chart geometry', () => {
@@ -79,5 +80,15 @@ describe('chart geometry', () => {
     expect(monthTickIndexes(dates, 10)).toEqual([0, 2, 4, 5]);
     expect(monthTickIndexes(dates, 2)).toEqual([0, 4]);
     expect(monthTickIndexes(dates, 0)).toEqual([]);
+  });
+
+  it('places the tooltip beside the anchor, flipping past the middle and staying in the chart', () => {
+    expect(tooltipLeft(100, 190, 720)).toBe(112);
+    expect(tooltipLeft(600, 190, 720)).toBe(398);
+    // A 343px phone chart: flipped at 172 it would start at -30, so it is clamped to 0.
+    expect(tooltipLeft(172, 190, 343)).toBe(0);
+    // Not flipped at 150 it would end at 352, so it is pulled back to end at 343.
+    expect(tooltipLeft(150, 190, 343)).toBe(153);
+    expect(tooltipLeft(10, 400, 343)).toBe(0);
   });
 });

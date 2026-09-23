@@ -78,3 +78,17 @@ export function monthTickIndexes(dates: readonly string[], maxTicks: number): nu
   const every = Math.ceil(firsts.length / Math.max(maxTicks, 1));
   return firsts.filter((_, i) => i % every === 0);
 }
+
+/**
+ * The tooltip's left edge: `offset` right of the anchor, or left of it once the anchor passes the
+ * chart's middle, then clamped so the whole tooltip stays inside [0, chartWidth].
+ */
+export function tooltipLeft(
+  anchorX: number,
+  tooltipWidth: number,
+  chartWidth: number,
+  offset = 12,
+): number {
+  const left = anchorX > chartWidth / 2 ? anchorX - offset - tooltipWidth : anchorX + offset;
+  return Math.max(0, Math.min(left, chartWidth - tooltipWidth));
+}
