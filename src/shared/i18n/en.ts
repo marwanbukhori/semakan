@@ -39,6 +39,21 @@ export const en = {
     architecture: {
       layersHeading: 'Layers',
     },
+    practices: {
+      title: 'Practices',
+      intro:
+        'Each practice shows where it lives in the code and what keeps it true. Partial and planned items say so.',
+      summary: '{{enforced}} enforced · {{partial}} partial · {{planned}} planned',
+      what: 'What',
+      why: 'Why',
+      enforcedBy: 'Enforced by',
+    },
+    status: {
+      enforced: 'Enforced',
+      partial: 'Partial',
+      planned: 'Planned',
+      plan: 'Plan {{plan}}',
+    },
   },
   fuel: {
     title: 'Fuel prices',

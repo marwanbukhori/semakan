@@ -41,6 +41,21 @@ export const ms: Translation = {
     architecture: {
       layersHeading: 'Lapisan',
     },
+    practices: {
+      title: 'Amalan',
+      intro:
+        'Setiap amalan menunjukkan di mana ia berada dalam kod dan apa yang mengekalkannya benar. Item separa dan dirancang menyatakan sedemikian.',
+      summary: '{{enforced}} dikuatkuasakan · {{partial}} separa · {{planned}} dirancang',
+      what: 'Apa',
+      why: 'Mengapa',
+      enforcedBy: 'Dikuatkuasakan oleh',
+    },
+    status: {
+      enforced: 'Dikuatkuasakan',
+      partial: 'Separa',
+      planned: 'Dirancang',
+      plan: 'Pelan {{plan}}',
+    },
   },
   fuel: {
     title: 'Harga bahan api',
