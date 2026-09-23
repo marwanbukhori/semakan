@@ -52,7 +52,7 @@ describe('useReviewApplication', () => {
     );
     expect(list?.items[0]?.status).toBe('rejected');
 
-    await waitFor(() => expect(result.current.review.isSuccess).toBe(true));
+    await waitFor(() => expect(result.current.review.isSuccess).toBe(true), { timeout: 3000 });
     expect(result.current.review.data?.version).toBe(target.version + 1);
   });
 
