@@ -7,3 +7,7 @@ export function blobUrl(path: string, lines?: { startLine: number; endLine: numb
 export function commitUrl(sha: string): string {
   return `${REPO_URL}/commit/${sha}`;
 }
+
+export function treeUrl(path: string): string {
+  return `${REPO_URL}/tree/main/${path}`;
+}

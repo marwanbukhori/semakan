@@ -30,6 +30,17 @@ export const ms: Translation = {
       viewLines: 'Lihat di GitHub (baris {{start}}–{{end}})',
       missing: 'Petikan ini tidak ditemui dalam kod sumber.',
     },
+    overview: {
+      ciAlt: 'Status CI',
+      liveDemo: 'Demo langsung',
+      repo: 'Repositori',
+      stackHeading: 'Tumpukan teknologi',
+      tourHeading: 'Lawatan ringkas',
+      foldersHeading: 'Terokai kod',
+    },
+    architecture: {
+      layersHeading: 'Lapisan',
+    },
   },
   fuel: {
     title: 'Harga bahan api',

@@ -28,6 +28,17 @@ export const en = {
       viewLines: 'View on GitHub (lines {{start}}–{{end}})',
       missing: "This excerpt couldn't be found in the source.",
     },
+    overview: {
+      ciAlt: 'CI status',
+      liveDemo: 'Live demo',
+      repo: 'Repository',
+      stackHeading: 'Tech stack',
+      tourHeading: 'Take a tour',
+      foldersHeading: 'Explore the code',
+    },
+    architecture: {
+      layersHeading: 'Layers',
+    },
   },
   fuel: {
     title: 'Fuel prices',

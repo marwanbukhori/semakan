@@ -1,4 +1,4 @@
-import { blobUrl, commitUrl } from './repo';
+import { blobUrl, commitUrl, treeUrl } from './repo';
 
 it('builds GitHub links to files, line ranges and commits', () => {
   expect(blobUrl('src/shared/api/client.ts')).toBe(
@@ -8,4 +8,10 @@ it('builds GitHub links to files, line ranges and commits', () => {
     'https://github.com/marwanbukhori/semakan/blob/main/src/shared/api/client.ts#L10-L24',
   );
   expect(commitUrl('66e3cd7')).toBe('https://github.com/marwanbukhori/semakan/commit/66e3cd7');
+});
+
+it('builds a GitHub link to a folder', () => {
+  expect(treeUrl('src/features/about')).toBe(
+    'https://github.com/marwanbukhori/semakan/tree/main/src/features/about',
+  );
 });
