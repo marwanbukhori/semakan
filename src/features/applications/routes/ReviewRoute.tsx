@@ -79,6 +79,9 @@ export function Component() {
     >
       <DialogBody
         hideClose
+        // MYDS centres the dialog with no height limit, so on a short screen the
+        // footer falls off-screen. Cap it to the viewport and let it scroll.
+        className="max-h-[calc(100dvh-2rem)] overflow-y-auto"
         // The dialog opens from a URL, not a Radix trigger, so Radix has nothing
         // to return focus to. Send it to the Review link, or to the heading once
         // the application is closed and the link is gone.
