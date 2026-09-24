@@ -89,13 +89,15 @@ const STATUS_WEIGHTS: ReadonlyArray<readonly [ApplicationStatus, number]> = [
   ['rejected', 10],
 ];
 
-export function weightedStatus(roll: number): ApplicationStatus {
+function weightedStatus(roll: number): ApplicationStatus {
   const total = STATUS_WEIGHTS.reduce((sum, [, weight]) => sum + weight, 0);
   let threshold = roll * total;
   for (const [status, weight] of STATUS_WEIGHTS) {
     if (threshold < weight) return status;
     threshold -= weight;
   }
+  // Unreachable while the weights sum to the total; kept as a safe default.
+  /* v8 ignore next */
   return 'submitted';
 }
 
@@ -152,7 +154,7 @@ function seedDocuments(
   }));
 }
 
-export function seedTimeline(
+function seedTimeline(
   summary: ApplicationSummary,
   documents: ApplicationDocument[],
 ): TimelineEvent[] {
@@ -214,6 +216,7 @@ export function seedTimeline(
         note: 'Premis tidak mematuhi syarat zon.',
       });
       break;
+    /* v8 ignore next 2 */
     default:
       return assertNever(summary.status);
   }

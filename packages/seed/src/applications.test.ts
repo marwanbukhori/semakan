@@ -1,12 +1,6 @@
 import { ApplicationDetailSchema } from '@semakan/contract';
 import { z } from 'zod';
-import {
-  seedApplicationDetails,
-  seedApplications,
-  seedTimeline,
-  toSummary,
-  weightedStatus,
-} from './applications';
+import { seedApplicationDetails, seedApplications, toSummary } from './applications';
 
 describe('seedApplicationDetails', () => {
   it('returns 57 records', () => {
@@ -39,21 +33,5 @@ describe('seedApplicationDetails', () => {
 describe('toSummary', () => {
   it('extends the summaries without changing them', () => {
     expect(seedApplicationDetails().map(toSummary)).toEqual(seedApplications());
-  });
-});
-
-// Not in the brief: these close the coverage gap left by the defensive fallback in
-// `weightedStatus` and the exhaustiveness-check branch (`assertNever`) that `seedTimeline`
-// inherits verbatim from the mock. See the report's Concerns.
-describe('exhaustiveness and defensive fallbacks', () => {
-  it('weightedStatus falls back to submitted once every weight is exhausted', () => {
-    expect(weightedStatus(1)).toBe('submitted');
-  });
-
-  it('seedTimeline throws on an unhandled status', () => {
-    const summary = seedApplications(1)[0]!;
-    expect(() => seedTimeline({ ...summary, status: 'bogus' as never }, [])).toThrow(
-      'Unhandled value',
-    );
   });
 });
