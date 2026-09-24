@@ -4,6 +4,8 @@ const ConfigSchema = z.object({
   DATABASE_URL: z.url(),
   PORT: z.coerce.number().int().positive().default(3100),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  /** The officer every review is recorded against. Plan 6c replaces it with the authenticated user. */
+  DEMO_OFFICER: z.string().trim().min(1).default('Pn. Hafizah'),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;

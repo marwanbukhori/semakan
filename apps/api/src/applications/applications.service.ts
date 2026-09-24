@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import type {
   ApplicationDetail,
@@ -7,10 +7,12 @@ import type {
   ReviewRequest,
 } from '@semakan/contract';
 import { decide } from '@semakan/domain';
-import { CURRENT_OFFICER } from '@semakan/seed';
 import { ApplicationsRepository } from './applications.repository';
 import { IdempotencyRepository, requestHash } from './idempotency.repository';
 import { ProblemException } from '../http/problem.filter';
+
+/** Injection token for the configured demo officer (config DEMO_OFFICER). */
+export const DEMO_OFFICER = Symbol('DEMO_OFFICER');
 
 export interface ReviewResponse {
   status: number;
@@ -30,6 +32,9 @@ export class ApplicationsService {
     private readonly ds: DataSource,
     private readonly repo: ApplicationsRepository,
     private readonly idempotency: IdempotencyRepository,
+    // Every review is recorded against the demo officer until plan 6c, which
+    // replaces it with the authenticated user.
+    @Inject(DEMO_OFFICER) private readonly officer: string,
   ) {}
 
   list(params: ApplicationListParams): Promise<ApplicationList> {
@@ -74,7 +79,7 @@ export class ApplicationsService {
       const before = await this.repo.findDetail(id, manager);
       if (!before) throw notFound();
 
-      const decision = decide(before, request, CURRENT_OFFICER, new Date());
+      const decision = decide(before, request, this.officer, new Date());
       if (!decision.ok) {
         if (decision.error.kind === 'version_conflict') throw versionConflict();
         throw new ProblemException(422, {

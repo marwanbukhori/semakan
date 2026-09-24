@@ -14,7 +14,6 @@
     "check": "npm run typecheck && npm run lint && npm run coverage"
   },
   "dependencies": {
-    "@semakan/contract": "0.1.0",
-    "zod": "4.6.5"
+    "@semakan/contract": "0.1.0"
   }
 }
