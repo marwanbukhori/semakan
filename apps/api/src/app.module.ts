@@ -10,6 +10,8 @@ import { HealthModule } from './health/health.module';
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
         ...dataSourceOptions(loadConfig(process.env).DATABASE_URL),
+        // Fine for a single instance. A multi-replica deployment runs migrations
+        // once as a separate job (`npm run db:migrate`) and turns this off.
         migrationsRun: true,
         retryAttempts: 2,
         retryDelay: 1000,

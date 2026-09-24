@@ -7,7 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Problem } from '@semakan/contract';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 
 export type ProblemInit = {
   title: string;
@@ -32,20 +32,43 @@ export class ProblemDetailsFilter implements ExceptionFilter {
   private readonly logger = new Logger(ProblemDetailsFilter.name);
 
   catch(exception: unknown, host: ArgumentsHost) {
-    const res = host.switchToHttp().getResponse<Response>();
-    const status = exception instanceof HttpException ? exception.getStatus() : 500;
+    const http = host.switchToHttp();
+    const res = http.getResponse<Response>();
+    const status =
+      exception instanceof HttpException
+        ? exception.getStatus()
+        : isExposedClientError(exception)
+          ? exception.status
+          : 500;
     if (status >= 500) {
-      this.logger.error(
-        exception instanceof Error ? (exception.stack ?? exception.message) : String(exception),
-      );
+      const req = http.getRequest<Request>();
+      const reason =
+        exception instanceof Error ? (exception.stack ?? exception.message) : String(exception);
+      this.logger.error(`${req.method} ${req.originalUrl} ${reason}`);
     }
     const body = toProblem(status, describe(exception, status));
     res.status(status).type('application/problem+json').send(JSON.stringify(body));
   }
 }
 
+/**
+ * An http-errors error (what body-parser throws, e.g. 413 for a body over the
+ * limit) that marks its message safe for clients with `expose`. It reaches this
+ * filter as a plain Error, not an HttpException.
+ */
+function isExposedClientError(
+  exception: unknown,
+): exception is Error & { status: number; expose: true } {
+  if (!(exception instanceof Error)) return false;
+  const { status, expose } = exception as { status?: unknown; expose?: unknown };
+  return typeof status === 'number' && status >= 400 && status <= 499 && expose === true;
+}
+
 function describe(exception: unknown, status: number): ProblemInit {
   if (exception instanceof ProblemException) return exception.problem;
+  if (isExposedClientError(exception)) {
+    return { title: STATUS_CODES[status] ?? 'Error', detail: exception.message };
+  }
   if (!(exception instanceof HttpException)) return { title: 'Internal Server Error' };
   const title = STATUS_CODES[status] ?? 'Error';
   const response = exception.getResponse();

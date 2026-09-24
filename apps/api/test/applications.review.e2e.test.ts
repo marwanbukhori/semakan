@@ -6,6 +6,7 @@ import { ApplicationDetailSchema } from '@semakan/contract';
 import type { ApplicationDetail } from '@semakan/contract';
 import { isReviewable, requiresFireCertificate } from '@semakan/domain';
 import { CURRENT_OFFICER, seedApplicationDetails } from '@semakan/seed';
+import { IDEMPOTENCY_LOCK_NAMESPACE } from '../src/applications/idempotency.repository';
 import { createTestApp } from './app';
 import { resetDatabase } from './database';
 
@@ -164,6 +165,18 @@ describe('POST /api/v1/applications/:id/review', () => {
     });
   });
 
+  it('returns 413 problem+json for a body over the 100 kB limit', async () => {
+    const { id, version } = approvable;
+    const res = await review(
+      id,
+      { version, review: { decision: 'approve', note: 'x'.repeat(110_000) } },
+      { 'If-Match': `"${version}"` },
+    ).expect(413);
+    expect(res.headers['content-type']).toMatch(/^application\/problem\+json/);
+    expect(res.body).toMatchObject({ status: 413, title: 'Payload Too Large' });
+    expect(await storedVersion(id)).toBe(version);
+  });
+
   it('returns 404 for an unknown id', async () => {
     const res = await review('app-999', approve(1), { 'If-Match': '"1"' }).expect(404);
     expect(res.body).toMatchObject({ code: 'not_found' });
@@ -233,6 +246,40 @@ describe('POST /api/v1/applications/:id/review', () => {
       const res = await review(id, approve(version), headers).expect(400);
       expect(res.body).toMatchObject({ code: 'invalid_idempotency_key' });
       expect(await storedVersion(id)).toBe(version);
+    });
+
+    it('waits for the advisory lock held on its key before doing anything', async () => {
+      const { id, version } = approvable;
+      const key = 'key-locked';
+      const holder = ds.createQueryRunner();
+      await holder.connect();
+      await holder.startTransaction();
+      try {
+        await holder.query('SELECT pg_advisory_xact_lock($1::int, hashtext($2))', [
+          IDEMPOTENCY_LOCK_NAMESPACE,
+          key,
+        ]);
+        let settled = false;
+        const pending = review(id, approve(version), {
+          'If-Match': `"${version}"`,
+          'Idempotency-Key': key,
+        }).then((res) => {
+          settled = true;
+          return res;
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        expect(settled).toBe(false);
+        expect(await storedVersion(id)).toBe(version);
+
+        await holder.commitTransaction();
+        const res = await pending;
+        expect(res.status).toBe(200);
+        expect(res.body).toMatchObject({ version: version + 1 });
+      } finally {
+        if (holder.isTransactionActive) await holder.rollbackTransaction();
+        await holder.release();
+      }
     });
 
     it('serialises two concurrent requests sharing the same new key: both replay one commit', async () => {

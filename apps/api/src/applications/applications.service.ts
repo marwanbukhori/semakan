@@ -53,7 +53,9 @@ export class ApplicationsService {
         ? undefined
         : { key: idempotencyKey, hash: requestHash(id, request) };
 
-    return this.ds.transaction(async (manager) => {
+    // READ COMMITTED is Postgres's default, but the idempotency lock depends on it
+    // (a fresh snapshot per statement), so it is requested explicitly.
+    return this.ds.transaction('READ COMMITTED', async (manager) => {
       if (idempotency) {
         // Must stay first: serialises concurrent same-key requests so the
         // second one waits for the first to commit and then replays it,

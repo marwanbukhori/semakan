@@ -9,6 +9,9 @@ export interface StoredResponse {
   body: unknown;
 }
 
+/** The first key of the two-key advisory lock, so these locks cannot collide with other features' locks. */
+export const IDEMPOTENCY_LOCK_NAMESPACE = 7201;
+
 /** JSON with object keys sorted recursively, so equal bodies serialise identically. */
 export function canonicalJson(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
@@ -34,12 +37,18 @@ export function requestHash(id: string, body: unknown): string {
 export class IdempotencyRepository {
   /**
    * Serialises requests that share a key until the holder commits or rolls back.
+   * The lock is two-key: IDEMPOTENCY_LOCK_NAMESPACE plus a hash of the key, so it
+   * never collides with advisory locks taken elsewhere for other purposes.
    * Must stay the first statement in the transaction, before `find`: it relies
-   * on READ COMMITTED (each statement gets a fresh snapshot), so the waiter's
-   * subsequent `find` sees the row the lock holder just committed.
+   * on READ COMMITTED (each statement gets a fresh snapshot, which the service
+   * requests explicitly), so the waiter's subsequent `find` sees the row the
+   * lock holder just committed.
    */
   async lock(manager: EntityManager, key: string): Promise<void> {
-    await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [key]);
+    await manager.query('SELECT pg_advisory_xact_lock($1::int, hashtext($2))', [
+      IDEMPOTENCY_LOCK_NAMESPACE,
+      key,
+    ]);
   }
 
   async find(manager: EntityManager, key: string): Promise<StoredResponse | null> {

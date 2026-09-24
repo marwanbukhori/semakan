@@ -25,7 +25,10 @@ function render(exception: unknown) {
       return fake;
     },
   };
-  const host = { switchToHttp: () => ({ getResponse: () => fake }) } as unknown as ArgumentsHost;
+  const req = { method: 'POST', originalUrl: '/api/v1/applications/app-1/review' };
+  const host = {
+    switchToHttp: () => ({ getResponse: () => fake, getRequest: () => req }),
+  } as unknown as ArgumentsHost;
   new ProblemDetailsFilter().catch(exception, host);
   return { ...res, problem: ProblemSchema.parse(JSON.parse(res.body)) };
 }
@@ -111,6 +114,39 @@ describe('ProblemDetailsFilter', () => {
     const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     render(new ProblemException(503, { title: 'Service Unavailable', detail: 'db down' }));
     expect(log).toHaveBeenCalledTimes(1);
+    expect(String(log.mock.calls[0]?.[0])).toMatch(/^POST \/api\/v1\/applications\/app-1\/review /);
+    log.mockRestore();
+  });
+
+  it('maps an exposed 4xx http-error (e.g. from body-parser) to its status without logging', () => {
+    const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const tooLarge = Object.assign(new Error('request entity too large'), {
+      status: 413,
+      statusCode: 413,
+      expose: true,
+      type: 'entity.too.large',
+    });
+    const { statusCode, contentType, problem } = render(tooLarge);
+    expect(statusCode).toBe(413);
+    expect(contentType).toBe('application/problem+json');
+    expect(problem).toEqual({
+      type: 'about:blank',
+      title: 'Payload Too Large',
+      status: 413,
+      detail: 'request entity too large',
+      message: 'request entity too large',
+    });
+    expect(log).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+
+  it('still treats an unexposed or non-4xx status on an error as a 500', () => {
+    const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    const hidden = Object.assign(new Error('internal'), { status: 400, expose: false });
+    const server = Object.assign(new Error('boom'), { status: 502, expose: true });
+    expect(render(hidden).statusCode).toBe(500);
+    expect(render(server).statusCode).toBe(500);
+    expect(log).toHaveBeenCalledTimes(2);
     log.mockRestore();
   });
 
@@ -134,7 +170,7 @@ describe('ProblemDetailsFilter', () => {
     expect(body).not.toContain('secret failure');
     render('a thrown string');
     expect(log).toHaveBeenCalledTimes(2);
-    expect(log.mock.calls[1]).toEqual(['a thrown string']);
+    expect(log.mock.calls[1]).toEqual(['POST /api/v1/applications/app-1/review a thrown string']);
     log.mockRestore();
   });
 });

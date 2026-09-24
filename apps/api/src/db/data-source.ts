@@ -22,5 +22,8 @@ export function dataSourceOptions(url: string) {
     migrations: MIGRATIONS,
     migrationsRun: false,
     synchronize: false,
+    // Passed to the pg pool: fail fast when the database is unreachable, and
+    // cap any single statement (including a wait on the idempotency lock).
+    extra: { connectionTimeoutMillis: 2000, statement_timeout: 5000 },
   } satisfies DataSourceOptions;
 }
