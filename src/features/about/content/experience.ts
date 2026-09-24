@@ -173,8 +173,8 @@ export const PROJECTS: readonly Project[] = [
         ],
       },
       challenge: {
-        en: 'A booking night that crashed at around three thousand attempts and sold the same table twice: two different failures with two different fixes.',
-        ms: 'Satu malam tempahan yang crash pada kira-kira tiga ribu percubaan dan menjual meja yang sama dua kali: dua kegagalan berbeza dengan dua penyelesaian berbeza.',
+        en: 'A load-tested booking night that crashed at around three thousand attempts and sold the same table twice: two different failures with two different fixes.',
+        ms: 'Satu malam tempahan dalam ujian beban (load test) yang crash pada kira-kira tiga ribu percubaan dan menjual meja yang sama dua kali: dua kegagalan berbeza dengan dua penyelesaian berbeza.',
       },
       requirements: [
         'be-typed-services',
