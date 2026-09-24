@@ -12,6 +12,8 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @semakan/web --",
+    "dev:api": "npm run dev --workspace @semakan/api --",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d postgres",
     "build": "npm run build --workspace @semakan/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
