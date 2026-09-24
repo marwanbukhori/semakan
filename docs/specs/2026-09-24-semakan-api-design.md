@@ -111,7 +111,7 @@ Commands are pure: each one returns `Result<{ state, events }, DomainError>` and
 - **JWT checks:** issuer, audience, expiry, and the signature against a cached JWKS.
 - **Access control:** role checks in a guard; data-dependent checks in the domain.
 - **Hardening:** helmet, a CORS allow-list, zod validation of inputs, rate limits.
-- **Personal data:** pino redacts applicant contact details (the notifier needs an email address, so `applications` gains an `applicant_email` column that is never logged). The audit log stores who, what and when, but not free-text reasons.
+- **Personal data:** pino redacts applicant contact details (the contract already carries `applicantEmail`, which the notifier uses; it is stored but never logged). The audit log stores who, what and when, but not free-text reasons.
 - **Config** is validated with zod at startup. `.env.example` is committed; real `.env` files are not.
 - **CI** runs `npm audit` and dependency review.
 
