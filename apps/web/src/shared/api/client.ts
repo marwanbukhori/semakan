@@ -6,19 +6,29 @@ type QueryValue = string | number | boolean | null | undefined;
 export type RequestOptions = {
   params?: Record<string, QueryValue>;
   signal?: AbortSignal;
+  headers?: Record<string, string>;
 };
 
 type SendOptions = RequestOptions & { method: 'GET' | 'POST'; body?: unknown };
 
-export function createApiClient({ baseUrl }: { baseUrl: string }) {
+export function createApiClient({ baseUrl }: { baseUrl: string | (() => string) }) {
+  function resolveBaseUrl(): string {
+    return typeof baseUrl === 'string' ? baseUrl : baseUrl();
+  }
+
   // #region practice:validate-at-boundary
   /** Every request is validated: the schema is required, so unvalidated data never reaches the UI. */
   async function request<T extends z.ZodType>(
     path: string,
     schema: T,
-    { method, body, params, signal }: SendOptions,
+    { method, body, params, signal, headers }: SendOptions,
   ): Promise<z.infer<T>> {
-    const response = await send(buildUrl(baseUrl, path, params), { method, body, signal });
+    const response = await send(buildUrl(resolveBaseUrl(), path, params), {
+      method,
+      body,
+      signal,
+      headers,
+    });
     const payload = await readJson(response);
 
     if (!response.ok) throw ApiError.fromResponse(response.status, payload);
@@ -61,7 +71,15 @@ export function createApiClient({ baseUrl }: { baseUrl: string }) {
 
 export type ApiClient = ReturnType<typeof createApiClient>;
 
-export const apiClient = createApiClient({ baseUrl: '/api' });
+// The app layer (never shared code) may repoint this at the real API in dev; see setApiBaseUrl.
+let currentBase = '/api';
+
+/** Set by the app layer, e.g. when the Dev Panel's API source switch changes. */
+export function setApiBaseUrl(url: string): void {
+  currentBase = url;
+}
+
+export const apiClient = createApiClient({ baseUrl: () => currentBase });
 
 function buildUrl(baseUrl: string, path: string, params: RequestOptions['params'] = {}): URL {
   const url = new URL(`${baseUrl}${path}`, window.location.origin);
@@ -74,16 +92,18 @@ function buildUrl(baseUrl: string, path: string, params: RequestOptions['params'
 
 async function send(
   url: URL,
-  { method, body, signal }: Pick<SendOptions, 'method' | 'body' | 'signal'>,
+  { method, body, signal, headers }: Pick<SendOptions, 'method' | 'body' | 'signal' | 'headers'>,
 ): Promise<Response> {
   const hasBody = body !== undefined;
   try {
     return await fetch(url, {
       method,
       signal,
-      headers: hasBody
-        ? { Accept: 'application/json', 'Content-Type': 'application/json' }
-        : { Accept: 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
+        ...headers,
+      },
       body: hasBody ? JSON.stringify(body) : undefined,
     });
   } catch (cause) {

@@ -3,6 +3,7 @@ dist
 coverage
 *.local
 .vercel
+.env
 test-results
 playwright-report
 .DS_Store

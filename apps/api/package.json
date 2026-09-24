@@ -1,0 +1,48 @@
+{
+  "name": "@semakan/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --watch --import @swc-node/register/esm-register src/main.ts",
+    "start": "node --env-file-if-exists=.env --import @swc-node/register/esm-register src/main.ts",
+    "db:migrate": "node --env-file-if-exists=.env --import @swc-node/register/esm-register src/db/migrate.ts",
+    "db:seed": "node --env-file-if-exists=.env --import @swc-node/register/esm-register src/db/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test:run": "vitest run",
+    "coverage": "vitest run --coverage",
+    "check": "npm run typecheck && npm run lint && npm run coverage"
+  },
+  "dependencies": {
+    "@nestjs/common": "12.1.0",
+    "@nestjs/core": "12.1.0",
+    "@nestjs/platform-express": "12.1.0",
+    "@nestjs/swagger": "12.0.2",
+    "@nestjs/typeorm": "12.0.1",
+    "@semakan/contract": "0.1.0",
+    "@semakan/domain": "0.1.0",
+    "@semakan/seed": "0.1.0",
+    "@swc-node/register": "1.12.1",
+    "@swc/core": "1.16.2",
+    "pg": "8.23.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "typeorm": "1.1.1",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "12.1.0",
+    "@testcontainers/postgresql": "12.1.0",
+    "@types/express": "5.0.6",
+    "@types/node": "24.13.6",
+    "@types/supertest": "7.2.1",
+    "@vitest/coverage-v8": "5.0.1",
+    "globals": "17.12.0",
+    "supertest": "7.3.0",
+    "testcontainers": "12.1.0",
+    "typescript": "6.0.3",
+    "unplugin-swc": "2.0.0",
+    "vitest": "5.0.1"
+  }
+}

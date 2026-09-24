@@ -14,6 +14,9 @@ const DevControlsSchema = z.object({
   emptyList: z.boolean(),
   conflictNext: z.boolean(),
   dataGov: z.enum(DATA_GOV_OPTIONS),
+  // .catch, not a plain default: stored data from before this field existed must still parse
+  // (and keep its other settings) rather than fail the whole object and fall back entirely.
+  apiSource: z.enum(['mock', 'real']).catch('mock'),
 });
 
 export type DevControls = z.infer<typeof DevControlsSchema>;
@@ -26,6 +29,10 @@ export const FAILURE_OPTIONS = [
   'server',
   'network',
 ] as const satisfies readonly DevControls['failure'][];
+export const API_SOURCE_OPTIONS = [
+  'mock',
+  'real',
+] as const satisfies readonly DevControls['apiSource'][];
 export const DEFAULT_DEV_CONTROLS: DevControls = {
   latencyMs: 0,
   failure: 'none',
@@ -33,6 +40,7 @@ export const DEFAULT_DEV_CONTROLS: DevControls = {
   conflictNext: false,
   // Tests must never reach the real API; the running app calls it live by default.
   dataGov: import.meta.env.MODE === 'test' ? 'fixture' : 'live',
+  apiSource: 'mock',
 };
 
 const STORAGE_KEY = 'semakan.devControls';

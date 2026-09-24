@@ -8,6 +8,11 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  server: {
+    // The Dev Panel's "Real API" source targets /api/v1; MSW bypasses it (onUnhandledRequest:
+    // 'bypass') so it reaches this proxy. Port 3100 per controller ruling P6b-R3 (3000 is taken).
+    proxy: { '/api/v1': 'http://localhost:3100' },
+  },
   build: {
     rolldownOptions: {
       output: {

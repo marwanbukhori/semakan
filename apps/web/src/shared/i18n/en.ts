@@ -299,6 +299,12 @@ export const en = {
     failureNetwork: 'Network failure',
     emptyList: 'Return an empty list',
     conflictNext: 'Force a conflict on the next review',
+    apiSource: {
+      title: 'API source',
+      mock: 'Mock API',
+      real: 'Real API (localhost:3100)',
+      mockOnlyNote: 'These controls apply to the mock API only.',
+    },
     dataGov: {
       title: 'data.gov.my',
       live: 'Live API',

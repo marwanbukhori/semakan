@@ -1,0 +1,44 @@
+name: semakan
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: semakan
+      POSTGRES_PASSWORD: semakan
+      POSTGRES_DB: semakan
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U semakan -d semakan']
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgres://semakan:semakan@postgres:5432/semakan
+      PORT: 3100
+    # Migrate and seed first (the seed is idempotent), so `docker compose up` serves data.
+    command:
+      - sh
+      - -c
+      - node --import @swc-node/register/esm-register src/db/seed.ts && exec node --import @swc-node/register/esm-register src/main.ts
+    ports:
+      - '127.0.0.1:3100:3100'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3100/health/ready || exit 1']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

@@ -94,6 +94,81 @@ describe('DevPanel', () => {
     expect(getDevControls().dataGov).toBe('rate_limited');
   });
 
+  it('defaults to the mock API and switches to the real API, disabling the mock-only controls', async () => {
+    const { user } = renderPanel();
+    await user.click(screen.getByRole('button', { name: /Dev Panel/ }));
+
+    expect(screen.getByRole('radio', { name: 'Mock API' })).toBeChecked();
+    expect(
+      screen.queryByText('These controls apply to the mock API only.'),
+    ).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Real API (localhost:3100)' }));
+
+    expect(getDevControls().apiSource).toBe('real');
+    const note = screen.getByText('These controls apply to the mock API only.');
+    expect(note).toBeInTheDocument();
+    expect(note).toHaveAttribute('id');
+
+    const latency = screen.getByRole('group', { name: 'Latency' });
+    const failure = screen.getByRole('group', { name: 'Failure' });
+    const emptyList = screen.getByRole('checkbox', { name: 'Return an empty list' });
+    const conflictNext = screen.getByRole('checkbox', {
+      name: 'Force a conflict on the next review',
+    });
+    expect(within(latency).getByRole('radio', { name: 'None' })).toBeDisabled();
+    expect(within(failure).getByRole('radio', { name: 'None' })).toBeDisabled();
+    expect(emptyList).toBeDisabled();
+    expect(conflictNext).toBeDisabled();
+
+    // Each mock-only control points at the note, so its reason for being disabled is
+    // announced in context, not only as a standalone paragraph elsewhere in the panel.
+    const noteId = note.getAttribute('id');
+    expect(latency).toHaveAttribute('aria-describedby', noteId);
+    expect(failure).toHaveAttribute('aria-describedby', noteId);
+    expect(emptyList).toHaveAttribute('aria-describedby', noteId);
+    expect(conflictNext).toHaveAttribute('aria-describedby', noteId);
+
+    await user.click(screen.getByRole('radio', { name: 'Mock API' }));
+    expect(within(latency).getByRole('radio', { name: 'None' })).toBeEnabled();
+    expect(latency).not.toHaveAttribute('aria-describedby');
+    expect(emptyList).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('persists the API source choice across a reload', async () => {
+    const { user } = renderPanel();
+    await user.click(screen.getByRole('button', { name: /Dev Panel/ }));
+
+    await user.click(screen.getByRole('radio', { name: 'Real API (localhost:3100)' }));
+
+    vi.resetModules();
+    const { getDevControls: reloadedGetDevControls } = await import('@/mocks/devControls');
+    expect(reloadedGetDevControls().apiSource).toBe('real');
+  });
+
+  it('keeps other settings when stored data predates the apiSource field', async () => {
+    localStorage.setItem(
+      'semakan.devControls',
+      JSON.stringify({
+        latencyMs: 800,
+        failure: 'server',
+        emptyList: true,
+        conflictNext: false,
+        dataGov: 'live',
+      }),
+    );
+
+    vi.resetModules();
+    const { getDevControls: reloadedGetDevControls } = await import('@/mocks/devControls');
+
+    expect(reloadedGetDevControls()).toMatchObject({
+      latencyMs: 800,
+      failure: 'server',
+      emptyList: true,
+      apiSource: 'mock',
+    });
+  });
+
   it('ignores Escape pressed outside the panel', async () => {
     const { Wrapper } = createWrapper();
     const user = userEvent.setup();

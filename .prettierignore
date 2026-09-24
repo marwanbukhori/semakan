@@ -4,3 +4,5 @@ docs
 apps/web/public/mockServiceWorker.js
 package-lock.json
 .superpowers
+.vercel
+.worktrees
