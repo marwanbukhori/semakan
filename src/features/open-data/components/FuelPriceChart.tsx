@@ -90,6 +90,7 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
   const lang = i18n.language;
   const price = (value: number) => t('fuel.price', { value: formatPrice(value, lang) });
 
+  // #region practice:measured-memo
   const geometry = useMemo(() => {
     const plotRight = width - margin.right;
     const plotBottom = HEIGHT - margin.bottom;
@@ -131,6 +132,7 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
       ),
     };
   }, [width, levels, fuels, margin.left, margin.right, margin.top, margin.bottom]);
+  // #endregion
 
   const { hasData } = geometry;
   const activeRow = active === null ? undefined : levels[active];
@@ -178,6 +180,7 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     show(active ?? levels.length - 1);
   }
 
+  // #region practice:keyboard
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     // Leave browser and assistive-technology shortcuts (Alt+Left and the like) alone.
     if (!hasData || event.altKey || event.ctrlKey || event.metaKey) return;
@@ -201,6 +204,7 @@ export function FuelPriceChart({ levels, fuels, rangeLabel }: FuelPriceChartProp
     event.preventDefault();
     show(next);
   }
+  // #endregion
 
   const activeX = active === null ? undefined : geometry.xs[active];
 

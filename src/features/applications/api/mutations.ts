@@ -21,6 +21,7 @@ export function useReviewApplication(id: string) {
         request,
       ),
 
+    // #region practice:optimistic-rollback
     // Show the outcome straight away; the server's answer replaces or rolls it back.
     onMutate: async (request) => {
       await queryClient.cancelQueries({ queryKey: applicationKeys.detail(id) });
@@ -56,6 +57,7 @@ export function useReviewApplication(id: string) {
       queryClient.setQueryData(applicationKeys.detail(id), context.previousDetail);
       for (const [key, data] of context.previousLists) queryClient.setQueryData(key, data);
     },
+    // #endregion
 
     onSuccess: (detail) => {
       queryClient.setQueryData(applicationKeys.detail(id), detail);

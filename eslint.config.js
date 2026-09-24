@@ -7,7 +7,10 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage', 'docs', 'public/mockServiceWorker.js']),
+  // `scripts` is plain Node ESM (no type-aware project, no React/boundaries rules to apply); it
+  // already matches none of the `files` patterns below, so this makes that exclusion explicit
+  // instead of accidental, the same way generated/vendored output is ignored below.
+  globalIgnores(['dist', 'coverage', 'docs', 'public/mockServiceWorker.js', 'scripts']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -42,6 +45,7 @@ export default defineConfig([
     },
     rules: {
       '@typescript-eslint/no-deprecated': 'error',
+      // #region practice:feature-boundaries
       'boundaries/dependencies': [
         'error',
         {
@@ -96,6 +100,7 @@ export default defineConfig([
           ],
         },
       ],
+      // #endregion
     },
   },
   {

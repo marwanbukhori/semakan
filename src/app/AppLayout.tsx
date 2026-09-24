@@ -17,19 +17,25 @@ export function AppLayout() {
       </a>
       <header className="border-b border-otl-divider">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3">
-          <div>
-            <p className="font-heading text-body-lg font-semibold">{t('app.name')}</p>
-            <p className="text-body-xs text-txt-black-500">{t('app.tagline')}</p>
-          </div>
+          {/* The app name doubles as the link to the applications list, and is marked current there like the other nav links. */}
+          <NavLink
+            to="/applications"
+            className="rounded focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
+          >
+            {({ isActive }) => (
+              <>
+                <span
+                  className={`block font-heading text-body-lg font-semibold ${
+                    isActive ? 'text-txt-primary' : 'hover:underline'
+                  }`}
+                >
+                  {t('app.name')}
+                </span>
+                <span className="block text-body-xs text-txt-black-500">{t('app.tagline')}</span>
+              </>
+            )}
+          </NavLink>
           <nav aria-label={t('app.nav.label')} className="flex items-center gap-4">
-            <NavLink
-              to="/applications"
-              className={({ isActive }) =>
-                isActive ? 'font-semibold text-txt-primary' : 'text-txt-black-700 hover:underline'
-              }
-            >
-              {t('app.nav.applications')}
-            </NavLink>
             <NavLink
               to="/open-data/fuel-prices"
               className={({ isActive }) =>
@@ -37,6 +43,14 @@ export function AppLayout() {
               }
             >
               {t('app.nav.fuel')}
+            </NavLink>
+            <NavLink
+              to="/about"
+              className={({ isActive }) =>
+                isActive ? 'font-semibold text-txt-primary' : 'text-txt-black-700 hover:underline'
+              }
+            >
+              {t('app.nav.about')}
             </NavLink>
           </nav>
           {/* MYDS names the toggle after the current theme's label, so the labels are translated. */}

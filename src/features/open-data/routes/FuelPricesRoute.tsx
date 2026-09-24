@@ -8,6 +8,7 @@ import { FuelPriceChart } from '../components/FuelPriceChart';
 import { LatestPricesTable } from '../components/LatestPricesTable';
 import { useFuelFilters } from '../hooks/useFuelFilters';
 
+// #region practice:thin-routes
 export function Component() {
   const { t } = useTranslation();
   const { range, fuels, setRange, toggleFuel } = useFuelFilters();
@@ -75,3 +76,4 @@ export function Component() {
     </section>
   );
 }
+// #endregion

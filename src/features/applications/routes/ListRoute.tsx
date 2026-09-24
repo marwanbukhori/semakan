@@ -8,6 +8,7 @@ import { ListPagination } from '../components/ListPagination';
 import { EmptyResults } from '../components/ListStates';
 import { useApplicationFilters } from '../hooks/useApplicationFilters';
 
+// #region practice:composition
 /** Thin route: reads filters from the URL, fetches, and composes components. */
 export function Component() {
   const { t } = useTranslation();
@@ -70,3 +71,4 @@ export function Component() {
     </section>
   );
 }
+// #endregion

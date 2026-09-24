@@ -12,6 +12,7 @@ import { formatDate, formatPrice } from '@/shared/lib/format';
 import type { FuelKey, LevelRow } from '../types';
 import { NoValue } from './NoValue';
 
+// #region practice:accessible-chart
 /** The table view: every value the chart plots, reachable without hovering. */
 export function ChartDataTable({
   levels,
@@ -59,3 +60,4 @@ export function ChartDataTable({
     </details>
   );
 }
+// #endregion

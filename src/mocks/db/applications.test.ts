@@ -26,6 +26,13 @@ describe('seedApplications', () => {
   it('only produces records that satisfy the API contract', () => {
     expect(z.array(ApplicationSummarySchema).safeParse(items).success).toBe(true);
   });
+
+  // The About > Overview tour links straight to /applications/app-001/review (a review
+  // dialog demo), so app-001 must stay reviewable for that link to work.
+  it('keeps app-001 reviewable, since the About tour links directly to its review dialog', () => {
+    const first = items.find((item) => item.id === 'app-001')!;
+    expect(isReviewable(first.status)).toBe(true);
+  });
 });
 
 describe('queryApplications', () => {

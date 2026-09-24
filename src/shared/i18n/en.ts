@@ -3,10 +3,97 @@ export const en = {
     name: 'Semakan',
     tagline: 'Licence application review',
     skipToContent: 'Skip to main content',
-    nav: { label: 'Main', applications: 'Applications', fuel: 'Fuel prices' },
+    nav: {
+      label: 'Main',
+      fuel: 'Fuel prices',
+      about: 'About this build',
+    },
     theme: { light: 'Light theme', dark: 'Dark theme' },
     mockApiFailed:
       "The demo's mock API could not start, so no data will load. Try reloading the page.",
+  },
+  about: {
+    nav: {
+      label: 'About this build',
+      overview: 'Overview',
+      architecture: 'Architecture',
+      practices: 'Practices',
+      experience: 'Experience',
+      aiWorkflow: 'AI workflow',
+    },
+    code: {
+      loading: 'Loading code…',
+      view: 'View on GitHub',
+      viewLines: 'View on GitHub (lines {{start}}–{{end}})',
+      missing: "This excerpt couldn't be found in the source.",
+    },
+    overview: {
+      ciAlt: 'CI status',
+      liveDemo: 'Live demo',
+      repo: 'Repository',
+      stackHeading: 'Tech stack',
+      tourHeading: 'Take a tour',
+      foldersHeading: 'Explore the code',
+    },
+    architecture: {
+      layersHeading: 'Layers',
+    },
+    practices: {
+      title: 'Practices',
+      intro:
+        'Each practice shows where it lives in the code and what keeps it true. Partial and planned items say so.',
+      summary: '{{enforced}} enforced · {{partial}} partial · {{planned}} planned',
+      what: 'What',
+      why: 'Why',
+      enforcedBy: 'Enforced by',
+    },
+    status: {
+      enforced: 'Enforced',
+      partial: 'Partial',
+      planned: 'Planned',
+      plan: 'Plan {{plan}}',
+    },
+    experience: {
+      title: 'Experience',
+      intro:
+        "The same projects, seen through each role's requirements. Switch the role to see that side of my work.",
+      roleLegend: 'Show my experience for',
+      projects: 'Projects',
+      roles: { frontend: 'Frontend role', backend: 'Backend role' },
+      facet: { frontend: 'Frontend', backend: 'Backend' },
+      built: 'What I built',
+      challenge: 'The hard part',
+      inSemakan: 'In Semakan',
+      requirements: 'Requirements met',
+      roleWord: { frontend: 'frontend', backend: 'backend' },
+      mapTitle: 'Requirements map',
+      mapCaption: 'Requirements for the {{role}} role',
+      col: { requirement: 'Requirement', level: 'Level', past: 'Past work', semakan: 'In Semakan' },
+      level: { must: 'Must-have', nice: 'Nice to have' },
+      semakanStatus: {
+        shown: 'Shown',
+        partial: 'Partly shown',
+        planned: 'Planned · Plan {{plan}}',
+      },
+    },
+    aiWorkflow: {
+      title: 'AI workflow',
+      pipeline: 'How it was built',
+      tools: 'Tools',
+      ownership: 'Who does what',
+      own: 'What I own',
+      ai: 'What the AI does',
+      caught: 'Caught by review',
+      numbers: 'By the numbers',
+      logs: 'Read the logs',
+      viewLog: 'Review log',
+      viewCommit: 'Commit {{sha}}',
+      tasks: 'Tasks completed',
+      fixRounds: 'Fix rounds',
+      rulings: 'Rulings recorded',
+      plan: 'Plan {{n}}',
+      total: 'Total',
+    },
   },
   fuel: {
     title: 'Fuel prices',
@@ -224,7 +311,9 @@ export const en = {
   },
 } as const;
 
+// #region practice:typed-translations
 type Widen<T> = { [K in keyof T]: T[K] extends string ? string : Widen<T[K]> };
 
 /** Every language must provide exactly these keys; the type checker enforces it. */
 export type Translation = Widen<typeof en>;
+// #endregion

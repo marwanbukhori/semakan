@@ -21,6 +21,7 @@ type SetFiltersOptions = {
   replace?: boolean;
 };
 
+// #region practice:derive-dont-sync
 /** The URL is the single source of truth for list filters: shareable, and back/forward just works. */
 export function useApplicationFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,3 +52,4 @@ export function useApplicationFilters() {
 
   return { filters, hasActiveFilters, setFilters, resetFilters };
 }
+// #endregion

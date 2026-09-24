@@ -5,12 +5,14 @@ import type { FuelFilters, FuelKey, FuelRange } from '../types';
 
 const DEFAULTS = FuelFiltersSchema.parse({});
 
+// #region practice:url-state
 function toSearchParams({ range, fuels }: FuelFilters): URLSearchParams {
   const params = new URLSearchParams();
   if (range !== DEFAULTS.range) params.set('range', range);
   if (fuels.join(',') !== DEFAULTS.fuels.join(',')) params.set('fuels', fuels.join(','));
   return params;
 }
+// #endregion
 
 const parse = (params: URLSearchParams) => FuelFiltersSchema.parse(Object.fromEntries(params));
 

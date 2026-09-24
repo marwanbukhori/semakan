@@ -23,6 +23,7 @@ export function Timeline({ events }: { events: readonly TimelineEvent[] }) {
   );
 }
 
+// #region practice:exhaustive-switch
 /** One case per event kind; adding a kind to the schema without rendering it is a compile error. */
 function TimelineEntry({ event }: { event: TimelineEvent }) {
   const { t } = useTranslation();
@@ -76,3 +77,4 @@ function TimelineEntry({ event }: { event: TimelineEvent }) {
       return assertNever(event);
   }
 }
+// #endregion

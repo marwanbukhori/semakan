@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { isReviewable } from '@/features/applications/rules';
 import { seedApplicationDetails } from '@/mocks/db/applications';
 import { renderRoutes } from '@/test/render';
@@ -7,16 +7,31 @@ import { RouteError } from './RouteError';
 import { createRoutes } from './router';
 
 describe('app routes', () => {
-  it('redirects / to the applications list inside the layout', async () => {
+  it('redirects / to the about pages', async () => {
     const { router } = renderRoutes(createRoutes(), { initialEntries: ['/'] });
-
-    expect(
-      await screen.findByRole('heading', { name: 'Licence applications' }),
-    ).toBeInTheDocument();
-    expect(router.state.location.pathname).toBe('/applications');
+    expect(await screen.findByRole('navigation', { name: 'About this build' })).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe('/about');
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
-    // MYDS's ThemeSwitch names its button after the current theme, which we translate.
-    expect(screen.getByRole('button', { name: 'Light theme' })).toBeInTheDocument();
+  });
+
+  it('links the app name in the header to the applications list', async () => {
+    const { user, router } = renderRoutes(createRoutes(), { initialEntries: ['/about'] });
+    await user.click(
+      await screen.findByRole('link', { name: /^Semakan\s*Licence application review$/ }),
+    );
+    await waitFor(() => expect(router.state.location.pathname).toBe('/applications'));
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: /^Semakan/ })).toHaveAttribute(
+        'aria-current',
+        'page',
+      ),
+    );
+  });
+
+  it('links to the about pages from the header', async () => {
+    const { user, router } = renderRoutes(createRoutes(), { initialEntries: ['/applications'] });
+    await user.click(await screen.findByRole('link', { name: 'About this build' }));
+    expect(router.state.location.pathname).toBe('/about');
   });
 
   it('shows a not-found page without losing the layout', async () => {
