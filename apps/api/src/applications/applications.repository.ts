@@ -80,16 +80,16 @@ function toTimelineEvent(row: TimelineEventEntity): TimelineEvent {
 export class ApplicationsRepository {
   constructor(private readonly ds: DataSource) {}
 
-  async findDetail(id: string): Promise<ApplicationDetail | null> {
-    const row = await this.ds.getRepository(ApplicationEntity).findOneBy({ id });
+  /** Loads one application; pass `manager` to read on a transaction's connection. */
+  async findDetail(
+    id: string,
+    manager: EntityManager = this.ds.manager,
+  ): Promise<ApplicationDetail | null> {
+    const row = await manager.findOneBy(ApplicationEntity, { id });
     if (!row) return null;
     const [documents, timeline] = await Promise.all([
-      this.ds
-        .getRepository(DocumentEntity)
-        .find({ where: { applicationId: id }, order: { position: 'ASC' } }),
-      this.ds
-        .getRepository(TimelineEventEntity)
-        .find({ where: { applicationId: id }, order: { seq: 'ASC' } }),
+      manager.find(DocumentEntity, { where: { applicationId: id }, order: { position: 'ASC' } }),
+      manager.find(TimelineEventEntity, { where: { applicationId: id }, order: { seq: 'ASC' } }),
     ]);
     return ApplicationDetailSchema.parse({
       id: row.id,
