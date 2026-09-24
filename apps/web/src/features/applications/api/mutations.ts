@@ -14,11 +14,20 @@ export function useReviewApplication(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation<ApplicationDetail, Error, ReviewRequest, ReviewContext>({
+    // Mutation retries are off (`mutations: { retry: false }` in app/providers.tsx), so
+    // mutationFn runs at most once per mutate() call: the Idempotency-Key is naturally one per
+    // submission, never regenerated for a retry.
     mutationFn: (request) =>
       apiClient.post(
         `/applications/${encodeURIComponent(id)}/review`,
         ApplicationDetailSchema,
         request,
+        {
+          headers: {
+            'If-Match': `"${request.version}"`,
+            'Idempotency-Key': crypto.randomUUID(),
+          },
+        },
       ),
 
     // #region practice:optimistic-rollback

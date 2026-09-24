@@ -308,6 +308,12 @@ export const ms: Translation = {
     failureNetwork: 'Kegagalan rangkaian',
     emptyList: 'Pulangkan senarai kosong',
     conflictNext: 'Paksa konflik pada semakan seterusnya',
+    apiSource: {
+      title: 'Sumber API',
+      mock: 'API olok-olok',
+      real: 'API sebenar (localhost:3100)',
+      mockOnlyNote: 'Kawalan ini hanya untuk API olok-olok.',
+    },
     dataGov: {
       title: 'data.gov.my',
       live: 'API langsung',

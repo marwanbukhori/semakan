@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import { useTranslation } from 'react-i18next';
 import { resetApplications } from '@/mocks/db/applications';
 import {
+  API_SOURCE_OPTIONS,
   DATA_GOV_OPTIONS,
   DEFAULT_DEV_CONTROLS,
   FAILURE_OPTIONS,
@@ -46,6 +47,14 @@ export function DevPanel() {
     server: t('devPanel.failureServer'),
     network: t('devPanel.failureNetwork'),
   } satisfies Record<DevControls['failure'], string>;
+
+  const apiSourceLabels = {
+    mock: t('devPanel.apiSource.mock'),
+    real: t('devPanel.apiSource.real'),
+  } satisfies Record<DevControls['apiSource'], string>;
+
+  // In production the switch isn't rendered, so apiSource is always the default 'mock'.
+  const mockOnlyDisabled = import.meta.env.DEV && controls.apiSource === 'real';
 
   function update(patch: Partial<DevControls>) {
     setDevControls(patch);
@@ -92,7 +101,7 @@ export function DevPanel() {
         >
           <h2 className="mb-3 font-heading text-body-md font-semibold">{t('devPanel.title')}</h2>
 
-          <fieldset className="mb-3">
+          <fieldset className="mb-3" disabled={mockOnlyDisabled}>
             <legend className="mb-1 text-body-sm font-medium">{t('devPanel.latency')}</legend>
             <div className="flex flex-wrap gap-3">
               {LATENCY_OPTIONS.map((ms) => (
@@ -109,7 +118,7 @@ export function DevPanel() {
             </div>
           </fieldset>
 
-          <fieldset className="mb-3">
+          <fieldset className="mb-3" disabled={mockOnlyDisabled}>
             <legend className="mb-1 text-body-sm font-medium">{t('devPanel.failure')}</legend>
             {FAILURE_OPTIONS.map((failure) => (
               <label key={failure} className="flex items-center gap-2 text-body-sm">
@@ -128,6 +137,7 @@ export function DevPanel() {
             <input
               type="checkbox"
               checked={controls.emptyList}
+              disabled={mockOnlyDisabled}
               onChange={(event) => update({ emptyList: event.target.checked })}
             />
             {t('devPanel.emptyList')}
@@ -137,6 +147,7 @@ export function DevPanel() {
             <input
               type="checkbox"
               checked={controls.conflictNext}
+              disabled={mockOnlyDisabled}
               onChange={(event) => update({ conflictNext: event.target.checked })}
             />
             {t('devPanel.conflictNext')}
@@ -156,6 +167,32 @@ export function DevPanel() {
               </label>
             ))}
           </fieldset>
+
+          {import.meta.env.DEV && (
+            <fieldset className="mb-4">
+              <legend className="mb-1 text-body-sm font-medium">
+                {t('devPanel.apiSource.title')}
+              </legend>
+              <div className="flex flex-wrap gap-3">
+                {API_SOURCE_OPTIONS.map((source) => (
+                  <label key={source} className="inline-flex items-center gap-1 text-body-sm">
+                    <input
+                      type="radio"
+                      name={`${panelId}-api-source`}
+                      checked={controls.apiSource === source}
+                      onChange={() => update({ apiSource: source })}
+                    />
+                    {apiSourceLabels[source]}
+                  </label>
+                ))}
+              </div>
+              {mockOnlyDisabled && (
+                <p className="mt-1 text-body-xs text-txt-black-500">
+                  {t('devPanel.apiSource.mockOnlyNote')}
+                </p>
+              )}
+            </fieldset>
+          )}
 
           <Button variant="default-outline" size="small" onClick={resetData}>
             {t('devPanel.reset')}

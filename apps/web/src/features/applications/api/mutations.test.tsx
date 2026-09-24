@@ -2,6 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { isReviewable } from '@/features/applications/rules';
 import { requiresFireCertificate, seedApplicationDetails } from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
+import { server } from '@/mocks/node';
 import { createWrapper } from '@/test/render';
 import { DEFAULT_LIST_PARAMS } from '../schemas';
 import type { ApplicationDetail, ApplicationList } from '../types';
@@ -84,5 +85,26 @@ describe('useReviewApplication', () => {
 
     await waitFor(() => expect(result.current.review.isError).toBe(true));
     expect(result.current.review.error).toMatchObject({ kind: 'conflict' });
+  });
+
+  it('sends If-Match with the request version and a UUID Idempotency-Key', async () => {
+    const { result } = setup();
+    await waitFor(() => expect(result.current.detail.isSuccess).toBe(true));
+
+    let seenHeaders: Headers | undefined;
+    const onRequestStart = ({ request }: { request: Request }) => {
+      if (request.url.includes('/review')) seenHeaders = request.headers;
+    };
+    server.events.on('request:start', onRequestStart);
+
+    act(() => result.current.review.mutate(rejectRequest()));
+
+    await waitFor(() => expect(result.current.review.isSuccess).toBe(true));
+    server.events.removeListener('request:start', onRequestStart);
+
+    expect(seenHeaders?.get('If-Match')).toBe(`"${target.version}"`);
+    expect(seenHeaders?.get('Idempotency-Key')).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
   });
 });

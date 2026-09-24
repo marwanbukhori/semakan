@@ -2,7 +2,7 @@ import { delay, http, HttpResponse } from 'msw';
 import { z } from 'zod';
 import { server } from '@/mocks/node';
 import { ApiError } from './ApiError';
-import { createApiClient } from './client';
+import { apiClient, createApiClient, setApiBaseUrl } from './client';
 
 const client = createApiClient({ baseUrl: '/api' });
 const ThingSchema = z.object({ id: z.string(), count: z.number() });
@@ -131,5 +131,45 @@ describe('apiClient.post', () => {
       status: 422,
       fieldErrors: { reason: ['reason_too_short'] },
     });
+  });
+});
+
+describe('createApiClient with a baseUrl function', () => {
+  it('resolves the base URL on every request and sends custom headers', async () => {
+    let seenHeader: string | null = null;
+    server.use(
+      http.get('/x/things', ({ request }) => {
+        seenHeader = request.headers.get('X-Test');
+        return HttpResponse.json({ id: 'a', count: 1 });
+      }),
+    );
+    const dynamicClient = createApiClient({ baseUrl: () => '/x' });
+
+    const result = await dynamicClient.get('/things', ThingSchema, {
+      headers: { 'X-Test': 'abc' },
+    });
+
+    expect(result).toEqual({ id: 'a', count: 1 });
+    expect(seenHeader).toBe('abc');
+  });
+});
+
+describe('setApiBaseUrl', () => {
+  afterEach(() => setApiBaseUrl('/api'));
+
+  it('repoints the shared apiClient at the given base URL', async () => {
+    let seenUrl = '';
+    server.use(
+      http.get('/api/v1/things', ({ request }) => {
+        seenUrl = request.url;
+        return HttpResponse.json({ id: 'a', count: 1 });
+      }),
+    );
+
+    setApiBaseUrl('/api/v1');
+    const result = await apiClient.get('/things', ThingSchema);
+
+    expect(result).toEqual({ id: 'a', count: 1 });
+    expect(new URL(seenUrl).pathname).toBe('/api/v1/things');
   });
 });
