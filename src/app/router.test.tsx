@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { isReviewable } from '@/features/applications/rules';
 import { seedApplicationDetails } from '@/mocks/db/applications';
 import { renderRoutes } from '@/test/render';
@@ -12,6 +12,14 @@ describe('app routes', () => {
     expect(await screen.findByRole('navigation', { name: 'About this build' })).toBeInTheDocument();
     expect(router.state.location.pathname).toBe('/about');
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeInTheDocument();
+  });
+
+  it('links the app name in the header to the applications list', async () => {
+    const { user, router } = renderRoutes(createRoutes(), { initialEntries: ['/about'] });
+    await user.click(
+      await screen.findByRole('link', { name: /^Semakan\s*Licence application review$/ }),
+    );
+    await waitFor(() => expect(router.state.location.pathname).toBe('/applications'));
   });
 
   it('links to the about pages from the header', async () => {

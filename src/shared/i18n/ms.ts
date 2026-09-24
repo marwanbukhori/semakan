@@ -7,7 +7,6 @@ export const ms: Translation = {
     skipToContent: 'Langkau ke kandungan utama',
     nav: {
       label: 'Utama',
-      applications: 'Semakan',
       fuel: 'Harga bahan api',
       about: 'Tentang binaan ini',
     },

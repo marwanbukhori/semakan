@@ -5,7 +5,6 @@ export const en = {
     skipToContent: 'Skip to main content',
     nav: {
       label: 'Main',
-      applications: 'Semakan',
       fuel: 'Fuel prices',
       about: 'About this build',
     },
