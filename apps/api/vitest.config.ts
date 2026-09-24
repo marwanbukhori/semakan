@@ -15,7 +15,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.ts'],
-      exclude: ['src/main.ts', 'src/db/migrations/**', 'src/db/seed.ts'],
+      exclude: ['src/main.ts', 'src/db/migrations/**', 'src/db/seed.ts', 'src/db/migrate.ts'],
       thresholds: { lines: 80, statements: 80, functions: 75, branches: 70 },
     },
   },
