@@ -45,7 +45,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'The applications feature', ms: 'Feature applications' },
-          path: 'src/features/applications/routes/ListRoute.tsx',
+          path: 'apps/web/src/features/applications/routes/ListRoute.tsx',
         },
       ],
     },
@@ -63,11 +63,11 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Query hooks', ms: 'Query hooks' },
-          path: 'src/features/applications/api/queries.ts',
+          path: 'apps/web/src/features/applications/api/queries.ts',
         },
         {
           label: { en: 'URL state', ms: 'URL state' },
-          path: 'src/features/applications/hooks/useApplicationFilters.ts',
+          path: 'apps/web/src/features/applications/hooks/useApplicationFilters.ts',
         },
       ],
     },
@@ -85,11 +85,11 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Review errors and conflicts', ms: 'Ralat review dan conflict' },
-          path: 'src/features/applications/routes/ReviewRoute.tsx',
+          path: 'apps/web/src/features/applications/routes/ReviewRoute.tsx',
         },
         {
           label: { en: 'Load errors', ms: 'Ralat pemuatan (load errors)' },
-          path: 'src/shared/ui/LoadError.tsx',
+          path: 'apps/web/src/shared/ui/LoadError.tsx',
         },
       ],
     },
@@ -107,7 +107,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Stacked facts on mobile', ms: 'Fakta bertindan (stacked) pada mudah alih' },
-          path: 'src/features/applications/components/ApplicationFacts.tsx',
+          path: 'apps/web/src/features/applications/components/ApplicationFacts.tsx',
         },
       ],
     },
@@ -126,7 +126,7 @@ const REQUIREMENTS_DATA = [
         { label: { en: 'AGENTS.md conventions', ms: 'Konvensyen AGENTS.md' }, path: 'AGENTS.md' },
         {
           label: { en: 'Mutation tests', ms: 'Mutation tests' },
-          path: 'src/features/applications/api/mutations.test.tsx',
+          path: 'apps/web/src/features/applications/api/mutations.test.tsx',
         },
       ],
     },
@@ -147,7 +147,7 @@ const REQUIREMENTS_DATA = [
             en: 'The API contract both sides build to',
             ms: 'Kontrak API yang digunakan kedua-dua pihak',
           },
-          path: 'src/features/applications/schemas.ts',
+          path: 'packages/contract/src/applications.ts',
         },
       ],
     },
@@ -164,10 +164,13 @@ const REQUIREMENTS_DATA = [
       status: 'partial',
       plan: 4,
       links: [
-        { label: { en: 'Built on MYDS', ms: 'Dibina atas MYDS' }, path: 'tailwind.config.ts' },
+        {
+          label: { en: 'Built on MYDS', ms: 'Dibina atas MYDS' },
+          path: 'apps/web/tailwind.config.ts',
+        },
         {
           label: { en: 'Own components on MYDS', ms: 'Components sendiri atas MYDS' },
-          path: 'src/features/applications/components/StatusBadge.tsx',
+          path: 'apps/web/src/features/applications/components/StatusBadge.tsx',
         },
       ],
     },
@@ -182,7 +185,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Checked at 360px', ms: 'Disemak pada 360px' },
-          path: 'src/features/applications/components/ApplicationFacts.tsx',
+          path: 'apps/web/src/features/applications/components/ApplicationFacts.tsx',
         },
       ],
     },
@@ -198,8 +201,8 @@ const REQUIREMENTS_DATA = [
     semakan: {
       status: 'shown',
       links: [
-        { label: { en: 'Vendor chunks', ms: 'Vendor chunks' }, path: 'vite.config.ts' },
-        { label: { en: 'Lazy routes', ms: 'Lazy routes' }, path: 'src/app/router.ts' },
+        { label: { en: 'Vendor chunks', ms: 'Vendor chunks' }, path: 'apps/web/vite.config.ts' },
+        { label: { en: 'Lazy routes', ms: 'Lazy routes' }, path: 'apps/web/src/app/router.ts' },
       ],
     },
   },
@@ -216,11 +219,11 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Accessible review form', ms: 'Borang review yang accessible' },
-          path: 'src/features/applications/components/ReviewForm.tsx',
+          path: 'apps/web/src/features/applications/components/ReviewForm.tsx',
         },
         {
           label: { en: 'Accessible chart', ms: 'Carta yang accessible' },
-          path: 'src/features/open-data/components/FuelPriceChart.tsx',
+          path: 'apps/web/src/features/open-data/components/FuelPriceChart.tsx',
         },
       ],
     },
@@ -247,7 +250,10 @@ const REQUIREMENTS_DATA = [
     semakan: {
       status: 'partial',
       links: [
-        { label: { en: 'The Dev Panel', ms: 'Dev Panel' }, path: 'src/app/dev-panel/DevPanel.tsx' },
+        {
+          label: { en: 'The Dev Panel', ms: 'Dev Panel' },
+          path: 'apps/web/src/app/dev-panel/DevPanel.tsx',
+        },
       ],
     },
   },
@@ -311,11 +317,11 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'The REST contract', ms: 'Kontrak REST' },
-          path: 'src/features/applications/schemas.ts',
+          path: 'packages/contract/src/applications.ts',
         },
         {
           label: { en: 'The mock handlers', ms: 'Mock handlers' },
-          path: 'src/mocks/handlers/applications.ts',
+          path: 'apps/web/src/mocks/handlers/applications.ts',
         },
       ],
     },
@@ -341,7 +347,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Review rules in one place', ms: 'Peraturan review di satu tempat' },
-          path: 'src/mocks/db/applications.ts',
+          path: 'apps/web/src/mocks/db/applications.ts',
         },
       ],
     },
@@ -373,7 +379,7 @@ const REQUIREMENTS_DATA = [
             en: "Client cache tuned to the publisher's update schedule",
             ms: 'Cache klien ditala mengikut jadual kemas kini penerbit',
           },
-          path: 'src/features/open-data/api/queries.ts',
+          path: 'apps/web/src/features/open-data/api/queries.ts',
         },
       ],
     },
@@ -392,7 +398,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'Handler tests', ms: 'Handler tests' },
-          path: 'src/mocks/handlers/applications.test.ts',
+          path: 'apps/web/src/mocks/handlers/applications.test.ts',
         },
       ],
     },

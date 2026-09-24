@@ -1,6 +1,6 @@
-dist
-coverage
+**/dist
+**/coverage
 docs
-public/mockServiceWorker.js
+apps/web/public/mockServiceWorker.js
 package-lock.json
 .superpowers

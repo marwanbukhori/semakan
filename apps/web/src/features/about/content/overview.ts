@@ -74,42 +74,49 @@ export const overview: OverviewContent = {
   },
   folders: [
     {
-      path: 'src/app',
+      path: 'apps/web/src/app',
       text: {
         en: 'The shell: routes, layout, providers, error boundaries, and the Dev Panel that controls the mock API.',
         ms: 'Cangkerang aplikasi: routes, susun atur, providers, sempadan ralat (error boundaries), dan Panel Dev yang mengawal API olok-olok.',
       },
     },
     {
-      path: 'src/features/applications',
+      path: 'apps/web/src/features/applications',
       text: {
         en: 'Licence applications: list, detail and the review dialog. Schemas, queries, mutations, hooks and components live together.',
         ms: 'Permohonan lesen: senarai, perincian dan dialog semakan. Schemas, queries, mutations, hooks dan components berada bersama.',
       },
     },
     {
-      path: 'src/features/open-data',
+      path: 'apps/web/src/features/open-data',
       text: {
         en: 'Fuel prices from the real data.gov.my API: the contract, the client, URL filters and the SVG chart.',
         ms: 'Harga bahan api daripada API data.gov.my sebenar: contract, client, penapis URL dan carta SVG.',
       },
     },
     {
-      path: 'src/features/about',
+      path: 'apps/web/src/features/about',
       text: {
         en: 'These pages. Content is typed data in both languages; code excerpts are read from the real source.',
         ms: 'Halaman-halaman ini. Kandungan adalah data typed dalam kedua-dua bahasa; petikan kod dibaca daripada kod sumber sebenar.',
       },
     },
     {
-      path: 'src/shared',
+      path: 'packages/contract',
+      text: {
+        en: 'The API contract: zod schemas and types shared by the frontend and the backend.',
+        ms: 'Kontrak API: zod schemas dan types yang dikongsi oleh frontend dan backend.',
+      },
+    },
+    {
+      path: 'apps/web/src/shared',
       text: {
         en: 'Code any feature may use: the validated API client, ApiError, i18n, formatting, hooks and shared UI.',
         ms: 'Kod yang boleh digunakan oleh mana-mana feature: API client yang disahkan, ApiError, i18n, pemformatan, hooks dan UI kongsi.',
       },
     },
     {
-      path: 'src/mocks',
+      path: 'apps/web/src/mocks',
       text: {
         en: "The mock API (MSW): seeded data, the review rules the 'server' enforces, and the data.gov.my switch.",
         ms: "API olok-olok (MSW): data seed, peraturan semakan yang dikuatkuasakan oleh 'server', dan suis data.gov.my.",

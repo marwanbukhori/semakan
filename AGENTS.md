@@ -12,8 +12,8 @@ Implementation plans live in `docs/plans/`.
 
 ## Architecture rules
 
-- `src/features/<name>` never imports another feature. Shared code goes in
-  `src/shared`. Enforced by `eslint-plugin-boundaries`.
+- `apps/web/src/features/<name>` never imports another feature. Shared code goes in
+  `apps/web/src/shared`. Enforced by `eslint-plugin-boundaries`.
 - Routes are thin. Data access lives in `features/<name>/api` hooks, markup in
   `components/`.
 - Every API response is parsed with a zod schema: `apiClient.get(path, schema)`.
@@ -28,7 +28,7 @@ Implementation plans live in `docs/plans/`.
 
 - Write the failing test first.
 - Query by role and label. Avoid test IDs.
-- Mock the network only with MSW handlers in `src/mocks`, never by mocking
+- Mock the network only with MSW handlers in `apps/web/src/mocks`, never by mocking
   `fetch` or modules.
 
 ## Pinned versions

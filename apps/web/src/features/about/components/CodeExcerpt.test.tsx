@@ -7,7 +7,7 @@ describe('CodeExcerpt', () => {
     const { Wrapper } = createWrapper();
     render(
       <CodeExcerpt
-        path="src/features/applications/components/Timeline.tsx"
+        path="apps/web/src/features/applications/components/Timeline.tsx"
         region="exhaustive-switch"
       />,
       { wrapper: Wrapper },
@@ -16,13 +16,13 @@ describe('CodeExcerpt', () => {
     expect(await screen.findByText(/function TimelineEntry/)).toBeInTheDocument();
     const link = screen.getByRole('link', { name: /View on GitHub/ });
     expect(link.getAttribute('href')).toMatch(
-      /^https:\/\/github\.com\/marwanbukhori\/semakan\/blob\/main\/src\/features\/applications\/components\/Timeline\.tsx#L\d+-L\d+$/,
+      /^https:\/\/github\.com\/marwanbukhori\/semakan\/blob\/main\/apps\/web\/src\/features\/applications\/components\/Timeline\.tsx#L\d+-L\d+$/,
     );
   });
 
   it('says so when the region is missing', async () => {
     const { Wrapper } = createWrapper();
-    render(<CodeExcerpt path="src/shared/lib/assertNever.ts" region="does-not-exist" />, {
+    render(<CodeExcerpt path="apps/web/src/shared/lib/assertNever.ts" region="does-not-exist" />, {
       wrapper: Wrapper,
     });
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -32,7 +32,9 @@ describe('CodeExcerpt', () => {
 
   it('shows the same alert when the source file is unknown', async () => {
     const { Wrapper } = createWrapper();
-    render(<CodeExcerpt path="src/does/not/exist.ts" region="anything" />, { wrapper: Wrapper });
+    render(<CodeExcerpt path="apps/web/src/does/not/exist.ts" region="anything" />, {
+      wrapper: Wrapper,
+    });
     expect(await screen.findByRole('alert')).toHaveTextContent(
       "This excerpt couldn't be found in the source.",
     );

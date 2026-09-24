@@ -14,7 +14,7 @@ import type {
   SORT_ORDERS,
   StatusFilterSchema,
   TimelineEventSchema,
-} from './schemas';
+} from './applications';
 
 // #region practice:types-from-schemas
 export type ApplicationStatus = z.infer<typeof ApplicationStatusSchema>;

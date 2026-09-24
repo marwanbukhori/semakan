@@ -31,7 +31,7 @@ describe('OverviewRoute', () => {
   it('toggles a folder to reveal its description, by click and by keyboard', async () => {
     const { user } = renderRoutes(routes, { initialEntries: ['/about'] });
 
-    const summary = screen.getByText('src/mocks').closest('summary')!;
+    const summary = screen.getByText('apps/web/src/mocks').closest('summary')!;
     expect(screen.queryByText(/The mock API \(MSW\)/)).not.toBeVisible();
 
     await user.click(summary);
@@ -44,7 +44,7 @@ describe('OverviewRoute', () => {
   it('the folder summary is reachable by keyboard', async () => {
     const { user } = renderRoutes(routes, { initialEntries: ['/about'] });
 
-    const summary = screen.getByText('src/mocks').closest('summary')!;
+    const summary = screen.getByText('apps/web/src/mocks').closest('summary')!;
     for (let tabs = 0; tabs < 50 && document.activeElement !== summary; tabs++) {
       await user.tab();
     }
