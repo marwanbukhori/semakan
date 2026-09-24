@@ -11,6 +11,9 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebouncedCallback } from '@/shared/hooks/useDebouncedCallback';
+
+/** Hides MYDS's duplicate ItemText copy inside each option (it's the item's last child). */
+const ITEM_CLASS = '[&>*:last-child]:hidden';
 import { APPLICATION_STATUSES, StatusFilterSchema } from '../schemas';
 import type { ApplicationListParams, StatusFilter } from '../types';
 
@@ -93,12 +96,15 @@ export function ApplicationFilters({ q, status, onChange }: ApplicationFiltersPr
               asChild, which requires a single element (not raw text) or Slot
               throws "failed to slot onto its children" on every render. Wrap
               the label so plain translated strings work.
+              MYDS also renders those children twice (the label, then Radix's
+              ItemText copy that Radix mirrors into the trigger), so the list
+              hides the in-item ItemText copy; the trigger's copy is unaffected.
             */}
-            <SelectItem value="all">
+            <SelectItem value="all" className={ITEM_CLASS}>
               <span>{t('applications.filters.allStatuses')}</span>
             </SelectItem>
             {APPLICATION_STATUSES.map((option) => (
-              <SelectItem key={option} value={option}>
+              <SelectItem key={option} value={option} className={ITEM_CLASS}>
                 <span>{t(`status.${option}`)}</span>
               </SelectItem>
             ))}
