@@ -11,7 +11,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace @semakan/web",
+    "dev": "npm run dev --workspace @semakan/web --",
     "build": "npm run build --workspace @semakan/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
