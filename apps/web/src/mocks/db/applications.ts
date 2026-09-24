@@ -1,3 +1,4 @@
+import { decide, requiresFireCertificate } from '@semakan/domain';
 import { PAGE_SIZE, PREMISES_CATEGORIES } from '@/features/applications/schemas';
 import type {
   ApplicationDetail,
@@ -12,13 +13,11 @@ import type {
   SortField,
   TimelineEvent,
 } from '@/features/applications/types';
-import {
-  isReviewable,
-  statusAfterDecision,
-  type ReviewErrorCode,
-} from '@/features/applications/rules';
+import type { ReviewErrorCode } from '@/features/applications/rules';
 import { assertNever } from '@/shared/lib/assertNever';
 import { createRandom } from './random';
+
+export { requiresFireCertificate };
 
 const SEED = 20260923;
 const COUNT = 57;
@@ -134,10 +133,6 @@ const STREETS = [
   'Perdana',
   'Kenanga',
 ] as const;
-
-export function requiresFireCertificate(category: PremisesCategory): boolean {
-  return category === 'food_beverage' || category === 'entertainment';
-}
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -298,58 +293,14 @@ export type ReviewOutcome =
 export function applyReview(id: string, request: ReviewRequest, now = new Date()): ReviewOutcome {
   const current = getApplication(id);
   if (!current) return { kind: 'not_found' };
-  if (request.version !== current.version) return { kind: 'conflict' };
-  if (!isReviewable(current.status))
-    return { kind: 'invalid', fieldErrors: { decision: ['not_reviewable'] } };
 
-  const { review } = request;
-  if (
-    review.decision === 'approve' &&
-    requiresFireCertificate(current.premisesCategory) &&
-    !current.documents.some((doc) => doc.kind === 'fire_certificate')
-  ) {
-    return { kind: 'invalid', fieldErrors: { decision: ['missing_fire_certificate'] } };
+  const result = decide(current, request, CURRENT_OFFICER, now);
+  if (!result.ok) {
+    if (result.error.kind === 'version_conflict') return { kind: 'conflict' };
+    return { kind: 'invalid', fieldErrors: { [result.error.field]: [result.error.code] } };
   }
 
-  const to = statusAfterDecision(review.decision);
-  const base = {
-    id: `${current.id}-ev-${current.timeline.length + 1}`,
-    at: now.toISOString(),
-    actor: CURRENT_OFFICER,
-  };
-  let event: TimelineEvent;
-  switch (review.decision) {
-    case 'approve':
-      event = {
-        ...base,
-        kind: 'status_changed',
-        from: current.status,
-        to,
-        note: review.note === '' ? null : review.note,
-      };
-      break;
-    case 'reject':
-      event = { ...base, kind: 'status_changed', from: current.status, to, note: review.reason };
-      break;
-    case 'request_info':
-      event = {
-        ...base,
-        kind: 'info_requested',
-        requestedInfo: review.requestedInfo,
-        note: review.note,
-      };
-      break;
-    default:
-      return assertNever(review);
-  }
-
-  const detail: ApplicationDetail = {
-    ...current,
-    status: to,
-    assignedOfficerName: CURRENT_OFFICER,
-    timeline: [...current.timeline, event],
-    version: current.version + 1,
-  };
+  const { detail } = result.value;
   applications = applications.map((application) => (application.id === id ? detail : application));
   return { kind: 'ok', detail };
 }
