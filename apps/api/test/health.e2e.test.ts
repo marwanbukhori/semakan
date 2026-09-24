@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { inject } from 'vitest';
-import type { INestApplication } from '@nestjs/common';
+import { Logger, type INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { createTestApp } from './app';
 
@@ -9,7 +9,7 @@ beforeAll(async () => {
   process.env.DATABASE_URL = inject('databaseUrl');
   app = await createTestApp();
 });
-afterAll(() => app.close());
+afterAll(() => app?.close());
 
 it('reports liveness and readiness', async () => {
   await request(app.getHttpServer()).get('/health/live').expect(200, { status: 'ok' });
@@ -27,9 +27,12 @@ it('publishes an OpenAPI 3.1 document', async () => {
   expect(res.body.openapi).toBe('3.1.0');
 });
 
-it('reports not ready with a 503 problem when the database query fails', async () => {
+it('reports not ready with a 503 problem when the database query fails, logging the reason', async () => {
   vi.spyOn(app.get(DataSource), 'query').mockRejectedValueOnce(new Error('connection refused'));
+  const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
   const res = await request(app.getHttpServer()).get('/health/ready').expect(503);
   expect(res.headers['content-type']).toMatch(/^application\/problem\+json/);
   expect(res.body).toMatchObject({ status: 503, title: 'Service Unavailable' });
+  expect(log.mock.calls.some((call) => String(call[0]).includes('connection refused'))).toBe(true);
+  log.mockRestore();
 });

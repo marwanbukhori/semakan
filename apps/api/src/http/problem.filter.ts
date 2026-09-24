@@ -34,7 +34,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const res = host.switchToHttp().getResponse<Response>();
     const status = exception instanceof HttpException ? exception.getStatus() : 500;
-    if (!(exception instanceof HttpException)) {
+    if (status >= 500) {
       this.logger.error(
         exception instanceof Error ? (exception.stack ?? exception.message) : String(exception),
       );

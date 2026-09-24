@@ -13,6 +13,8 @@ import { HealthModule } from './health/health.module';
         migrations: [],
         migrationsRun: true,
         synchronize: false,
+        retryAttempts: 2,
+        retryDelay: 1000,
       }),
     }),
     HealthModule,

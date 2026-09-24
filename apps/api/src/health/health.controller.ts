@@ -1,9 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ProblemException } from '../http/problem.filter';
 
 @Controller('health')
 export class HealthController {
+  private readonly logger = new Logger(HealthController.name);
+
   constructor(private readonly dataSource: DataSource) {}
 
   @Get('live')
@@ -15,7 +17,8 @@ export class HealthController {
   async ready() {
     try {
       await this.dataSource.query('SELECT 1');
-    } catch {
+    } catch (error) {
+      this.logger.error(error instanceof Error ? (error.stack ?? error.message) : String(error));
       throw new ProblemException(503, {
         title: 'Service Unavailable',
         detail: 'The database is not reachable.',

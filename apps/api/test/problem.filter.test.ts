@@ -107,6 +107,20 @@ describe('ProblemDetailsFilter', () => {
     expect(problem.detail).toMatch(/expected object/);
   });
 
+  it('logs a 5xx HttpException instead of swallowing it', () => {
+    const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    render(new ProblemException(503, { title: 'Service Unavailable', detail: 'db down' }));
+    expect(log).toHaveBeenCalledTimes(1);
+    log.mockRestore();
+  });
+
+  it('does not log a 4xx HttpException', () => {
+    const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+    render(new NotFoundException('Cannot GET /api/v1/nope'));
+    expect(log).not.toHaveBeenCalled();
+    log.mockRestore();
+  });
+
   it('turns anything else into a logged 500 without leaking the stack', () => {
     const log = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
     const { statusCode, body, problem } = render(new Error('secret failure'));

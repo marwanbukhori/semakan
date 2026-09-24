@@ -3,6 +3,7 @@
 **/coverage
 .git
 .superpowers
+**/.env*
 .vercel
 apps/web
 docs

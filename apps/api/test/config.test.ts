@@ -4,7 +4,7 @@ describe('loadConfig', () => {
   it('applies defaults', () => {
     expect(loadConfig({ DATABASE_URL: 'postgres://u:p@localhost:5432/db' })).toEqual({
       DATABASE_URL: 'postgres://u:p@localhost:5432/db',
-      PORT: 3000,
+      PORT: 3100,
       NODE_ENV: 'development',
     });
   });
