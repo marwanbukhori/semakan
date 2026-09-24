@@ -1,7 +1,7 @@
 import { MoonIcon, SunIcon } from '@govtechmy/myds-react/icon';
 import { ThemeSwitch } from '@govtechmy/myds-react/theme-switch';
 import { useTranslation } from 'react-i18next';
-import { Link, NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet } from 'react-router';
 import { AppToaster } from './AppToaster';
 import { DevPanel } from './dev-panel/DevPanel';
 
@@ -17,14 +17,24 @@ export function AppLayout() {
       </a>
       <header className="border-b border-otl-divider">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3">
-          {/* The app name doubles as the link to the applications list. */}
-          <Link
+          {/* The app name doubles as the link to the applications list, and is marked current there like the other nav links. */}
+          <NavLink
             to="/applications"
-            className="rounded hover:underline focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
+            className="rounded focus-visible:outline-none focus-visible:ring focus-visible:ring-fr-primary"
           >
-            <span className="block font-heading text-body-lg font-semibold">{t('app.name')}</span>
-            <span className="block text-body-xs text-txt-black-500">{t('app.tagline')}</span>
-          </Link>
+            {({ isActive }) => (
+              <>
+                <span
+                  className={`block font-heading text-body-lg font-semibold ${
+                    isActive ? 'text-txt-primary' : 'hover:underline'
+                  }`}
+                >
+                  {t('app.name')}
+                </span>
+                <span className="block text-body-xs text-txt-black-500">{t('app.tagline')}</span>
+              </>
+            )}
+          </NavLink>
           <nav aria-label={t('app.nav.label')} className="flex items-center gap-4">
             <NavLink
               to="/open-data/fuel-prices"

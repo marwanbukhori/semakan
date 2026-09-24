@@ -56,7 +56,7 @@ export const en = {
     experience: {
       title: 'Experience',
       intro:
-        "The same projects, seen through each role's requirements. Switch the role to reorder the page.",
+        "The same projects, seen through each role's requirements. Switch the role to see that side of my work.",
       roleLegend: 'Show my experience for',
       projects: 'Projects',
       roles: { frontend: 'Frontend role', backend: 'Backend role' },

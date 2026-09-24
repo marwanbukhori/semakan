@@ -58,7 +58,7 @@ export const ms: Translation = {
     experience: {
       title: 'Pengalaman',
       intro:
-        'Projek yang sama, dilihat melalui keperluan setiap peranan. Tukar peranan untuk menyusun semula halaman.',
+        'Projek yang sama, dilihat melalui keperluan setiap peranan. Tukar peranan untuk melihat bahagian kerja tersebut.',
       roleLegend: 'Tunjukkan pengalaman saya untuk',
       projects: 'Projek',
       roles: { frontend: 'Peranan frontend', backend: 'Peranan backend' },

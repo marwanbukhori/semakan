@@ -20,6 +20,7 @@ describe('app routes', () => {
       await screen.findByRole('link', { name: /^Semakan\s*Licence application review$/ }),
     );
     await waitFor(() => expect(router.state.location.pathname).toBe('/applications'));
+    expect(screen.getByRole('link', { name: /^Semakan/ })).toHaveAttribute('aria-current', 'page');
   });
 
   it('links to the about pages from the header', async () => {
