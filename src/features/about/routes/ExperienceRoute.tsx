@@ -6,15 +6,15 @@ import { PROJECTS } from '../content/experience';
 import type { Role } from '../content/requirements';
 import { useRole } from '../hooks/useRole';
 
-/** Cards with a facet for the active role come first; content order is kept within each group. */
-function orderProjects(role: Role) {
-  return [...PROJECTS].sort((a, b) => Number(!a[role]) - Number(!b[role]));
+/** Only projects with a facet for the active role are shown; content order is otherwise kept. */
+function projectsFor(role: Role) {
+  return PROJECTS.filter((project) => project[role] !== undefined);
 }
 
 export function Component() {
   const { t } = useTranslation();
   const { role, setRole } = useRole();
-  const orderedProjects = orderProjects(role);
+  const roleProjects = projectsFor(role);
 
   return (
     <div className="flex flex-col gap-8">
@@ -31,7 +31,7 @@ export function Component() {
         <h2 id="projects-heading" className="font-heading text-body-lg font-semibold">
           {t('about.experience.projects')}
         </h2>
-        {orderedProjects.map((project) => (
+        {roleProjects.map((project) => (
           <ProjectCard key={project.id} project={project} role={role} />
         ))}
       </section>

@@ -26,9 +26,9 @@ describe('ExperienceRoute', () => {
       'RON95 subsidy and POS features',
       'Security hardening',
       'Python services',
-      'Verus Virtus company site',
     ]);
     expect(within(cards[0]!).getAllByRole('heading', { level: 4 })[0]!.textContent).toBe('Backend');
+    expect(screen.queryByRole('heading', { level: 4, name: 'Frontend' })).not.toBeInTheDocument();
 
     const map = screen.getByRole('table');
     expect(screen.getByText('Requirements for the backend role')).toBeInTheDocument();
@@ -70,23 +70,25 @@ describe('ExperienceRoute', () => {
       'Verus Virtus company site',
       'Rembayung booking queue',
       'CloudBOS reporting',
-      'RON95 subsidy and POS features',
-      'Security hardening',
-      'Python services',
     ]);
-    const ron95Card = cards[cardNames.indexOf('RON95 subsidy and POS features')]!;
-    expect(within(ron95Card).getByText('No frontend work on this project.')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { level: 4, name: 'Backend' })).not.toBeInTheDocument();
   });
 
   it('links past-work cells to project card anchors that exist on the page', () => {
-    renderRoutes(routes, { initialEntries: ['/about/experience'] });
+    for (const initialEntry of ['/about/experience', '/about/experience?role=frontend']) {
+      const { unmount } = renderRoutes(routes, { initialEntries: [initialEntry] });
 
-    const map = screen.getByRole('table');
-    const links = within(map).getAllByRole('link');
-    const projectLinks = links.filter((link) => link.getAttribute('href')?.startsWith('#project-'));
-    expect(projectLinks.length).toBeGreaterThan(0);
-    for (const link of projectLinks) {
-      expect(document.querySelector(link.getAttribute('href')!)).not.toBeNull();
+      const map = screen.getByRole('table');
+      const links = within(map).getAllByRole('link');
+      const projectLinks = links.filter((link) =>
+        link.getAttribute('href')?.startsWith('#project-'),
+      );
+      expect(projectLinks.length).toBeGreaterThan(0);
+      for (const link of projectLinks) {
+        expect(document.querySelector(link.getAttribute('href')!)).not.toBeNull();
+      }
+
+      unmount();
     }
   });
 

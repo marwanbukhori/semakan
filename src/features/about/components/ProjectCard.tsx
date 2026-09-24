@@ -6,7 +6,6 @@ import type { Facet, Project } from '../content/experience';
 import { REQUIREMENTS, type Role } from '../content/requirements';
 import { linkClass } from './linkClass';
 
-const OTHER_ROLE: Record<Role, Role> = { frontend: 'backend', backend: 'frontend' };
 /** Every id in a facet's `requirements` comes from `REQUIREMENTS` (typed via `RequirementId`), so a lookup here always finds an entry. */
 const REQUIREMENT_LABEL = new Map(
   REQUIREMENTS.map((requirement) => [requirement.id, requirement.label]),
@@ -15,22 +14,13 @@ const REQUIREMENT_LABEL = new Map(
 type ProjectCardProps = { project: Project; role: Role };
 
 /**
- * Each project can have a frontend facet, a backend facet, or both. The active role's facet comes
- * first; a project missing that facet is dimmed by its container (dashed border, `bg-bg-washed`,
- * never opacity) but any facet it does have for the other role stays fully readable.
+ * Each project can have a frontend facet, a backend facet, or both, but a card only ever shows the
+ * active role's facet. The caller (`ExperienceRoute`) filters out projects that have no facet for
+ * the active role before rendering this component.
  */
 export function ProjectCard({ project, role }: ProjectCardProps) {
-  const { t } = useTranslation();
   const pick = useLocalized();
-  const otherRole = OTHER_ROLE[role];
-  const activeFacet = project[role];
-  const otherFacet = project[otherRole];
-  const hasActiveFacet = activeFacet !== undefined;
-
-  const sections: { role: Role; facet: Facet }[] = [
-    ...(activeFacet ? [{ role, facet: activeFacet }] : []),
-    ...(otherFacet ? [{ role: otherRole, facet: otherFacet }] : []),
-  ];
+  const facet = project[role];
 
   const headingId = `project-${project.id}-heading`;
 
@@ -38,9 +28,7 @@ export function ProjectCard({ project, role }: ProjectCardProps) {
     <article
       id={`project-${project.id}`}
       aria-labelledby={headingId}
-      className={`flex flex-col gap-4 rounded-md border p-4 ${
-        hasActiveFacet ? 'border-otl-divider' : 'border-dashed border-otl-divider bg-bg-washed'
-      }`}
+      className="flex flex-col gap-4 rounded-md border border-otl-divider p-4"
     >
       <header className="flex flex-col gap-1">
         <h3 id={headingId} className="font-heading text-body-lg font-semibold">
@@ -58,15 +46,7 @@ export function ProjectCard({ project, role }: ProjectCardProps) {
         </ul>
       </header>
 
-      {!hasActiveFacet && (
-        <p className="text-body-sm text-txt-black-700">
-          {t('about.experience.noFacet', { role: t(`about.experience.roleWord.${role}`) })}
-        </p>
-      )}
-
-      {sections.map(({ role: facetRole, facet }) => (
-        <FacetSection key={facetRole} role={facetRole} facet={facet} />
-      ))}
+      {facet && <FacetSection role={role} facet={facet} />}
     </article>
   );
 }

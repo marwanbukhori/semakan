@@ -45,6 +45,7 @@ Backend practices are added with Plan 6.
 - **Role switch** at the top, stored in the URL (`?role=frontend|backend`, default `frontend`).
 - **Update (2026-09-24):** the author is focusing on the Backend role, so the default is now `backend` (`?role=frontend` shows the frontend view).
 - **Project cards**, each with a **Frontend** and a **Backend** section (what was built, the hard problem, the pattern in Semakan). Items are tagged with requirement IDs from the job descriptions. The active role's section comes first; a project with nothing for the active role is dimmed, not hidden.
+  - **Update (2026-09-24):** the role switch filters: each card shows only the selected role's work, and projects with none are hidden.
 - **Requirements map**: one row per requirement from the selected role's job description (must-have and nice-to-have), with evidence from past work (links to cards) and evidence in Semakan (links to code). Rows without Semakan evidence yet are marked **Planned** with the plan number.
 - Requirement tags are typed: a tag that does not exist in `requirements.ts` fails the type check.
 - **Cards** (facts from the author's portfolio content, corrected by the author on 2026-09-24):
