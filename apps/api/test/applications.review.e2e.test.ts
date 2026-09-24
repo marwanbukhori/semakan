@@ -226,16 +226,50 @@ describe('POST /api/v1/applications/:id/review', () => {
       );
       expect(n).toBe(0);
     });
-  });
-});
 
-it('publishes the review path in the OpenAPI document', async () => {
-  const res = await request(app.getHttpServer()).get('/docs-json').expect(200);
-  expect(Object.keys(res.body.paths)).toContain('/api/v1/applications/{id}/review');
-  const post = (res.body as { paths: Record<string, { post?: { requestBody?: unknown } }> }).paths[
-    '/api/v1/applications/{id}/review'
-  ]?.post;
-  expect(post?.requestBody).toMatchObject({
-    content: { 'application/json': { schema: { required: ['version', 'review'] } } },
+    it('returns 400 invalid_idempotency_key for a key longer than 255 characters', async () => {
+      const { id, version } = approvable;
+      const headers = { 'If-Match': `"${version}"`, 'Idempotency-Key': 'k'.repeat(256) };
+      const res = await review(id, approve(version), headers).expect(400);
+      expect(res.body).toMatchObject({ code: 'invalid_idempotency_key' });
+      expect(await storedVersion(id)).toBe(version);
+    });
+
+    it('serialises two concurrent requests sharing the same new key: both replay one commit', async () => {
+      const { id, version } = approvable;
+      const eventsBefore = await timelineCount(id);
+      const headers = { 'If-Match': `"${version}"`, 'Idempotency-Key': 'key-concurrent' };
+      const server = app.getHttpServer();
+      const send = () =>
+        request(server)
+          .post(`/api/v1/applications/${id}/review`)
+          .set(headers)
+          .send(approve(version));
+
+      const [first, second] = await Promise.all([send(), send()]);
+
+      expect(first.status).toBe(200);
+      expect(second.status).toBe(200);
+      expect(second.body).toEqual(first.body);
+      expect(first.headers.etag).toBe(`"${version + 1}"`);
+      expect(second.headers.etag).toBe(`"${version + 1}"`);
+      expect(await storedVersion(id)).toBe(version + 1);
+      expect(await timelineCount(id)).toBe(eventsBefore + 1);
+      const [{ n }] = await ds.query<[{ n: number }]>(
+        'SELECT count(*)::int AS n FROM idempotency_keys WHERE key = $1',
+        ['key-concurrent'],
+      );
+      expect(n).toBe(1);
+    });
+  });
+
+  it('publishes the review path in the OpenAPI document', async () => {
+    const res = await request(app.getHttpServer()).get('/docs-json').expect(200);
+    expect(Object.keys(res.body.paths)).toContain('/api/v1/applications/{id}/review');
+    const post = (res.body as { paths: Record<string, { post?: { requestBody?: unknown } }> })
+      .paths['/api/v1/applications/{id}/review']?.post;
+    expect(post?.requestBody).toMatchObject({
+      content: { 'application/json': { schema: { required: ['version', 'review'] } } },
+    });
   });
 });

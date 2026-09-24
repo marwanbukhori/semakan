@@ -21,13 +21,16 @@ export function toFieldErrors(error: z.ZodError): Record<string, string[]> {
 
 /** Validates with a zod schema and answers 422 in the same shape as the mock. */
 export class ZodValidationPipe<S extends z.ZodType> implements PipeTransform {
-  constructor(private readonly schema: S) {}
+  constructor(
+    private readonly schema: S,
+    private readonly title: string,
+  ) {}
 
   transform(value: unknown): z.output<S> {
     const parsed = this.schema.safeParse(value);
     if (!parsed.success) {
       throw new ProblemException(422, {
-        title: 'Invalid review',
+        title: this.title,
         fieldErrors: toFieldErrors(parsed.error),
       });
     }

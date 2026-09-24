@@ -32,6 +32,16 @@ export function requestHash(id: string, body: unknown): string {
 /** Stores successful responses by Idempotency-Key. Always used inside a transaction. */
 @Injectable()
 export class IdempotencyRepository {
+  /**
+   * Serialises requests that share a key until the holder commits or rolls back.
+   * Must stay the first statement in the transaction, before `find`: it relies
+   * on READ COMMITTED (each statement gets a fresh snapshot), so the waiter's
+   * subsequent `find` sees the row the lock holder just committed.
+   */
+  async lock(manager: EntityManager, key: string): Promise<void> {
+    await manager.query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [key]);
+  }
+
   async find(manager: EntityManager, key: string): Promise<StoredResponse | null> {
     const row = await manager.findOneBy(IdempotencyKeyEntity, { key });
     if (!row) return null;

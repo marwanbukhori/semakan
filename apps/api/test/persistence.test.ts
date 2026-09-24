@@ -109,3 +109,40 @@ it('saves a review once per version and reports a conflict for a stale version',
   expect(await ds.transaction((m) => repo.saveReview(m, before, after, event))).toBe('conflict');
   expect(await repo.findDetail(before.id)).toEqual(after);
 });
+
+it('reports a conflict deterministically when the WHERE-version guard fails', async () => {
+  // Bumps the row's version directly with SQL, out from under `before`, so the
+  // guard's failure does not depend on an HTTP race actually serialising.
+  const staleBefore = seedApplicationDetails().find((a) => a.status === 'submitted')!;
+  await ds.query('UPDATE applications SET version = version + 1 WHERE id = $1', [staleBefore.id]);
+  const timelineBefore = await ds.query<[{ n: number }]>(
+    'SELECT count(*)::int AS n FROM timeline_events WHERE application_id = $1',
+    [staleBefore.id],
+  );
+
+  const event: TimelineEvent = {
+    id: `${staleBefore.id}-ev-2`,
+    kind: 'status_changed',
+    at: '2026-09-24T01:00:00.000Z',
+    actor: CURRENT_OFFICER,
+    from: 'submitted',
+    to: 'under_review',
+    note: null,
+  };
+  const after = {
+    ...staleBefore,
+    status: 'under_review' as const,
+    assignedOfficerName: CURRENT_OFFICER,
+    timeline: [...staleBefore.timeline, event],
+    version: staleBefore.version + 1,
+  };
+
+  expect(await ds.transaction((m) => repo.saveReview(m, staleBefore, after, event))).toBe(
+    'conflict',
+  );
+  const timelineAfter = await ds.query<[{ n: number }]>(
+    'SELECT count(*)::int AS n FROM timeline_events WHERE application_id = $1',
+    [staleBefore.id],
+  );
+  expect(timelineAfter[0].n).toBe(timelineBefore[0].n);
+});

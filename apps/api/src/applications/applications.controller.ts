@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Headers, HttpCode, Param, Post, Query, Res } from '@nestjs/common';
-import { ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { z } from 'zod';
 import {
@@ -37,14 +37,35 @@ export class ApplicationsController {
    * the global StandardSchemaValidationPipe before parameter pipes, and with a
    * schema in the metadata it would answer 400 first. Without one it passes the
    * body through, so ZodValidationPipe answers 422 in the mock's shape.
+   *
+   * Pipes precede the handler, so body validation always runs before the
+   * If-Match check below: a malformed body without If-Match still gets 422,
+   * not 428.
    */
   @Post(':id/review')
   @HttpCode(200)
   @ApiBody({ schema: z.toJSONSchema(ReviewRequestSchema) as object })
+  @ApiHeader({ name: 'If-Match', required: true, description: 'The current application version.' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    required: false,
+    description: 'Replays the stored response for a repeated key with the same body.',
+  })
   @ApiOkResponse({ standardSchema: ApplicationDetailSchema })
+  @ApiResponse({
+    status: 400,
+    description: 'invalid_if_match, version_mismatch or invalid_idempotency_key.',
+  })
+  @ApiResponse({ status: 404, description: 'not_found: no application with this id.' })
+  @ApiResponse({ status: 409, description: 'version_conflict or idempotency_key_reused.' })
+  @ApiResponse({ status: 422, description: 'Invalid review body, or the decision was rejected.' })
+  @ApiResponse({
+    status: 428,
+    description: 'precondition_required: the If-Match header is missing.',
+  })
   async review(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(ReviewRequestSchema)) body: ReviewRequest,
+    @Body(new ZodValidationPipe(ReviewRequestSchema, 'Invalid review')) body: ReviewRequest,
     @Headers('if-match') ifMatch: string | undefined,
     @Headers('idempotency-key') idempotencyKey: string | undefined,
     @Res({ passthrough: true }) res: Response,
@@ -63,6 +84,12 @@ export class ApplicationsController {
       throw new ProblemException(400, {
         title: 'If-Match does not match the body version',
         code: 'version_mismatch',
+      });
+    }
+    if (idempotencyKey && idempotencyKey.length > 255) {
+      throw new ProblemException(400, {
+        title: 'Invalid Idempotency-Key',
+        code: 'invalid_idempotency_key',
       });
     }
 

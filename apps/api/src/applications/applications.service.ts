@@ -55,6 +55,10 @@ export class ApplicationsService {
 
     return this.ds.transaction(async (manager) => {
       if (idempotency) {
+        // Must stay first: serialises concurrent same-key requests so the
+        // second one waits for the first to commit and then replays it,
+        // instead of racing it to a spurious version_conflict.
+        await this.idempotency.lock(manager, idempotency.key);
         const stored = await this.idempotency.find(manager, idempotency.key);
         if (stored && stored.requestHash !== idempotency.hash) {
           throw new ProblemException(409, {
