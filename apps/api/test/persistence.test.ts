@@ -65,9 +65,19 @@ it('orders mixed-case and punctuated names the way localeCompare does, not by by
 
 it('treats %, _ and \\ in the search as literal characters', async () => {
   const params = { status: 'all', sort: 'referenceNo', order: 'asc', page: 1 } as const;
-  for (const q of ['%', '_', '\\', 'LPP_2026']) {
+  const target = seedApplicationDetails()[0]!;
+  await ds.query('UPDATE applications SET business_name = $1 WHERE id = $2', [
+    'A\\B Trading',
+    target.id,
+  ]);
+
+  for (const q of ['%', '_', 'LPP_2026']) {
     expect((await repo.list({ ...params, q })).total, q).toBe(0);
   }
+
+  const result = await repo.list({ ...params, q: '\\' });
+  expect(result.total).toBe(1);
+  expect(result.items[0]?.id).toBe(target.id);
 });
 
 it('rejects a status outside the allowed list', async () => {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { loadConfig } from './config';
 import { dataSourceOptions } from './db/data-source';
+import { ApplicationsModule } from './applications/applications.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { HealthModule } from './health/health.module';
         retryDelay: 1000,
       }),
     }),
+    ApplicationsModule,
     HealthModule,
   ],
 })

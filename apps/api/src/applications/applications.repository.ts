@@ -17,7 +17,7 @@ import type {
 import { ApplicationEntity } from '../db/entities/application.entity';
 import { DocumentEntity } from '../db/entities/document.entity';
 import { TimelineEventEntity } from '../db/entities/timeline-event.entity';
-import { toTimelineRow } from '../db/seed-data';
+import { toTimelineRow } from '../db/mappers';
 
 /*
  * Sorting must match queryApplications in @semakan/seed, which compares with JS
@@ -178,7 +178,7 @@ export class ApplicationsRepository {
       })
       .where('id = :id AND version = :version', { id: before.id, version: before.version })
       .execute();
-    if (result.affected === 0) return 'conflict';
+    if (!result.affected) return 'conflict';
     await manager.insert(
       TimelineEventEntity,
       toTimelineRow(before.id, after.timeline.length, event),
