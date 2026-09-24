@@ -102,6 +102,13 @@ export const overview: OverviewContent = {
       },
     },
     {
+      path: 'packages/contract',
+      text: {
+        en: 'The API contract: zod schemas and types shared by the frontend and the backend.',
+        ms: 'Kontrak API: zod schemas dan types yang dikongsi oleh frontend dan backend.',
+      },
+    },
+    {
       path: 'apps/web/src/shared',
       text: {
         en: 'Code any feature may use: the validated API client, ApiError, i18n, formatting, hooks and shared UI.',

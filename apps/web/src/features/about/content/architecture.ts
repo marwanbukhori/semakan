@@ -64,7 +64,7 @@ export const architecture: ArchitectureContent = {
       paths: [
         'apps/web/src/shared/api/client.ts',
         'apps/web/src/shared/api/ApiError.ts',
-        'apps/web/src/features/applications/schemas.ts',
+        'packages/contract/src/applications.ts',
       ],
     },
     {

@@ -73,7 +73,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: '`z.infer` dan semakan type dalam CI.',
     },
     status: 'enforced',
-    source: { path: 'apps/web/src/features/applications/types.ts', region: 'types-from-schemas' },
+    source: { path: 'packages/contract/src/types.ts', region: 'types-from-schemas' },
   },
   {
     id: 'composition',

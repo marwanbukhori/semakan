@@ -147,7 +147,7 @@ const REQUIREMENTS_DATA = [
             en: 'The API contract both sides build to',
             ms: 'Kontrak API yang digunakan kedua-dua pihak',
           },
-          path: 'apps/web/src/features/applications/schemas.ts',
+          path: 'packages/contract/src/applications.ts',
         },
       ],
     },
@@ -317,7 +317,7 @@ const REQUIREMENTS_DATA = [
       links: [
         {
           label: { en: 'The REST contract', ms: 'Kontrak REST' },
-          path: 'apps/web/src/features/applications/schemas.ts',
+          path: 'packages/contract/src/applications.ts',
         },
         {
           label: { en: 'The mock handlers', ms: 'Mock handlers' },
