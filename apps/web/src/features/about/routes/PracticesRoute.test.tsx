@@ -54,7 +54,7 @@ describe('PracticesRoute', () => {
     expect(await within(article).findByText(/schema\.safeParse/)).toBeInTheDocument();
     const link = within(article).getByRole('link', { name: /View on GitHub/ });
     expect(link.getAttribute('href')).toMatch(
-      /^https:\/\/github\.com\/marwanbukhori\/semakan\/blob\/main\/src\/shared\/api\/client\.ts#L\d+-L\d+$/,
+      /^https:\/\/github\.com\/marwanbukhori\/semakan\/blob\/main\/apps\/web\/src\/shared\/api\/client\.ts#L\d+-L\d+$/,
     );
   });
 

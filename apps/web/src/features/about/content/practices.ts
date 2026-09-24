@@ -31,7 +31,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Kompilator TypeScript dan typescript-eslint, dalam CI.',
     },
     status: 'enforced',
-    source: { path: 'tsconfig.app.json', region: 'strict-typescript' },
+    source: { path: 'apps/web/tsconfig.app.json', region: 'strict-typescript' },
   },
   {
     id: 'exhaustive-switch',
@@ -53,7 +53,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'enforced',
     source: {
-      path: 'src/features/applications/components/Timeline.tsx',
+      path: 'apps/web/src/features/applications/components/Timeline.tsx',
       region: 'exhaustive-switch',
     },
   },
@@ -73,7 +73,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: '`z.infer` dan semakan type dalam CI.',
     },
     status: 'enforced',
-    source: { path: 'src/features/applications/types.ts', region: 'types-from-schemas' },
+    source: { path: 'apps/web/src/features/applications/types.ts', region: 'types-from-schemas' },
   },
   {
     id: 'composition',
@@ -92,7 +92,10 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     plan: 4,
-    source: { path: 'src/features/applications/routes/ListRoute.tsx', region: 'composition' },
+    source: {
+      path: 'apps/web/src/features/applications/routes/ListRoute.tsx',
+      region: 'composition',
+    },
   },
   {
     id: 'thin-routes',
@@ -110,7 +113,10 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Konvensyen folder, dan peraturan lint boundaries untuk imports. Saiz route sendiri disemak semasa review.',
     },
     status: 'partial',
-    source: { path: 'src/features/open-data/routes/FuelPricesRoute.tsx', region: 'thin-routes' },
+    source: {
+      path: 'apps/web/src/features/open-data/routes/FuelPricesRoute.tsx',
+      region: 'thin-routes',
+    },
   },
   {
     id: 'derive-dont-sync',
@@ -129,7 +135,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     source: {
-      path: 'src/features/applications/hooks/useApplicationFilters.ts',
+      path: 'apps/web/src/features/applications/hooks/useApplicationFilters.ts',
       region: 'derive-dont-sync',
     },
   },
@@ -150,7 +156,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     source: {
-      path: 'src/features/applications/components/ApplicationTable.tsx',
+      path: 'apps/web/src/features/applications/components/ApplicationTable.tsx',
       region: 'stable-keys',
     },
   },
@@ -171,7 +177,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     source: {
-      path: 'src/features/open-data/components/FuelPriceChart.tsx',
+      path: 'apps/web/src/features/open-data/components/FuelPriceChart.tsx',
       region: 'measured-memo',
     },
   },
@@ -194,7 +200,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Function signature client itu sendiri, jadi panggilan tanpa schema tidak akan dikompil.',
     },
     status: 'enforced',
-    source: { path: 'src/shared/api/client.ts', region: 'validate-at-boundary' },
+    source: { path: 'apps/web/src/shared/api/client.ts', region: 'validate-at-boundary' },
   },
   {
     id: 'query-keys',
@@ -215,7 +221,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Unit tests ke atas key factory.',
     },
     status: 'enforced',
-    source: { path: 'src/features/applications/api/keys.ts', region: 'query-keys' },
+    source: { path: 'apps/web/src/features/applications/api/keys.ts', region: 'query-keys' },
   },
   {
     id: 'url-state',
@@ -233,7 +239,10 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Integration tests ke atas halaman senarai dan halaman fuel.',
     },
     status: 'enforced',
-    source: { path: 'src/features/open-data/hooks/useFuelFilters.ts', region: 'url-state' },
+    source: {
+      path: 'apps/web/src/features/open-data/hooks/useFuelFilters.ts',
+      region: 'url-state',
+    },
   },
   {
     id: 'async-states',
@@ -255,7 +264,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     plan: 4,
-    source: { path: 'src/shared/api/errorMessage.ts', region: 'async-states' },
+    source: { path: 'apps/web/src/shared/api/errorMessage.ts', region: 'async-states' },
   },
   {
     id: 'semantic-forms',
@@ -275,7 +284,7 @@ export const PRACTICES: readonly Practice[] = [
     status: 'partial',
     plan: 4,
     source: {
-      path: 'src/features/applications/components/ReviewForm.tsx',
+      path: 'apps/web/src/features/applications/components/ReviewForm.tsx',
       region: 'semantic-forms',
     },
   },
@@ -299,7 +308,10 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     plan: 4,
-    source: { path: 'src/features/open-data/components/FuelPriceChart.tsx', region: 'keyboard' },
+    source: {
+      path: 'apps/web/src/features/open-data/components/FuelPriceChart.tsx',
+      region: 'keyboard',
+    },
   },
   {
     id: 'test-behaviour',
@@ -318,7 +330,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'partial',
     source: {
-      path: 'src/features/applications/routes/ReviewRoute.test.tsx',
+      path: 'apps/web/src/features/applications/routes/ReviewRoute.test.tsx',
       region: 'test-behaviour',
     },
   },
@@ -341,7 +353,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'eslint-plugin-boundaries, dalam CI.',
     },
     status: 'enforced',
-    source: { path: 'eslint.config.js', region: 'feature-boundaries' },
+    source: { path: 'apps/web/eslint.config.js', region: 'feature-boundaries' },
   },
   {
     id: 'code-splitting',
@@ -359,7 +371,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Lazy routes dan konfigurasi build. Amaran saiz chunk daripada build kelihatan dalam CI tetapi belum menggagalkannya lagi.',
     },
     status: 'partial',
-    source: { path: 'vite.config.ts', region: 'code-splitting' },
+    source: { path: 'apps/web/vite.config.ts', region: 'code-splitting' },
   },
   {
     id: 'typed-translations',
@@ -380,7 +392,7 @@ export const PRACTICES: readonly Practice[] = [
       ms: 'Type checker, untuk key parity. Tiada peraturan lint mengesan teks literal dalam JSX lagi.',
     },
     status: 'partial',
-    source: { path: 'src/shared/i18n/en.ts', region: 'typed-translations' },
+    source: { path: 'apps/web/src/shared/i18n/en.ts', region: 'typed-translations' },
   },
   {
     id: 'optimistic-rollback',
@@ -402,7 +414,7 @@ export const PRACTICES: readonly Practice[] = [
     },
     status: 'enforced',
     source: {
-      path: 'src/features/applications/api/mutations.ts',
+      path: 'apps/web/src/features/applications/api/mutations.ts',
       region: 'optimistic-rollback',
     },
   },
@@ -427,7 +439,7 @@ export const PRACTICES: readonly Practice[] = [
     status: 'partial',
     plan: 4,
     source: {
-      path: 'src/features/open-data/components/ChartDataTable.tsx',
+      path: 'apps/web/src/features/open-data/components/ChartDataTable.tsx',
       region: 'accessible-chart',
     },
   },

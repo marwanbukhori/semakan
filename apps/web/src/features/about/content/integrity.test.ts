@@ -5,23 +5,46 @@ import { PRACTICES } from './practices';
 import { aiWorkflow, REVIEW_LOG_PATHS, REVIEW_LOG_README_PATH } from './aiWorkflow';
 import { architecture } from './architecture';
 import { overview } from './overview';
+import { toRepoPath } from '../source/repoPath';
 
 /**
  * Every path/region a content module points at must exist in the real repo, so the About pages
- * never link to or excerpt something that has drifted or was never there. Widened to `/*.{md,json,
- * ts,js}` at the repo root so evidence pointing at files such as `vercel.json`, `AGENTS.md` and
- * `tailwind.config.ts` is covered too.
+ * never link to or excerpt something that has drifted or was never there. Paths are repo-root
+ * relative (the same paths GitHub shows), so the glob reaches the whole repo — including root
+ * files such as `vercel.json` and `AGENTS.md` — and every key is resolved to a repo-root path.
  */
-const repoFiles = import.meta.glob<string>(
-  ['/src/**/*', '/docs/**/*', '/.github/**/*', '/*.{md,json,ts,js}'],
+const globbed = import.meta.glob<string>(
+  [
+    '../../../../../../apps/web/**/*.{ts,tsx,js,json,css,html}',
+    '../../../../../../packages/**/*.{ts,json}',
+    '../../../../../../docs/**/*',
+    '../../../../../../.github/**/*',
+    '../../../../../../*.{md,json}',
+    '!**/node_modules/**',
+    '!**/dist/**',
+    '!**/coverage/**',
+  ],
   { query: '?raw', import: 'default', eager: true },
+);
+const repoFiles = new Map(
+  Object.entries(globbed).map(([key, text]) => [
+    toRepoPath(key, 'apps/web/src/features/about/content'),
+    text,
+  ]),
 );
 
 function readFile(path: string): string | undefined {
-  return repoFiles[`/${path}`];
+  return repoFiles.get(path);
 }
 
 describe('content integrity', () => {
+  it('resolves glob keys to repo-root paths', () => {
+    expect(repoFiles.has('apps/web/src/app/router.ts')).toBe(true);
+    expect(repoFiles.has('docs/specs/2026-09-24-semakan-api-design.md')).toBe(true);
+    expect(repoFiles.has('.github/workflows/ci.yml')).toBe(true);
+    expect(repoFiles.has('AGENTS.md')).toBe(true);
+  });
+
   describe.each(PRACTICES)('practice $id', (practice) => {
     it('points at a file that exists in the repo', () => {
       expect(readFile(practice.source.path)).toBeDefined();
@@ -106,6 +129,6 @@ describe('content integrity', () => {
 
   // A folder is a directory, so it exists when some repo file sits under it.
   it.each(overview.folders)('overview folder $path exists in the repo', ({ path }) => {
-    expect(Object.keys(repoFiles).some((key) => key.startsWith(`/${path}/`))).toBe(true);
+    expect([...repoFiles.keys()].some((k) => k.startsWith(`${path}/`))).toBe(true);
   });
 });
