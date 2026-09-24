@@ -1,11 +1,19 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+import type { ReactNode } from 'react';
+import { createQueryClient } from '@/app/providers';
 import { isReviewable } from '@/features/applications/rules';
-import { requiresFireCertificate, seedApplicationDetails } from '@/mocks/db/applications';
+import {
+  applyReview,
+  requiresFireCertificate,
+  seedApplicationDetails,
+} from '@/mocks/db/applications';
 import { setDevControls } from '@/mocks/devControls';
 import { server } from '@/mocks/node';
 import { createWrapper } from '@/test/render';
 import { DEFAULT_LIST_PARAMS } from '../schemas';
-import type { ApplicationDetail, ApplicationList } from '../types';
+import type { ApplicationDetail, ApplicationList, ReviewRequest } from '../types';
 import { applicationKeys } from './keys';
 import { useReviewApplication } from './mutations';
 import { useApplication, useApplications } from './queries';
@@ -106,5 +114,47 @@ describe('useReviewApplication', () => {
     expect(seenHeaders?.get('Idempotency-Key')).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
     );
+  });
+
+  it('reuses the same Idempotency-Key when a retry re-invokes mutationFn', async () => {
+    // A mutation-level retry is opt-in for this test only: the app itself runs with
+    // mutations.retry: false, so mutationFn normally never re-runs for the same submission.
+    const queryClient = createQueryClient({ mutations: { retry: 1 } });
+    function Wrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    }
+    const { result } = renderHook(
+      () => ({
+        detail: useApplication(target.id),
+        review: useReviewApplication(target.id),
+      }),
+      { wrapper: Wrapper },
+    );
+    await waitFor(() => expect(result.current.detail.isSuccess).toBe(true));
+
+    const seenKeys: (string | null)[] = [];
+    let attempt = 0;
+    server.use(
+      http.post('/api/applications/:id/review', async ({ params, request }) => {
+        attempt += 1;
+        seenKeys.push(request.headers.get('Idempotency-Key'));
+        // Fail the first attempt with a network error; the retry applies the review for real
+        // (mirroring the default handler), so the mutation still resolves successfully.
+        if (attempt === 1) return HttpResponse.error();
+        const body = (await request.json()) as ReviewRequest;
+        const outcome = applyReview(String(params.id), body);
+        if (outcome.kind !== 'ok') throw new Error(`Unexpected review outcome: ${outcome.kind}`);
+        return HttpResponse.json(outcome.detail);
+      }),
+    );
+
+    act(() => result.current.review.mutate(rejectRequest()));
+
+    await waitFor(() => expect(result.current.review.isSuccess).toBe(true), { timeout: 3000 });
+
+    expect(seenKeys).toHaveLength(2);
+    expect(seenKeys[0]).not.toBeNull();
+    expect(seenKeys[0]).toBe(seenKeys[1]);
+    expect(seenKeys[0]).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
   });
 });

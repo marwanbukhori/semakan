@@ -106,19 +106,33 @@ describe('DevPanel', () => {
     await user.click(screen.getByRole('radio', { name: 'Real API (localhost:3100)' }));
 
     expect(getDevControls().apiSource).toBe('real');
-    expect(screen.getByText('These controls apply to the mock API only.')).toBeInTheDocument();
+    const note = screen.getByText('These controls apply to the mock API only.');
+    expect(note).toBeInTheDocument();
+    expect(note).toHaveAttribute('id');
 
     const latency = screen.getByRole('group', { name: 'Latency' });
     const failure = screen.getByRole('group', { name: 'Failure' });
+    const emptyList = screen.getByRole('checkbox', { name: 'Return an empty list' });
+    const conflictNext = screen.getByRole('checkbox', {
+      name: 'Force a conflict on the next review',
+    });
     expect(within(latency).getByRole('radio', { name: 'None' })).toBeDisabled();
     expect(within(failure).getByRole('radio', { name: 'None' })).toBeDisabled();
-    expect(screen.getByRole('checkbox', { name: 'Return an empty list' })).toBeDisabled();
-    expect(
-      screen.getByRole('checkbox', { name: 'Force a conflict on the next review' }),
-    ).toBeDisabled();
+    expect(emptyList).toBeDisabled();
+    expect(conflictNext).toBeDisabled();
+
+    // Each mock-only control points at the note, so its reason for being disabled is
+    // announced in context, not only as a standalone paragraph elsewhere in the panel.
+    const noteId = note.getAttribute('id');
+    expect(latency).toHaveAttribute('aria-describedby', noteId);
+    expect(failure).toHaveAttribute('aria-describedby', noteId);
+    expect(emptyList).toHaveAttribute('aria-describedby', noteId);
+    expect(conflictNext).toHaveAttribute('aria-describedby', noteId);
 
     await user.click(screen.getByRole('radio', { name: 'Mock API' }));
     expect(within(latency).getByRole('radio', { name: 'None' })).toBeEnabled();
+    expect(latency).not.toHaveAttribute('aria-describedby');
+    expect(emptyList).not.toHaveAttribute('aria-describedby');
   });
 
   it('persists the API source choice across a reload', async () => {

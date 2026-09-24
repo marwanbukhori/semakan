@@ -55,6 +55,10 @@ export function DevPanel() {
 
   // In production the switch isn't rendered, so apiSource is always the default 'mock'.
   const mockOnlyDisabled = import.meta.env.DEV && controls.apiSource === 'real';
+  const mockOnlyNoteId = `${panelId}-mock-only-note`;
+  // Read out the reason a control is disabled in the same breath as the control itself,
+  // instead of only as a lone note elsewhere in the panel.
+  const mockOnlyDescribedBy = mockOnlyDisabled ? mockOnlyNoteId : undefined;
 
   function update(patch: Partial<DevControls>) {
     setDevControls(patch);
@@ -101,7 +105,11 @@ export function DevPanel() {
         >
           <h2 className="mb-3 font-heading text-body-md font-semibold">{t('devPanel.title')}</h2>
 
-          <fieldset className="mb-3" disabled={mockOnlyDisabled}>
+          <fieldset
+            className="mb-3"
+            disabled={mockOnlyDisabled}
+            aria-describedby={mockOnlyDescribedBy}
+          >
             <legend className="mb-1 text-body-sm font-medium">{t('devPanel.latency')}</legend>
             <div className="flex flex-wrap gap-3">
               {LATENCY_OPTIONS.map((ms) => (
@@ -118,7 +126,11 @@ export function DevPanel() {
             </div>
           </fieldset>
 
-          <fieldset className="mb-3" disabled={mockOnlyDisabled}>
+          <fieldset
+            className="mb-3"
+            disabled={mockOnlyDisabled}
+            aria-describedby={mockOnlyDescribedBy}
+          >
             <legend className="mb-1 text-body-sm font-medium">{t('devPanel.failure')}</legend>
             {FAILURE_OPTIONS.map((failure) => (
               <label key={failure} className="flex items-center gap-2 text-body-sm">
@@ -138,6 +150,7 @@ export function DevPanel() {
               type="checkbox"
               checked={controls.emptyList}
               disabled={mockOnlyDisabled}
+              aria-describedby={mockOnlyDescribedBy}
               onChange={(event) => update({ emptyList: event.target.checked })}
             />
             {t('devPanel.emptyList')}
@@ -148,6 +161,7 @@ export function DevPanel() {
               type="checkbox"
               checked={controls.conflictNext}
               disabled={mockOnlyDisabled}
+              aria-describedby={mockOnlyDescribedBy}
               onChange={(event) => update({ conflictNext: event.target.checked })}
             />
             {t('devPanel.conflictNext')}
@@ -187,7 +201,7 @@ export function DevPanel() {
                 ))}
               </div>
               {mockOnlyDisabled && (
-                <p className="mt-1 text-body-xs text-txt-black-500">
+                <p id={mockOnlyNoteId} className="mt-1 text-body-xs text-txt-black-500">
                   {t('devPanel.apiSource.mockOnlyNote')}
                 </p>
               )}
